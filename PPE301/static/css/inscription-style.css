@@ -1,0 +1,90 @@
+body {
+    background: linear-gradient(to right, #f12711, #f5af19);
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 40px 0;
+    overflow-y: auto;
+  }
+  
+  .register-form {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    color: #fff;
+    width: 90%;
+    max-width: 550px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+  
+  .register-form img {
+    display: block;
+    margin: 0 auto 20px auto;
+  }
+  
+  .register-form h3 {
+    font-size: 26px;
+    font-weight: bold;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #ffffff55;
+    padding-bottom: 10px;
+  }
+  
+  .form-group {
+    position: relative;
+    margin-bottom: 20px;
+  }
+  
+  .form-control {
+    padding-left: 40px;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.3);
+    color: #fff;
+    border: none;
+    width: 100%;
+    font-size: 16px;
+  }
+  
+  .form-control::placeholder {
+    color: #eee;
+  }
+  
+  .form-group .fa {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    color: #fff;
+  }
+  
+  .btn-register {
+    background-color: #6b0f1a;
+    color: white;
+    border: none;
+    width: 100%;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 16px;
+  }
+  
+  .btn-register:hover {
+    background-color: #941b2f;
+  }
+  
+  .text-small {
+    font-size: 0.9rem;
+  }
+  
+  @media (max-width: 576px) {
+    .register-form {
+      padding: 20px;
+    }
+  
+    .form-control {
+      font-size: 14px;
+    }
+  }
+  

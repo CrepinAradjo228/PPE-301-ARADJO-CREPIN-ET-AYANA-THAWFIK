@@ -1,0 +1,71 @@
+body {
+    background: linear-gradient(to right, #ff512f, #f09819);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .login-container {
+    background: transparent;
+    padding: 40px;
+    border-radius: 12px;
+    text-align: center;
+    color: white;
+    max-width: 400px;
+    width: 100%;
+  }
+  
+  .login-container h1 {
+    margin-bottom: 30px;
+  }
+  
+  .form-control {
+    background-color: rgba(255, 255, 255, 0.3);
+    border: none;
+    color: white;
+  }
+  
+  .form-control::placeholder {
+    color: #fff;
+  }
+  
+  .form-check-label {
+    color: white;
+  }
+  
+  .btn-login {
+    background-color: #7b1e1e;
+    color: white;
+  }
+  
+  .btn-social {
+    margin: 10px 5px;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    line-height: 45px;
+    font-size: 20px;
+    color: white;
+    text-align: center;
+  }
+  
+  .btn-facebook {
+    background-color: #3b5998;
+  }
+  
+  .btn-twitter {
+    background-color: #1da1f2;
+  }
+  
+  .btn-google {
+    background-color: #db4437;
+  }
+  
+  .error-message {
+    color: #ffcccc;
+    font-size: 0.9em;
+    margin-top: 10px;
+  }
+  

@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Enregistrer un Bien</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <!-- Ton style personnalisé -->
+    <link rel="stylesheet" href="{% static 'css/bien-style.css' %}">
+</head>
+<body>
+
+    <h1>ENREGISTRER UN BIEN</h1>
+
+    <div class="container mt-4">
+        <form action="{% url 'enregistrerbien' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button class="btn btn-primary" type="submit">Enregistrer</button>
+        </form>
+            <a href="{% url 'dashboard' %}" > <button class="btn btn-primary">RETOUR</button></a>
+    </div>
+
+    <!-- JS Bootstrap -->
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

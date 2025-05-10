@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des Biens</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+</head>
+<body class="container mt-5">
+
+    <h2 class="mb-4">Biens Enregistrés</h2>
+
+    <div class="row">
+        {% for bien in listebiens %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="{{ bien.image.url }}" class="card-img-top" alt="{{ bien.nom }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ bien.nom }}</h5>
+                    <p class="card-text">
+                        Type : {{ bien.type }} <br>
+                        Localisation : {{ bien.localisation }} <br>
+                        Prix : {{ bien.prix }} FCFA <br>
+                        État : {{ bien.etat }}
+                    </p>
+                    <!-- Bouton Publier -->
+                    <a href="{% url 'publierbien' bien.id %}" class="btn btn-success">Publier</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>

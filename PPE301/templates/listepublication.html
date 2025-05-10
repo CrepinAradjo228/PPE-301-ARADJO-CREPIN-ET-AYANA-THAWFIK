@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Publications</title>
+    <link rel="stylesheet" href="{% static 'css/publication-style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+</head>
+<body class="container mt-5">
+
+    <h2 class="mb-4">Liste des Publications</h2>
+
+    <div class="row">
+        {% for publication in listepublications %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <!-- Affichage de l'image du bien -->
+                {% if publication.bien.image %}
+                <img src="{{ publication.bien.image.url }}" class="card-img-top" alt="Image du bien">
+                {% else %}
+                <img src="{% static 'biens/background.jpeg' %}" class="card-img-top" alt="Image de publication">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ publication.bien.nom }}</h5>
+                    <p class="card-text">
+                        <strong>Type:</strong> {{ publication.bien.type }} <br>
+                        <strong>Localisation:</strong> {{ publication.bien.localisation }} <br>
+                        <strong>Prix:</strong> {{ publication.bien.prix }} FCFA <br>
+                        <strong>État:</strong> {{ publication.bien.etat }} <br>
+                        <strong>Nature de la publication:</strong> {{ publication.nature_publication }} <br>
+                        <strong>Description:</strong> {{ publication.description }} <br>
+                        <strong>Date de publication:</strong> {{ publication.datepublication }}
+                    </p>
+                    <!-- Lien vers la page de publication  -->
+                    <a href="#" class="btn btn-success">Voir details </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>
+

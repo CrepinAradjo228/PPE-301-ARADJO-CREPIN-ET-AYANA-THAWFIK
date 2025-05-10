@@ -1,0 +1,34 @@
+.publication-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f8f8f8;
+    border-radius: 8px;
+}
+
+.publication-item {
+    background-color: white;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: #333;
+}
+
+h3 {
+    margin-top: 10px;
+    color: #555;
+}
+
+strong {
+    font-weight: bold;
+}
+
+.publication-image {
+    max-width: 100%;
+    margin-top: 10px;
+    border-radius: 6px;
+}

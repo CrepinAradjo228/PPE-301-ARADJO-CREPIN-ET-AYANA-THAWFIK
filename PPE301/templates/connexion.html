@@ -1,0 +1,63 @@
+{% load static %}
+{% load widget_tweaks %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+    
+    <!-- Styles CSS -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/uf-style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/login-style.css' %}">  <!-- Ajouté -->
+
+    <title>Login</title>
+  </head>
+  <body>
+    <div class="login-container">
+      <img src="{% static 'images/logo-fb.png' %}" width="80" alt="Logo">
+      <h1>Account Login</h1>
+      <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <h6>Nom d'utilisateur </h6>
+          {{ form.username|add_class:"form-control" }}
+        </div>
+        <div class="mb-3">
+           <h6>Mot de passe </h6> 
+          {{ form.password|add_class:"form-control" }}
+        </div>
+        
+        <!-- Ajouter un champ pour la sélection du rôle -->
+        <div class="mb-3">
+          <h6>Vous vous êtes inscrit en tant que : </h6>
+          {{ form.role|add_class:"form-control" }}
+        </div>
+
+        {% if erreur %}
+          <p class="error-message">{{ erreur }}</p>
+        {% endif %}
+
+        <div class="form-check d-flex justify-content-start align-items-center mb-3">
+          <input type="checkbox" class="form-check-input" id="rememberMe">
+          <label class="form-check-label ms-2" for="rememberMe">Remember Me</label>
+          <a href="#" class="ms-auto text-white" style="text-decoration: none;">Forgot password?</a>
+        </div>
+        <button type="submit" class="btn btn-login w-100 mb-3">Login</button>
+        <p>Or login with</p>
+        <div>
+          <a href="#" class="btn btn-social btn-facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="btn btn-social btn-twitter"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="btn btn-social btn-google"><i class="fab fa-google"></i></a>
+        </div>
+        <p class="mt-4">Don't have an account? <a href="{% url 'inscription' %}" class="text-white"><strong>Sign Up</strong></a></p>
+      </form>
+    </div>
+
+    <!-- JS -->
+    <script src="{% static 'js/popper.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  </body>
+</html>
