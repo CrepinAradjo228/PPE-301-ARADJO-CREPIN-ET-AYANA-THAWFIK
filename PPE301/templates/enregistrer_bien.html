@@ -1,4 +1,5 @@
 {% load static %}
+{% extends "register.html" %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -16,7 +17,7 @@
     <h1>ENREGISTRER UN BIEN</h1>
 
     <div class="container mt-4">
-        <form action="{% url 'enregistrerbien' %}" method="post" enctype="multipart/form-data">
+        <form action="{% url 'registerbien' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}
 

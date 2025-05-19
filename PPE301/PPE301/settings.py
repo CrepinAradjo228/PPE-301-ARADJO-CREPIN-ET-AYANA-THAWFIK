@@ -77,9 +77,9 @@ WSGI_APPLICATION = 'PPE301.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME':  'PPE301DB',
+        'NAME':  'mobilier',
         'USER': 'postgres',
-        'PASSWORD': 'Cabricit2005',
+        'PASSWORD': 'Thawfik',
         'HOST': 'localhost',  # ou l'adresse IP de votre serveur MySQL
         'PORT': '5432',       # port par défaut pour MySQ
         

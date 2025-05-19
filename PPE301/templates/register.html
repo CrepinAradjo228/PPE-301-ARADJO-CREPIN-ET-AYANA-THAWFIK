@@ -4,23 +4,27 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Publier un bien</title>
+    <title>Enregistrer un bien</title>
 
     <!-- CSS principaux -->
     <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
-    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'css/publier-style.css' %}" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600,700,800,900" rel="stylesheet">
+    <link href="{% static 'css/bien-style.css' %}" rel="stylesheet">
+     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
 </head>
 
 <body id="page-top">
 
-<!-- Wrapper -->
+<!-- Page Wrapper -->
 <div id="wrapper">
 
-    <!-- Sidebar -->
+    <!-- Sidebar (copié du vrai dashboard) -->
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
         <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'dashboard' %}">
@@ -36,27 +40,30 @@
                 <i class="fas fa-fw fa-tachometer-alt"></i>
                 <span>Dashboard</span>
             </a>
-            <hr class="sidebar-divider">
-            <div class="sidebar-heading">Interface</div>
-        </li>
 
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
-               aria-expanded="true" aria-controls="collapsePages">
-                <i class="fas fa-fw fa-folder"></i>
-                <span>Propriétaires</span>
-            </a>
-            <div id="collapsePages" class="collapse show" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Biens :</h6>
-                    <a class="collapse-item" href="#">Messagerie</a>
-                    <a class="collapse-item" href="{% url 'registerbien' %}">Enregistrez un bien</a>
-                    <a class="collapse-item" href="{% url 'listebien' %}">Biens enregistrés</a>
-                    <a class="collapse-item active" href="#">Publier un bien</a>
-                </div>
+              <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                Interface
             </div>
         </li>
-
+        <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
+                    aria-expanded="true" aria-controls="collapsePages">
+                    <i class="fas fa-fw fa-folder"></i>
+                    <span>Proprietaires</span>
+                </a>
+                <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Biens:</h6>
+                        <a class="collapse-item" href="#">Messagerie</a>
+                        <a class="collapse-item" href="{% url 'registerbien' %}">Enregistrez un bien </a>
+                        <a class="collapse-item" href="{% url 'listebien' %}">Bien Enregistrés</a>
+                    </div>
+                </div>
+            </li>
     </ul>
     <!-- End Sidebar -->
 
@@ -75,24 +82,27 @@
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#">
                             <span class="mr-2 d-none d-lg-inline text-gray-600 small">Bienvenue</span>
-                            <img class="img-profile rounded-circle" src="{% static 'images/undraw_profile.svg' %}">
+                            <img class="img-profile rounded-circle"
+                                 src="{% static 'images/undraw_profile.svg' %}">
                         </a>
                     </li>
                 </ul>
             </nav>
-            <!-- End Topbar -->
+            <!-- End of Topbar -->
 
             <!-- Page Content -->
-            <div class="container-fluid">
-                <h1 class="h3 mb-4 text-gray-800">Publier un bien</h1>
+             <div class="container-fluid">
+                <h1 class="h3 mb-4 text-gray-800">Enregistrer un bien immobilier</h1>
 
-                <form method="POST" enctype="multipart/form-data">
+                <form method="POST" action="{% url 'registerbien' %}" enctype="multipart/form-data">
                     {% csrf_token %}
                     {{ form.as_p }}
-                   <button type="submit" class="btn btn-primary">Enregistrer</button>
-                    <a href="{% url 'listebien' %}" class="btn btn-secondary">Retour</a>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    <a href="{% url 'dashboard' %}" class="btn btn-secondary">Retour</a>
                 </form>
             </div>
+
+        </div>
 
         </div>
         <!-- End Main Content -->
@@ -111,3 +121,4 @@
 
 </body>
 </html>
+

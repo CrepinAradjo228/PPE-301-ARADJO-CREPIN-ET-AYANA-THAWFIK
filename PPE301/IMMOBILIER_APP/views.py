@@ -47,7 +47,7 @@ def inscription(request):
                 if utilisateur.role == 'client':
                     return redirect('home')  # Remplace 'home' par l'URL de la page client
                 else:
-                    return redirect('property')  # Remplace 'property' par l'URL de la page propriétaire
+                    return redirect('dashboard')  # Remplace 'property' par l'URL de la page propriétaire
     else:
         form = UtilisateurForm()
     
@@ -115,7 +115,7 @@ def EnregistrerBien(request):
             print("Formulaire invalide :", form.errors)
     else:
         form = BienForm()
-    return render(request, 'enregistrer_bien.html', {'form': form})
+    return render(request, 'register.html', {'form': form})
 
 def listeBien(request):
     context = {"listebiens":Bien.objects.all() }
