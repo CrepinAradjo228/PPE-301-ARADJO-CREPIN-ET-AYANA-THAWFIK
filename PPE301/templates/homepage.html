@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Accueil</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/accueil.css' %}">
+</head>
+
+<body>
+    <div class="background-image">
+        <div class="overlay">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+                <div class="container">
+                    <a class="navbar-brand" href="#">
+                        <img src="{% static 'images/logo-fb.png' %}" alt="Logo">
+                        IWAMMO
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse"
+                            data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                            aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                        <ul class="navbar-nav">
+                            <li class="nav-item"><a class="nav-link" href="#">Accueil</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">À propos</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Contenu central -->
+            <div class="welcome-box container">
+                <h1>Bienvenue sur notre plateforme</h1>
+                <p>Gérez facilement vos biens, vos publications et vos clients immobiliers.</p>
+                <div class="btn-group-custom">
+                    <a href="{% url 'inscription' %}" class="btn-start">Inscrivez vous sur la plateforme</a>
+                    <a href="{% url 'connexion' %}" class="btn-login">Connectez si vous avez déjà un compte</a>
+                </div>
+            </div>
+
+
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="container">
+                    &copy; {{ year|default:"2025" }} ImmoApp. Tous droits réservés.
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+
+</html>
+

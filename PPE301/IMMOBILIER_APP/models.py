@@ -17,8 +17,8 @@ class Utilisateur(models.Model):
     email = models.EmailField(max_length=255)
     username = models.CharField(max_length=255, unique=True)
     password = models.CharField(max_length=255)
-    password1 = models.CharField(max_length=255)
-    role = models.CharField(max_length=20, choices=ROLES, default='client')
+    password1 = models.CharField(max_length=255 ,null=True , blank=True)
+    role = models.CharField(max_length=20, choices=ROLES, default='proprietaire')
    
 
 class Administrateur(Utilisateur):

@@ -19,7 +19,7 @@
     <div class="login-container">
       <img src="{% static 'images/logo-fb.png' %}" width="80" alt="Logo">
       <h1>Account Login</h1>
-      <form method="POST">
+      <form method="POST" autocomplete="off">
         {% csrf_token %}
         <div class="mb-3">
             <h6>Nom d'utilisateur </h6>

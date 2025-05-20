@@ -1,0 +1,84 @@
+     body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+       .background-image {
+    height: 100%;
+    width: 100%;
+    background-image: url("/static/images/immo.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+        .overlay {
+            background-color: rgba(255, 255, 255, 0.9);
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .welcome-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .welcome-box h1 {
+            font-size: 2.5rem;
+            color: #343a40;
+            margin-bottom: 20px;
+        }
+
+        .welcome-box p {
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .btn-group-custom a {
+            margin: 5px;
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .btn-start {
+            background-color: #4e73df;
+            color: white;
+        }
+
+        .btn-start:hover {
+            background-color: #2e59d9;
+        }
+
+        .btn-login {
+            background-color: #1cc88a;
+            color: white;
+        }
+
+        .btn-login:hover {
+            background-color: #17a673;
+        }
+
+        .footer {
+            background-color: #f8f9fc;
+            padding: 15px 0;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .navbar-brand img {
+            height: 40px;
+        }

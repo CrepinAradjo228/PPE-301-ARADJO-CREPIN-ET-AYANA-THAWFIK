@@ -11,12 +11,18 @@ def property(request):
     return render(request , 'properties.html')
 def contact(request):
     return render(request , 'contact.html')
-def about(request):
-    return render(request , 'about.html')
+def landpage(request):
+    return render(request , 'homepage.html')
 def service(request):
     return render(request , 'services.html')
-def propertynew(request):
-    return render(request , 'Dashboard.html')
+def dashboard(request):
+    # Vérifie si l'utilisateur est connecté
+    if not request.session.get('utilisateur_id'):
+        return redirect('connexion')
+    # Vérifie si l'utilisateur est bien un propriétaire
+    if request.session.get('utilisateur_role') != 'proprietaire':
+        return redirect('connexion')  # Ou une page d'erreur/accès refusé
+    return render(request, 'Dashboard.html')
 
 
 def inscription(request):
@@ -31,7 +37,6 @@ def inscription(request):
                 utilisateur = Utilisateur(
                     username=form.cleaned_data['username'],
                     password=make_password(password),
-                    password1=password1,
                     nom=form.cleaned_data['nom'],
                     prenom=form.cleaned_data['prenom'],
                     sexe=form.cleaned_data['sexe'],
@@ -41,18 +46,12 @@ def inscription(request):
                     role=form.cleaned_data['role'],
                 )
                 utilisateur.save()
-
-
-                # Redirection selon le rôle de l'utilisateur
-                if utilisateur.role == 'client':
-                    return redirect('home')  # Remplace 'home' par l'URL de la page client
-                else:
-                    return redirect('dashboard')  # Remplace 'property' par l'URL de la page propriétaire
+                # NE PAS connecter l'utilisateur ici
+                return redirect('connexion')
     else:
         form = UtilisateurForm()
-    
     return render(request, 'inscription.html', {'form': form})
-  # assure-toi que ton formulaire est bien importé
+
 
 def connexion_view(request):
     erreur = None
@@ -64,35 +63,39 @@ def connexion_view(request):
             password_saisi = form.cleaned_data['password']
             role_saisi = form.cleaned_data['role']
 
-            utilisateurs = Utilisateur.objects.all()
-            utilisateur_trouve = None
+            try:
+                utilisateur = Utilisateur.objects.get(username=username_saisi)
+            except Utilisateur.DoesNotExist:
+                utilisateur = None
 
-            for u in utilisateurs:
-                if u.username == username_saisi and u.password1 == password_saisi:
-                    utilisateur_trouve = u
-                    break
-
-            if utilisateur_trouve:
-                if utilisateur_trouve.role != role_saisi:
-                    erreur = "Rôle incorrect pour cet utilisateur."
-                else:
-                    if role_saisi == 'client':
-                        return redirect('home')
-                    elif role_saisi == 'proprietaire':
-                        return redirect('property')
+            if utilisateur is None:
+                erreur = "Nom d'utilisateur incorrect."
+            elif not check_password(password_saisi, utilisateur.password):
+                erreur = "Mot de passe incorrect."
+            elif utilisateur.role != role_saisi:
+                erreur = "Rôle incorrect pour cet utilisateur."
             else:
-                erreur = "Nom d'utilisateur ou mot de passe incorrect."
+                request.session['utilisateur_id'] = utilisateur.id
+                request.session['utilisateur_role'] = utilisateur.role
+                # Redirection selon le rôle uniquement
+                if utilisateur.role == 'client':
+                    return redirect('home')
+                else:
+                    return redirect('dashboard')
     else:
         form = ConnexionForm()
 
     return render(request, 'connexion.html', {'form': form, 'erreur': erreur})
 
-
-
 def deconnexion_view(request):
-    logout(request)
-    return redirect('home')
+    # Supprime les informations de session
+    if 'utilisateur_id' in request.session:
+        del request.session['utilisateur_id']
+    if 'utilisateur_role' in request.session:
+        del request.session['utilisateur_role']
 
+    # Redirige vers la page d'accueil ou de connexion
+    return redirect('home')
 
 @login_required
 def tableau_de_bord(request):

@@ -12,7 +12,11 @@ class UtilisateurForm(forms.Form):
     username = forms.CharField(label="Nom d'utilisateur", max_length=255)
     password = forms.CharField(label="Mot de passe" , widget=forms.PasswordInput)
     password1 = forms.CharField(label="Mot de passe" , widget=forms.PasswordInput)
-    role = forms.ChoiceField(choices=Utilisateur.ROLES, label="Inscription en tant que")
+    role = forms.ChoiceField(
+        choices=[('client', 'Client'), ('proprietaire', 'Proprietaire')],
+        label="Inscription en tant que",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
 
 
 class ConnexionForm(forms.Form):
