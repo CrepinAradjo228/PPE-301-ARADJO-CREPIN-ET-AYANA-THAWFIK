@@ -131,17 +131,16 @@ def PublierBien(request, id):
     return render(request, 'choix_publication.html', {'bien': bien})
 
 def listePublication(request):
-        # Récupère toutes les publications avec leurs informations associées sur le bien
-    publications = Publication.objects.select_related('bien').all()
-    
-    context = {
-        'listepublications': publications
-    }
-    
-    return render(request, "properties.html", context)
+    ventes = Vendre.objects.all()
+    locations = Louer.objects.all()
 
-from django.shortcuts import render, redirect
+    # Fusion des 2 types de publication
+    listepublications = list(ventes) + list(locations)
 
+    return render(request, "properties.html", {
+        'listepublications': listepublications
+    })
+    
 def choix_publication(request):
     if request.method == 'POST':
         choix = request.POST.get('choix')
