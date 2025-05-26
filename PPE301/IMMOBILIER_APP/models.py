@@ -19,7 +19,8 @@ class Utilisateur(models.Model):
     password = models.CharField(max_length=255)
     password1 = models.CharField(max_length=255 ,null=True , blank=True)
     role = models.CharField(max_length=20, choices=ROLES, default='proprietaire')
-   
+    def __str__(self):
+        return f"{self.nom} {self.prenom}"
 
 class Administrateur(Utilisateur):
     pass
@@ -58,22 +59,37 @@ class Publication(models.Model):
 class Vendre(models.Model):
     type_bien = models.ForeignKey(TypeBien, on_delete=models.CASCADE)
     prix_vente = models.FloatField()
-    superficie = models.FloatField()  # Superficie en m²
+    superficie = models.FloatField()  # en m²
     localisation = models.CharField(max_length=255)
     description = models.TextField()
     etat_bien = models.CharField(max_length=255)
     image_principale = models.ImageField(upload_to='biens_vendus/')
     titre_foncier = models.ImageField(upload_to='titres_fonciers/', default="")
     numero_titre_foncier = models.CharField(max_length=255, unique=True, default="")
-    proprietaire = models.ForeignKey(Proprietaire, on_delete=models.CASCADE)
+    
+    proprietaire = models.ForeignKey(
+        Utilisateur,  
+        on_delete=models.CASCADE,
+        limit_choices_to={'role': 'proprietaire'}  
+    )
+    def __str__(self):
+        return f"{self.type_bien} - {self.localisation}"
     
 
 class Louer(models.Model):
-  type_bien = models.ForeignKey(TypeBien, on_delete=models.CASCADE, default=None)
-  loyer_mensuel = models.FloatField(default=0)
-  durée_location = models.IntegerField(default=1)  # Durée en mois
-  avance = models.FloatField(default=0)
-  localisation = models.CharField(max_length=255 , default="")
-  description = models.TextField(default="")
-  image_principale = models.ImageField(upload_to='biens_loues/' , default="")
-  proprietaire = models.ForeignKey(Proprietaire, on_delete=models.CASCADE ,default=None)       
+    type_bien = models.ForeignKey(TypeBien, on_delete=models.CASCADE, default=None)
+    loyer_mensuel = models.FloatField(default=0)
+    durée_location = models.IntegerField(default=1)  # Durée en mois
+    avance = models.FloatField(default=0)
+    localisation = models.CharField(max_length=255, default="")
+    description = models.TextField(default="")
+    image_principale = models.ImageField(upload_to='biens_loues/', default="")
+
+    proprietaire = models.ForeignKey(
+        Utilisateur,  
+        on_delete=models.CASCADE,
+        default=None,
+        limit_choices_to={'role': 'proprietaire'}  
+    )
+    def __str__(self):
+        return f"{self.type_bien} à {self.localisation} - {self.loyer_mensuel} FCFA"
