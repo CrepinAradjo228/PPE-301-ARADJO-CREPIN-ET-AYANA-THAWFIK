@@ -1,0 +1,90 @@
+/* Style global avec prise en compte de la sidebar */
+
+body {
+    background: #f8f9fc;
+    font-family: 'Nunito', sans-serif;
+}
+
+/* Enveloppe principale du contenu (hors sidebar) */
+.main-content {
+    margin-left: 250px; /* pour ne pas être sous la sidebar */
+    padding: 40px;
+    max-width: 900px;
+}
+
+/* Titre principal */
+h1.h3, h2 {
+    color: #4e73df;
+    font-weight: 700;
+    margin-bottom: 25px;
+}
+
+/* Boîte du formulaire */
+form {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.04);
+}
+
+/* Labels */
+form label {
+    font-weight: 600;
+    color: #343a40;
+    margin-top: 10px;
+}
+
+/* Champs de saisie */
+form input[type="text"],
+form input[type="number"],
+form input[type="email"],
+form input[type="file"],
+form select,
+form textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 15px;
+    color: #495057;
+}
+
+/* Focus */
+form input:focus,
+form select:focus,
+form textarea:focus {
+    outline: none;
+    border-color: #4e73df;
+    box-shadow: 0 0 5px rgba(78, 115, 223, 0.3);
+}
+
+/* Boutons */
+button.btn-primary {
+    background-color: #4e73df;
+    border-color: #4e73df;
+    padding: 10px 25px;
+    font-size: 15px;
+}
+
+button.btn-primary:hover {
+    background-color: #2e59d9;
+    border-color: #2653d4;
+}
+
+button.btn-secondary {
+    margin-left: 10px;
+    padding: 10px 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        padding: 20px;
+    }
+
+    form {
+        padding: 20px;
+    }
+}

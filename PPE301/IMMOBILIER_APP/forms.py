@@ -73,3 +73,35 @@ class PublierForm(forms.Form):
             self.fields['prix'].initial = bien.prix
             self.fields['etat'].initial = bien.etat
 
+class VendreForm(forms.Form):
+    type_bien = forms.ModelChoiceField(
+        label="Type de bien",
+        queryset=TypeBien.objects.all()
+    )
+    prix_vente = forms.FloatField(label="Prix de vente")
+    superficie = forms.FloatField(label="Superficie en m²")
+    localisation = forms.CharField(label="Localisation", max_length=255)
+    description = forms.CharField(label="Description", widget=forms.Textarea)
+    etat_bien = forms.CharField(label="État du bien", max_length=255)
+    image_principale = forms.ImageField(label="Image principale")
+    titre_foncier = forms.ImageField(label="Titre foncier")
+    numero_titre_foncier = forms.CharField(label="Numéro du titre foncier", max_length=255)
+    proprietaire = forms.ModelChoiceField(
+        label="Propriétaire",
+        queryset=Proprietaire.objects.all()
+    )
+class LouerForm(forms.Form):
+    type_bien = forms.ModelChoiceField(
+        label="Type de bien",
+        queryset=TypeBien.objects.all()
+    )
+    loyer_mensuel = forms.FloatField(label="Loyer mensuel (FCFA)")
+    durée_location = forms.IntegerField(label="Durée minimale (en mois)")
+    avance = forms.FloatField(label="Montant de la caution (avance)")
+    localisation = forms.CharField(label="Localisation", max_length=255)
+    description = forms.CharField(label="Description", widget=forms.Textarea)
+    image_principale = forms.ImageField(label="Image principale")
+    proprietaire = forms.ModelChoiceField(
+        label="Propriétaire",
+        queryset=Proprietaire.objects.all()
+    )

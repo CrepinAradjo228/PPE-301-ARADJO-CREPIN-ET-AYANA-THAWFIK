@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render , redirect,get_object_or_404
-from .models import Proprietaire,Client,Utilisateur,Bien,Publication
-from .forms import UtilisateurForm,ConnexionForm,BienForm,PublierForm
+from .models import Proprietaire,Client,Utilisateur,Bien,Publication,Vendre,Louer
+from .forms import UtilisateurForm,ConnexionForm,BienForm,PublierForm,VendreForm,LouerForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password , check_password
 
@@ -126,25 +126,9 @@ def listeBien(request):
 
 def PublierBien(request, id):
     bien = get_object_or_404(Bien, id=id)
-    if request.method == 'POST':
-        form = PublierForm(request.POST, request.FILES, bien=bien)
-        if form.is_valid():
-            # Ici tu peux enregistrer dans le modèle Publication (si tu en as un)
-            Publication.objects.create(
-                bien=bien,
-                titrefoncier=form.cleaned_data['titrefoncier'],
-                carterecto=form.cleaned_data['carterecto'],
-                carteverso=form.cleaned_data['carteverso'],
-                planbien=form.cleaned_data['planbien'],
-                nature_publication=form.cleaned_data['nature_publication'],
-                description=form.cleaned_data['description'],
-                datepublication = form.cleaned_data['datepublication'],
-            )
-            return redirect('property')
-    else:
-        form = PublierForm(bien=bien)
 
-    return render(request, 'publication.html', {'form': form})
+    # Affiche uniquement la page de choix de type de publication
+    return render(request, 'choix_publication.html', {'bien': bien})
 
 def listePublication(request):
         # Récupère toutes les publications avec leurs informations associées sur le bien
@@ -155,3 +139,59 @@ def listePublication(request):
     }
     
     return render(request, "properties.html", context)
+
+from django.shortcuts import render, redirect
+
+def choix_publication(request):
+    if request.method == 'POST':
+        choix = request.POST.get('choix')
+        if choix == 'location':
+            return redirect('ajouter_location')  # URL vers le formulaire de location
+        elif choix == 'vente':
+            return redirect('ajouter_vente')     # URL vers le formulaire de vente
+    return render(request, 'choix_publication.html')
+
+
+
+def ajouter_vente(request):
+    if request.method == 'POST':
+        form = VendreForm(request.POST, request.FILES)
+        if form.is_valid():
+            Vendre.objects.create(
+                type_bien=form.cleaned_data['type_bien'],
+                prix_vente=form.cleaned_data['prix_vente'],
+                superficie=form.cleaned_data['superficie'],
+                localisation=form.cleaned_data['localisation'],
+                description=form.cleaned_data['description'],
+                etat_bien=form.cleaned_data['etat_bien'],
+                image_principale=form.cleaned_data['image_principale'],
+                titre_foncier=form.cleaned_data['titre_foncier'],
+                numero_titre_foncier=form.cleaned_data['numero_titre_foncier'],
+                proprietaire=form.cleaned_data['proprietaire'],
+            )
+            return redirect('property')  # Redirige vers la page client adaptée
+    else:
+        form = VendreForm()
+    
+    return render(request, 'ajouter_vente.html', {'form': form})
+
+
+def ajouter_location(request):
+    if request.method == 'POST':
+        form = LouerForm(request.POST, request.FILES)
+        if form.is_valid():
+            Louer.objects.create(
+                type_bien=form.cleaned_data['type_bien'],
+                loyer_mensuel=form.cleaned_data['loyer_mensuel'],
+                durée_location=form.cleaned_data['durée_location'],
+                avance=form.cleaned_data['avance'],
+                localisation=form.cleaned_data['localisation'],
+                description=form.cleaned_data['description'],
+                image_principale=form.cleaned_data['image_principale'],
+                proprietaire=form.cleaned_data['proprietaire'],
+            )
+            return redirect('property')  # Redirige vers la page des publications
+    else:
+        form = LouerForm()
+
+    return render(request, 'ajouter_location.html', {'form': form})

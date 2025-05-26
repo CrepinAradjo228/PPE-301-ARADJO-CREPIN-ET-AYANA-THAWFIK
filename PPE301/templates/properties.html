@@ -788,30 +788,48 @@
         <div class="container mt-5">  -->
 
   <div class="row">
-    {% for publication in listepublications %}
-      <div class="col-md-6 col-lg-4 mb-4">
-        <div class="property-item rounded overflow-hidden">
-          <div class="position-relative overflow-hidden">
-            {% if publication.bien.image %}
-              <img class="img-fluid" src="{{ publication.bien.image.url }}" alt="Image du bien">
-            {% else %}
-              <img class="img-fluid" src="{% static 'biens/background.jpeg' %}" alt="Image de publication">
-            {% endif %}
-          </div>
-          <div class="property-content p-4">
-            <span class="city d-block mb-3">{{ publication.bien.type }}</span>
-            <div class="price mb-2"><span>{{ publication.bien.prix }} FCFA</span></div>
-            <span class="d-block mb-2 text-black-50">{{ publication.bien.localisation }}</span>
-            <p><strong>État du bien :</strong> {{ publication.bien.etat }}</p>
+  {% for publication in listepublications %}
+    <div class="col-md-6 col-lg-4 mb-4">
+      <div class="property-item rounded overflow-hidden">
+        <div class="position-relative overflow-hidden">
+          {% if publication.image_principale %}
+            <img class="img-fluid" src="{{ publication.image_principale.url }}" alt="Image du bien">
+          {% else %}
+            <img class="img-fluid" src="{% static 'biens/background.jpeg' %}" alt="Image de publication">
+          {% endif %}
+        </div>
+        <div class="property-content p-4">
+
+          {% if publication.prix_vente %}
+            <!-- Cas Vente -->
+            <span class="badge bg-primary mb-2">Bien en vente</span>
+            <span class="city d-block mb-2">{{ publication.type_bien }}</span>
+            <div class="price mb-2"><span>{{ publication.prix_vente }} FCFA</span></div>
+            <p><strong>Superficie :</strong> {{ publication.superficie }} m²</p>
+            <p><strong>Localisation :</strong> {{ publication.localisation }}</p>
+            <p><strong>État :</strong> {{ publication.etat_bien }}</p>
             <p><strong>Description :</strong> {{ publication.description }}</p>
-            <a href="#" class="btn btn-success py-2 px-3">Voir détails</a>
-          </div>
+
+          {% elif publication.loyer_mensuel %}
+            <!-- Cas Location -->
+            <span class="badge bg-success mb-2">Bien en location</span>
+            <span class="city d-block mb-2">{{ publication.type_bien }}</span>
+            <div class="price mb-2"><span>{{ publication.loyer_mensuel }} FCFA / mois</span></div>
+            <p><strong>Durée minimale :</strong> {{ publication.durée_location }} mois</p>
+            <p><strong>Caution :</strong> {{ publication.avance }} FCFA</p>
+            <p><strong>Localisation :</strong> {{ publication.localisation }}</p>
+            <p><strong>Description :</strong> {{ publication.description }}</p>
+          {% endif %}
+
+          <a href="#" class="btn btn-outline-primary py-2 px-3 mt-2">Voir détails</a>
         </div>
       </div>
-    {% empty %}
-      <p class="text-center">Aucune publication disponible pour le moment.</p>
-    {% endfor %}
-  </div>
+    </div>
+  {% empty %}
+    <p class="text-center">Aucune publication disponible pour le moment.</p>
+  {% endfor %}
+</div>
+
 
 </div>
         

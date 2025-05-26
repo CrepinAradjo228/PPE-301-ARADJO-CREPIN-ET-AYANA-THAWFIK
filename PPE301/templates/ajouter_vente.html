@@ -1,28 +1,25 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Publier un bien</title>
+    <title>Publier une vente</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- CSS principaux -->
+    <!-- Styles -->
     <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'css/publier-style.css' %}" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600,700,800,900" rel="stylesheet">
+    <link href="{% static 'css/vente-style.css' %}" rel="stylesheet">
 </head>
 
 <body id="page-top">
-
 <!-- Wrapper -->
 <div id="wrapper">
 
     <!-- Sidebar -->
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-
         <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'dashboard' %}">
             <div class="sidebar-brand-icon rotate-n-15">
                 <i class="fas fa-laugh-wink"></i>
@@ -36,27 +33,24 @@
                 <i class="fas fa-fw fa-tachometer-alt"></i>
                 <span>Dashboard</span>
             </a>
-            <hr class="sidebar-divider">
-            <div class="sidebar-heading">Interface</div>
+        </li>
+
+        <hr class="sidebar-divider">
+        <div class="sidebar-heading">Interface</div>
+
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'registerbien' %}">
+                <i class="fas fa-fw fa-home"></i>
+                <span>Enregistrement bien</span>
+            </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
-               aria-expanded="true" aria-controls="collapsePages">
-                <i class="fas fa-fw fa-folder"></i>
-                <span>Propriétaires</span>
+            <a class="nav-link" href="{% url 'listebien' %}">
+                <i class="fas fa-fw fa-list"></i>
+                <span>Biens enregistrés</span>
             </a>
-            <div id="collapsePages" class="collapse show" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Biens :</h6>
-                    <a class="collapse-item" href="#">Messagerie</a>
-                    <a class="collapse-item" href="{% url 'registerbien' %}">Enregistrez un bien</a>
-                    <a class="collapse-item" href="{% url 'listebien' %}">Biens enregistrés</a>
-                    <a class="collapse-item active" href="#">Publier un bien</a>
-                </div>
-            </div>
         </li>
-
     </ul>
     <!-- End Sidebar -->
 
@@ -82,20 +76,29 @@
             </nav>
             <!-- End Topbar -->
 
-            <!-- Page Content 
-            <div class="container-fluid">
-                <h1 class="h3 mb-4 text-gray-800">Publier un bien</h1>
-
-                <form method="POST" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                   <button type="submit" class="btn btn-primary">Enregistrer</button>
-                    <a href="{% url 'listebien' %}" class="btn btn-secondary">Retour</a>
-                </form>
+            <!-- Page Content -->
+            <div class="main-content">
+                <h2 class="h4 mb-4 text-gray-800">Mettre le bien en vente</h2>
+                <div class="card shadow p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-primary">Publier</button>
+                        <a href="{% url 'choixpublication' %}" class="btn btn-secondary">Annuler</a>
+                    </form>
+                </div>
             </div>
-            -->
         </div>
-        <!-- End Main Content -->
+        <!-- End Content -->
+
+        <!-- Footer -->
+        <footer class="sticky-footer bg-white mt-5">
+            <div class="container my-auto">
+                <div class="text-center text-muted my-auto">
+                    <span>&copy; PROJET IMMOBILIER 2025</span>
+                </div>
+            </div>
+        </footer>
 
     </div>
     <!-- End Content Wrapper -->

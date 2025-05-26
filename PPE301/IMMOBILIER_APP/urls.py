@@ -16,7 +16,11 @@ urlpatterns = [
     path('enregistrerbien/', views.EnregistrerBien, name='registerbien'),
     path('listebien/', views.listeBien, name='listebien'),
     path('publierbien/<int:id>/', views.PublierBien, name='publierbien'),
-    path('deconnexion/', views.deconnexion_view, name='deconnexion')
+    path('deconnexion/', views.deconnexion_view, name='deconnexion'),
+    path('ajouter-vente/', views.ajouter_vente, name='ajouter_vente'),
+    path('ajouter-location/', views.ajouter_location, name='ajouter_location'),
+    path('choixpublication/', views.choix_publication, name='choixpublication')
+
 
 ]
 

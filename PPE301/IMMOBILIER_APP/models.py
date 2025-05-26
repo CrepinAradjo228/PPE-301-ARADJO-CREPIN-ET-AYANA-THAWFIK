@@ -36,8 +36,8 @@ class Bien(models.Model):
     nom = models.CharField(max_length=255)
     type = models.ForeignKey(TypeBien, on_delete=models.CASCADE)
     localisation = models.CharField(max_length=255)
-    prix = models.FloatField()
-    etat = models.CharField(max_length=255)
+    prix = models.FloatField(null=True, blank=True)
+    etat = models.CharField(max_length=255 ,null=True, blank=True)
     image = models.ImageField(upload_to='biens/')
 
 class Publication(models.Model):
@@ -55,16 +55,25 @@ class Publication(models.Model):
     def __str__(self):
         return f"Publication pour {self.bien.nom}"
 
-class Acheter(models.Model):
-    date_achat = models.DateField()
-    Bien = models.ForeignKey(Bien , on_delete=models.CASCADE)
-    Client = models.ForeignKey(Client , on_delete=models.CASCADE)
+class Vendre(models.Model):
+    type_bien = models.ForeignKey(TypeBien, on_delete=models.CASCADE)
+    prix_vente = models.FloatField()
+    superficie = models.FloatField()  # Superficie en m²
+    localisation = models.CharField(max_length=255)
+    description = models.TextField()
+    etat_bien = models.CharField(max_length=255)
+    image_principale = models.ImageField(upload_to='biens_vendus/')
+    titre_foncier = models.ImageField(upload_to='titres_fonciers/', default="")
+    numero_titre_foncier = models.CharField(max_length=255, unique=True, default="")
+    proprietaire = models.ForeignKey(Proprietaire, on_delete=models.CASCADE)
+    
 
 class Louer(models.Model):
-    date_location = models.DateField()
-    duree_location = models.IntegerField(default=0)
-    Bien = models.ForeignKey(Bien , on_delete=models.CASCADE)
-    Client = models.ForeignKey(Client , on_delete=models.CASCADE)
-
-
-
+  type_bien = models.ForeignKey(TypeBien, on_delete=models.CASCADE, default=None)
+  loyer_mensuel = models.FloatField(default=0)
+  durée_location = models.IntegerField(default=1)  # Durée en mois
+  avance = models.FloatField(default=0)
+  localisation = models.CharField(max_length=255 , default="")
+  description = models.TextField(default="")
+  image_principale = models.ImageField(upload_to='biens_loues/' , default="")
+  proprietaire = models.ForeignKey(Proprietaire, on_delete=models.CASCADE ,default=None)       
