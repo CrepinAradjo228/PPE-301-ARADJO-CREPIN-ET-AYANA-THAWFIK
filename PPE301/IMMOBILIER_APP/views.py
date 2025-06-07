@@ -4,6 +4,7 @@ from .models import Proprietaire,Client,Utilisateur,Bien,Publication,Vendre,Loue
 from .forms import UtilisateurForm,ConnexionForm,BienForm,PublierForm,VendreForm,LouerForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password , check_password
+from django.contrib import messages
 
 def home(request):
     return render(request, 'index.html')
@@ -152,11 +153,16 @@ def choix_publication(request):
 
 
 
+
+
+from django.contrib import messages
+from .models import Utilisateur, Vendre
+
 def ajouter_vente(request):
     if request.method == 'POST':
         form = VendreForm(request.POST, request.FILES)
         if form.is_valid():
-            Vendre.objects.create(
+            vente = Vendre.objects.create(
                 type_bien=form.cleaned_data['type_bien'],
                 prix_vente=form.cleaned_data['prix_vente'],
                 superficie=form.cleaned_data['superficie'],
@@ -167,11 +173,20 @@ def ajouter_vente(request):
                 titre_foncier=form.cleaned_data['titre_foncier'],
                 numero_titre_foncier=form.cleaned_data['numero_titre_foncier'],
                 proprietaire=form.cleaned_data['proprietaire'],
+                statut='en_attente'
             )
-            return redirect('property')  # Redirige vers la page client adaptée
+
+            proprietaire = form.cleaned_data['proprietaire']
+
+            # Redirection selon le rôle du propriétaire
+            if proprietaire.role == 'utilisateur':
+                return redirect('publication_attente')  # nom de ta page d’attente
+            else:
+                return redirect('dashboard_admin')  # nom de ta page d’attente
+
     else:
         form = VendreForm()
-    
+
     return render(request, 'ajouter_vente.html', {'form': form})
 
 
@@ -194,3 +209,31 @@ def ajouter_location(request):
         form = LouerForm()
 
     return render(request, 'ajouter_location.html', {'form': form})
+
+def valider_publications(request):
+    biens_a_valider = Vendre.objects.filter(statut='en_attente')
+    return render(request, 'Valider_publication.html', {'publications': biens_a_valider})
+
+
+def confirmer_validation(request, id):
+    vente = get_object_or_404(Vendre, id=id)
+    vente.statut = 'valide'
+    vente.save()
+
+    return render(request, 'publication_validee.html', {'vente': vente})
+
+
+def liste_biens_valides(request):
+    biens_valides = Vendre.objects.filter(statut='valide')
+    return render(request, 'Bienvalidés.html', {'biens_valides': biens_valides})
+
+def DashboardAdmin(request):
+    return render(request, 'AdminDashboard.html')
+
+def publication_attente(request):
+    biens_en_attente = Vendre.objects.filter(statut='en_attente')
+    return render(request, 'publication_attente.html', {'biens_en_attente': biens_en_attente})
+
+def publication_validee(request):
+    biens_valides = Vendre.objects.filter(statut='valide')
+    return render(request, 'publication_validee.html', {'biens_valides': biens_valides})

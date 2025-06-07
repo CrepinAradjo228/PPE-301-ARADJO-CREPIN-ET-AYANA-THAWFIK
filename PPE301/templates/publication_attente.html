@@ -1,0 +1,19 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Publication en attente</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+</head>
+<body class="bg-light">
+    <div class="container text-center mt-5">
+        <div class="alert alert-warning p-5 rounded shadow">
+            <h3 class="text-dark">Merci pour votre soumission !</h3>
+            <p class="lead">Votre bien est en cours de <strong>validation</strong> par l'administrateur.</p>
+            <p>Vous recevrez une notification dès qu'il sera publié.</p>
+            <a href="{% url 'dashboard' %}" class="btn btn-primary mt-3">Retour au tableau de bord</a>
+        </div>
+    </div>
+</body>
+</html>

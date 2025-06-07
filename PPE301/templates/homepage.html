@@ -1,66 +1,143 @@
 {% load static %}
+<!-- This is the homepage template for the real estate application -->    
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
-    <title>Accueil</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/accueil.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil - Mon Appli Immobilière</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+     <link rel="stylesheet" href="{% static 'css/accueil.css' %}">
 </head>
-
 <body>
-    <div class="background-image">
-        <div class="overlay">
-            <!-- Navbar -->
-            <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-                <div class="container">
-                    <a class="navbar-brand" href="#">
-                        <img src="{% static 'images/logo-fb.png' %}" alt="Logo">
-                        IWAMMO
-                    </a>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse"
-                            data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
-                            aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                        <ul class="navbar-nav">
-                            <li class="nav-item"><a class="nav-link" href="#">Accueil</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">À propos</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
 
-            <!-- Contenu central -->
-            <div class="welcome-box container">
-                <h1>Bienvenue sur notre plateforme</h1>
-                <p>Gérez facilement vos biens, vos publications et vos clients immobiliers.</p>
-                <div class="btn-group-custom">
-                    <a href="{% url 'inscription' %}" class="btn-start">Inscrivez vous sur la plateforme</a>
-                    <a href="{% url 'connexion' %}" class="btn-login">Connectez si vous avez déjà un compte</a>
+    <header class="main-header">
+        <div class="container">
+            <div class="logo">
+                <a href="#">🏡 ImmobApp</a>
+            </div>
+            <div class="search-bar">
+                <input type="text" placeholder="Rechercher une ville, un quartier...">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+            <div class="auth-links">
+                <a href="#" class="btn-text">Se connecter</a>
+                <a href="#" class="btn-primary-small">S'inscrire</a>
+            </div>
+            <div class="header-icons">
+                <a href="#" class="menu-icon"><i class="fas fa-bars"></i></a> </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero-section">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Trouvez le bien de vos rêves</h1>
+                    <p>Des milliers d'annonces à découvrir, partout en France.</p>
+                    <button class="btn-primary">Commencer ma recherche</button>
                 </div>
             </div>
+        </section>
 
-
-            <!-- Footer -->
-            <footer class="footer">
-                <div class="container">
-                    &copy; {{ year|default:"2025" }} ImmoApp. Tous droits réservés.
+        <section class="quick-categories">
+            <div class="container">
+                <h2>Explorer par catégorie</h2>
+                <div class="category-grid">
+                    <a href="#" class="category-item">
+                        <i class="fas fa-house-user"></i>
+                        <span>Maisons à vendre</span>
+                    </a>
+                    <a href="#" class="category-item">
+                        <i class="fas fa-city"></i>
+                        <span>Appartements à louer</span>
+                    </a>
+                    <a href="#" class="category-item">
+                        <i class="fas fa-seedling"></i>
+                        <span>Terrains</span>
+                    </a>
+                    <a href="#" class="category-item">
+                        <i class="fas fa-building"></i>
+                        <span>Programmes neufs</span>
+                    </a>
                 </div>
-            </footer>
+            </div>
+        </section>
+
+        <section class="featured-listings">
+            <div class="container">
+                <h2>Annonces mises en avant</h2>
+                <div class="listing-grid">
+                    <div class="listing-card">
+                        <img src="https://via.placeholder.com/300x200?text=Maison+Moderne" alt="Maison Moderne">
+                        <div class="card-content">
+                            <h3>Maison 4 pièces à Lyon</h3>
+                            <p class="price">450 000 €</p>
+                            <p class="details">
+                                <i class="fas fa-ruler-combined"></i> 120 m² |
+                                <i class="fas fa-bed"></i> 3 chambres
+                            </p>
+                            <button class="btn-secondary">Voir le bien</button>
+                            <i class="fas fa-heart favorite-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="listing-card">
+                        <img src="https://via.placeholder.com/300x200?text=Appartement+Cosy" alt="Appartement Cosy">
+                        <div class="card-content">
+                            <h3>Appartement T2 à Paris</h3>
+                            <p class="price">1 200 € / mois</p>
+                            <p class="details">
+                                <i class="fas fa-ruler-combined"></i> 55 m² |
+                                <i class="fas fa-bed"></i> 1 chambre
+                            </p>
+                            <button class="btn-secondary">Voir le bien</button>
+                            <i class="fas fa-heart favorite-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="listing-card">
+                        <img src="https://via.placeholder.com/300x200?text=Villa+avec+Piscine" alt="Villa avec Piscine">
+                        <div class="card-content">
+                            <h3>Villa 6 pièces à Nice</h3>
+                            <p class="price">980 000 €</p>
+                            <p class="details">
+                                <i class="fas fa-ruler-combined"></i> 250 m² |
+                                <i class="fas fa-bed"></i> 5 chambres
+                            </p>
+                            <button class="btn-secondary">Voir le bien</button>
+                            <i class="fas fa-heart favorite-icon"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="view-more">
+                    <a href="#" class="btn-outline">Voir toutes les annonces</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <nav class="bottom-nav">
+                <a href="#" class="nav-item active"><i class="fas fa-home"></i><span>Accueil</span></a>
+                <a href="#" class="nav-item"><i class="fas fa-search"></i><span>Rechercher</span></a>
+                <a href="#" class="nav-item"><i class="fas fa-heart"></i><span>Favoris</span></a>
+                <a href="#" class="nav-item"><i class="fas fa-bell"></i><span>Alertes</span></a>
+                <a href="#" class="nav-item"><i class="fas fa-ellipsis-h"></i><span>Plus</span></a>
+            </nav>
+            <div class="footer-links">
+                <p>&copy; 2025 ImmobApp. Tous droits réservés.</p>
+                <ul>
+                    <li><a href="#">À propos</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Mentions Légales</a></li>
+                </ul>
+            </div>
         </div>
-    </div>
+    </footer>
 
-    <!-- JS -->
-    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
-    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 </body>
-
 </html>
-
+ 

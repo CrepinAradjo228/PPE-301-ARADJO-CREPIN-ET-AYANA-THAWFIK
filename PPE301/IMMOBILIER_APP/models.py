@@ -57,6 +57,12 @@ class Publication(models.Model):
         return f"Publication pour {self.bien.nom}"
 
 class Vendre(models.Model):
+    STATUTS = (
+    ('en_attente', 'En attente'),
+    ('valide', 'Validé'),
+    ('refuse', 'Refusé'),
+    )
+    statut = models.CharField(max_length=20, choices=STATUTS, default='en_attente')
     type_bien = models.ForeignKey(TypeBien, on_delete=models.CASCADE)
     prix_vente = models.FloatField()
     superficie = models.FloatField()  # en m²

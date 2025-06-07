@@ -19,8 +19,12 @@ urlpatterns = [
     path('deconnexion/', views.deconnexion_view, name='deconnexion'),
     path('ajouter-vente/', views.ajouter_vente, name='ajouter_vente'),
     path('ajouter-location/', views.ajouter_location, name='ajouter_location'),
-    path('choixpublication/', views.choix_publication, name='choixpublication')
-
-
+    path('choixpublication/', views.choix_publication, name='choixpublication'),
+    path('valider-publications/', views.valider_publications, name='valider_publication'),
+    path('confirmer-validation/<int:id>/', views.confirmer_validation, name='confirmer_validation'),
+    path('biens-valides/', views.liste_biens_valides, name='liste_biens_valides'),
+    path('dashboard-admin/', views.DashboardAdmin, name='dashboard_admin'),
+    path('publication_attente/', views.publication_attente, name='publication_attente'),
+    path('publication_validee/', views.publication_validee, name='publication_validee'),
 ]
 

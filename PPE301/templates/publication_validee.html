@@ -1,0 +1,19 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Publication validée</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+</head>
+<body class="bg-light">
+    <div class="container text-center mt-5">
+        <div class="alert alert-success p-5 rounded shadow">
+            <h3 class="text-success">Félicitations !</h3>
+            <p class="lead">Votre bien a été <strong>validé</strong> par l’administrateur.</p>
+            <p>Il est désormais <strong>publié</strong> et visible sur la plateforme.</p>
+            <a href="{% url 'listebien' %}" class="btn btn-success mt-3">Voir les biens</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,84 +1,557 @@
-     body, html {
-            height: 100%;
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-        }
+/* Variables CSS pour les couleurs */
+:root {
+    --primary-color: #007bff; /* Bleu standard */
+    --secondary-color: #6c757d; /* Gris */
+    --accent-color: #28a745; /* Vert pour les succès/actions positives */
+    --text-color: #333;
+    --light-text-color: #666;
+    --bg-color: #f8f9fa; /* Gris très clair pour le fond */
+    --border-color: #dee2e6;
+    --card-bg: #fff;
+}
 
-       .background-image {
-    height: 100%;
-    width: 100%;
-    background-image: url("/static/images/immo.jpg");
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
+/* Réinitialisation de base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+a {
+    text-decoration: none;
+    color: var(--primary-color);
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Boutons génériques */
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+    background-color: var(--primary-color);
+    color: white;
+    text-decoration: none;
+}
+
+/* Nouveaux styles pour les boutons de connexion/inscription */
+.btn-text {
+    color: var(--primary-color);
+    padding: 8px 12px;
+    transition: color 0.2s ease;
+}
+
+.btn-text:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.btn-primary-small {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary-small:hover {
+    background-color: #0056b3;
+}
+
+
+/* --- Header --- */
+.main-header {
+    background-color: var(--card-bg);
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.main-header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px; /* Espace entre les éléments */
+}
+
+.main-header .logo a {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    text-decoration: none;
+    white-space: nowrap; /* Empêche le logo de se casser sur plusieurs lignes */
+}
+
+.main-header .search-bar {
+    display: flex;
+    flex-grow: 1; /* Permet à la barre de recherche de prendre de l'espace */
+    max-width: 500px;
+}
+
+.main-header .search-bar input {
+    flex-grow: 1;
+    padding: 10px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px 0 0 5px;
+    font-size: 1rem;
+    outline: none;
+}
+
+.main-header .search-bar button {
+    background-color: var(--primary-color);
+    color: white;
+    border: 1px solid var(--primary-color);
+    padding: 10px 15px;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+    font-size: 1rem;
+    white-space: nowrap; /* Empêche le texte du bouton de se casser */
+}
+
+.main-header .search-bar button:hover {
+    background-color: #0056b3;
+}
+
+/* Styles pour les liens d'authentification */
+.main-header .auth-links {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espace entre les liens */
+    white-space: nowrap; /* Empêche les liens de se casser */
+}
+
+.main-header .header-icons {
+    display: flex;
+    gap: 15px;
+}
+
+.main-header .header-icons .menu-icon { /* Cibler spécifiquement l'icône de menu */
+    font-size: 1.5rem;
+    color: var(--text-color);
+    transition: color 0.2s ease;
+}
+
+.main-header .header-icons .menu-icon:hover {
+    color: var(--primary-color);
+}
+
+/* --- Hero Section --- */
+.hero-section {
+    background: url('https://via.placeholder.com/1500x500?text=Votre+Prochain+Bien') no-repeat center center/cover;
+    color: white;
+    text-align: center;
+    padding: 100px 0;
     position: relative;
+    z-index: 1;
+}
+
+.hero-section::before { /* Overlay pour meilleure lisibilité du texte */
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: -1;
+}
+
+.hero-content h1 {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+
+/* --- Quick Categories --- */
+.quick-categories {
+    padding: 40px 0;
+    text-align: center;
+    background-color: var(--card-bg);
+    margin-top: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.quick-categories h2 {
+    margin-bottom: 30px;
+    color: var(--text-color);
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+}
+
+.category-item {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: white;
+    color: var(--text-color);
+    transition: all 0.3s ease;
 }
-        .overlay {
-            background-color: rgba(255, 255, 255, 0.9);
-            height: 100%;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-        }
 
-        .welcome-box {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 40px;
-        }
+.category-item:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.1);
+    transform: translateY(-5px);
+    text-decoration: none;
+}
 
-        .welcome-box h1 {
-            font-size: 2.5rem;
-            color: #343a40;
-            margin-bottom: 20px;
-        }
+.category-item i {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
 
-        .welcome-box p {
-            font-size: 1.2rem;
-            color: #555;
-            margin-bottom: 30px;
-        }
+.category-item span {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
 
-        .btn-group-custom a {
-            margin: 5px;
-            padding: 12px 30px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-        }
+/* --- Featured Listings --- */
+.featured-listings {
+    padding: 60px 0;
+}
 
-        .btn-start {
-            background-color: #4e73df;
-            color: white;
-        }
+.featured-listings h2 {
+    text-align: center;
+    margin-bottom: 40px;
+    color: var(--text-color);
+}
 
-        .btn-start:hover {
-            background-color: #2e59d9;
-        }
+.listing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
 
-        .btn-login {
-            background-color: #1cc88a;
-            color: white;
-        }
+.listing-card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    position: relative;
+}
 
-        .btn-login:hover {
-            background-color: #17a673;
-        }
+.listing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
 
-        .footer {
-            background-color: #f8f9fc;
-            padding: 15px 0;
-            text-align: center;
-            font-size: 0.9rem;
-            color: #6c757d;
-        }
+.listing-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+}
 
-        .navbar-brand img {
-            height: 40px;
-        }
+.listing-card .card-content {
+    padding: 15px;
+    position: relative;
+}
+
+.listing-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    color: var(--text-color);
+}
+
+.listing-card .price {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.listing-card .details {
+    font-size: 0.9rem;
+    color: var(--light-text-color);
+    margin-bottom: 15px;
+}
+
+.listing-card .details i {
+    margin-right: 5px;
+}
+
+.listing-card .favorite-icon {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 1.5rem;
+    color: var(--border-color); /* Couleur par défaut */
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.listing-card .favorite-icon:hover,
+.listing-card .favorite-icon.active { /* 'active' pour les favoris déjà ajoutés */
+    color: #ff6347; /* Tomate */
+}
+
+.view-more {
+    text-align: center;
+    margin-top: 40px;
+}
+
+/* --- Footer --- */
+.main-footer {
+    background-color: var(--text-color);
+    color: white;
+    padding: 20px 0 0 0; /* Ajusté pour la barre de navigation */
+    text-align: center;
+    position: sticky; /* ou fixed pour rester en bas */
+    bottom: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.main-footer .container {
+    padding-bottom: 10px; /* Espace au-dessus des liens de pied de page */
+}
+
+.main-footer .bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: var(--primary-color); /* Couleur différente pour la barre nav */
+    padding: 10px 0;
+    width: 100%;
+    position: sticky; /* Pour qu'elle reste en bas sur mobile */
+    bottom: 0;
+    left: 0;
+    right: 0;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+}
+
+.main-footer .bottom-nav .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+    font-size: 0.8rem;
+    padding: 5px 0;
+    transition: color 0.2s ease;
+}
+
+.main-footer .bottom-nav .nav-item i {
+    font-size: 1.4rem;
+    margin-bottom: 3px;
+}
+
+.main-footer .bottom-nav .nav-item:hover,
+.main-footer .bottom-nav .nav-item.active {
+    color: #ffd700; /* Or */
+    text-decoration: none;
+}
+
+.main-footer .footer-links {
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.main-footer .footer-links ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.main-footer .footer-links ul li a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+}
+
+.main-footer .footer-links ul li a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+
+/* --- Media Queries pour la Responsivité --- */
+@media (max-width: 992px) {
+    /* Sur les tablettes, ajuster légèrement l'en-tête */
+    .main-header .container {
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+    .main-header .search-bar {
+        order: 3; /* Déplacer la barre de recherche sous le logo et les liens d'auth */
+        flex-basis: 100%; /* Prend toute la largeur */
+        margin-top: 15px;
+    }
+    .main-header .auth-links {
+        order: 2; /* Après le logo */
+    }
+    .main-header .header-icons {
+        order: 4; /* Après la barre de recherche */
+        margin-left: auto; /* Aligner à droite si de l'espace */
+    }
+}
+
+@media (max-width: 768px) {
+    .main-header .container {
+        flex-direction: column; /* Empile les éléments du header */
+        align-items: stretch; /* Les éléments prennent toute la largeur disponible */
+        gap: 15px;
+    }
+    .main-header .logo,
+    .main-header .search-bar,
+    .main-header .auth-links,
+    .main-header .header-icons {
+        width: 100%; /* Chaque élément prend toute la largeur */
+        justify-content: center; /* Centre le contenu des flex items */
+        text-align: center; /* Centre le texte si applicable */
+    }
+
+    .main-header .auth-links {
+        display: flex;
+        justify-content: center; /* Centre les boutons sur mobile */
+    }
+
+    .main-header .header-icons {
+        order: 1; /* Déplacer l'icône de menu en haut ou où tu veux */
+        display: flex;
+        justify-content: flex-end; /* Aligner l'icône de menu à droite */
+        margin-left: 0; /* Réinitialiser le margin-left auto */
+    }
+    .main-header .search-bar {
+        order: 3;
+    }
+    .main-header .logo {
+        order: 2;
+    }
+    .main-header .auth-links {
+        order: 4;
+    }
+
+
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+    .hero-content p {
+        font-size: 1rem;
+    }
+
+    .quick-categories {
+        padding: 30px 0;
+    }
+
+    .category-grid {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+
+    .listing-grid {
+        grid-template-columns: 1fr; /* Une seule colonne sur mobile */
+    }
+
+    .main-footer .bottom-nav {
+        display: flex; /* S'assure que la barre de navigation est toujours affichée */
+    }
+    .main-footer .footer-links {
+        display: none; /* Cache les liens du pied de page sur mobile pour la compacité */
+    }
+}
+
+@media (max-width: 480px) {
+    .main-header .logo a {
+        font-size: 1.5rem;
+    }
+    .main-header .search-bar input,
+    .main-header .search-bar button {
+        padding: 8px 10px;
+        font-size: 0.9rem;
+    }
+    .main-header .header-icons .menu-icon {
+        font-size: 1.2rem;
+    }
+
+    .hero-content h1 {
+        font-size: 1.8rem;
+    }
+    .hero-content p {
+        font-size: 0.9rem;
+    }
+
+    .category-item i {
+        font-size: 2.5rem;
+    }
+    .category-item span {
+        font-size: 1rem;
+    }
+
+    .btn-text, .btn-primary-small {
+        font-size: 0.85rem;
+        padding: 7px 10px;
+    }
+}
