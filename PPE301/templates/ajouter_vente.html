@@ -84,7 +84,7 @@
                         {% csrf_token %}
                         {{ form.as_p }}
                         <button type="submit" class="btn btn-primary">Publier</button>
-                        <a href="{% url 'choixpublication' %}" class="btn btn-secondary">Annuler</a>
+                        <a href="{% url 'choixpublication' bien.id %}" class="btn btn-secondary">Annuler</a>
                     </form>
                 </div>
             </div>

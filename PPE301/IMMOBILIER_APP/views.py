@@ -106,122 +106,153 @@ def EnregistrerBien(request):
     if request.method == "POST":
         form = BienForm(request.POST, request.FILES)
         if form.is_valid():
+            # Récupérer les données validées du formulaire
+            nom = form.cleaned_data['nom']
+            type_bien = form.cleaned_data['type'] # J'utilise type_bien pour éviter le conflit avec 'type' fonction built-in
+            localisation = form.cleaned_data['localisation']
+            prix = form.cleaned_data['prix']
+            etat = form.cleaned_data['etat']
+            image = form.cleaned_data['image']
+
             Bien.objects.create(
-                nom=form.cleaned_data['nom'],
-                type=form.cleaned_data['type'],
-                localisation=form.cleaned_data['localisation'],
-                prix=form.cleaned_data['prix'],
-                etat=form.cleaned_data['etat'],
-                image=form.cleaned_data['image'],
+                nom=nom,
+                type=type_bien, # Assurez-vous d'utiliser type_bien ici
+                localisation=localisation,
+                prix=prix,
+                etat=etat,
+                image=image,
+                statut='enregistre',  # Le statut est défini ici explicitement
             )
             return redirect('listebien')
         else:
             print("Formulaire invalide :", form.errors)
     else:
         form = BienForm()
+        
     return render(request, 'register.html', {'form': form})
 
 def listeBien(request):
-    context = {"listebiens":Bien.objects.all() }
-    return render(request , "listebien.html" , context)
+    listebiens = Bien.objects.filter(statut='enregistre')
+    context = {"listebiens": listebiens}
+    return render(request, "listebien.html", context)
 
 def PublierBien(request, id):
     bien = get_object_or_404(Bien, id=id)
-
-    # Affiche uniquement la page de choix de type de publication
-    return render(request, 'choix_publication.html', {'bien': bien})
+    request.session['bien_en_publication_id'] = bien.id
+    return redirect('choixpublication' ,id=bien.id) 
 
 def listePublication(request):
     ventes = Vendre.objects.all()
     locations = Louer.objects.all()
 
-    # Fusion des 2 types de publication
     listepublications = list(ventes) + list(locations)
 
     return render(request, "properties.html", {
         'listepublications': listepublications
     })
     
-def choix_publication(request):
-    if request.method == 'POST':
-        choix = request.POST.get('choix')
-        if choix == 'location':
-            return redirect('ajouter_location')  # URL vers le formulaire de location
-        elif choix == 'vente':
-            return redirect('ajouter_vente')     # URL vers le formulaire de vente
-    return render(request, 'choix_publication.html')
+def choix_publication(request, id): # La signature de la fonction doit accepter l'ID
+    bien = get_object_or_404(Bien, id=id) 
+    return render(request, 'choix_publication.html', {'bien': bien})
 
+def bienpublies(request):
+    listebiens_publies = Bien.objects.filter(statut='publie')
+    context = {"listebiens_publies": listebiens_publies}
+    return render(request, "bienpublies.html", context)
 
-
-
-
-from django.contrib import messages
-from .models import Utilisateur, Vendre
+# votre_app/views.py
 
 def ajouter_vente(request):
+    bien_id = request.GET.get('bien_id') 
+    if not bien_id:
+        return redirect('listebien') 
+
+    bien = get_object_or_404(Bien, id=bien_id) # Récupère l'objet Bien initial
+
     if request.method == 'POST':
         form = VendreForm(request.POST, request.FILES)
         if form.is_valid():
-            vente = Vendre.objects.create(
-                type_bien=form.cleaned_data['type_bien'],
+            proprietaire_selectionne = form.cleaned_data['proprietaire'] 
+
+            nouvelle_vente = Vendre.objects.create(
+                type_bien=bien.type, 
+                localisation=bien.localisation, 
+                image_principale=bien.image, 
+                proprietaire=proprietaire_selectionne, 
                 prix_vente=form.cleaned_data['prix_vente'],
                 superficie=form.cleaned_data['superficie'],
-                localisation=form.cleaned_data['localisation'],
                 description=form.cleaned_data['description'],
-                etat_bien=form.cleaned_data['etat_bien'],
-                image_principale=form.cleaned_data['image_principale'],
+                etat_bien=bien.etat,
                 titre_foncier=form.cleaned_data['titre_foncier'],
                 numero_titre_foncier=form.cleaned_data['numero_titre_foncier'],
-                proprietaire=form.cleaned_data['proprietaire'],
-                statut='en_attente'
+                statut='en_attente' 
             )
 
-            proprietaire = form.cleaned_data['proprietaire']
-
-            # Redirection selon le rôle du propriétaire
-            if proprietaire.role == 'utilisateur':
-                return redirect('publication_attente')  # nom de ta page d’attente
-            else:
-                return redirect('dashboard_admin')  # nom de ta page d’attente
-
+            return redirect('publication_attente', publication_id=nouvelle_vente.id, type_publication='vente')
+            
+        else:
+            print("Formulaire Vendre invalide :", form.errors) 
     else:
         form = VendreForm()
 
-    return render(request, 'ajouter_vente.html', {'form': form})
-
+    return render(request, 'ajouter_vente.html', {'form': form, 'bien': bien})
 
 def ajouter_location(request):
+    bien_id = request.GET.get('bien_id') 
+    if not bien_id:
+        return redirect('listebien') 
+
+    bien = get_object_or_404(Bien, id=bien_id)
+
     if request.method == 'POST':
         form = LouerForm(request.POST, request.FILES)
         if form.is_valid():
-            Louer.objects.create(
-                type_bien=form.cleaned_data['type_bien'],
+            proprietaire_selectionne = form.cleaned_data['proprietaire'] 
+
+            nouvelle_location = Louer.objects.create(
+                type_bien=bien.type, 
+                localisation=bien.localisation, 
+                image_principale=bien.image, 
+                proprietaire=proprietaire_selectionne, 
                 loyer_mensuel=form.cleaned_data['loyer_mensuel'],
                 durée_location=form.cleaned_data['durée_location'],
                 avance=form.cleaned_data['avance'],
-                localisation=form.cleaned_data['localisation'],
                 description=form.cleaned_data['description'],
-                image_principale=form.cleaned_data['image_principale'],
-                proprietaire=form.cleaned_data['proprietaire'],
+                statut='en_attente' 
             )
-            return redirect('property')  # Redirige vers la page des publications
+
+            return redirect('publication_attente_proprietaire', publication_id=nouvelle_location.id, type_publication='location')
+        else:
+            print("Formulaire Louer invalide :", form.errors) # Pour le débogage
     else:
         form = LouerForm()
 
-    return render(request, 'ajouter_location.html', {'form': form})
+    return render(request, 'ajouter_location.html', {'form': form, 'bien': bien})
 
 def valider_publications(request):
-    biens_a_valider = Vendre.objects.filter(statut='en_attente')
-    return render(request, 'Valider_publication.html', {'publications': biens_a_valider})
+    biens_vente_a_valider = Vendre.objects.filter(statut='en_attente')
+    biens_location_a_valider = Louer.objects.filter(statut='en_attente')
+    
+    return render(request, 'Valider_publication.html', {
+        'publications_vente': biens_vente_a_valider,
+        'publications_location': biens_location_a_valider
+    })
 
 
-def confirmer_validation(request, id):
-    vente = get_object_or_404(Vendre, id=id)
-    vente.statut = 'valide'
-    vente.save()
 
-    return render(request, 'publication_validee.html', {'vente': vente})
-
+def confirmer_validation(request, type_publication, publication_id):
+    if type_publication == 'vente':
+        publication = get_object_or_404(Vendre, id=publication_id)
+        publication.statut = 'valide' # Statut pour Vendre
+    elif type_publication == 'location':
+        publication = get_object_or_404(Louer, id=publication_id)
+        publication.statut = 'disponible' # Statut pour Louer
+    else:
+        from django.http import Http404
+        raise Http404("Type de publication inconnu.")
+        
+    publication.save()
+    return redirect('valider_publication')
 
 def liste_biens_valides(request):
     biens_valides = Vendre.objects.filter(statut='valide')
@@ -230,10 +261,35 @@ def liste_biens_valides(request):
 def DashboardAdmin(request):
     return render(request, 'AdminDashboard.html')
 
-def publication_attente(request):
-    biens_en_attente = Vendre.objects.filter(statut='en_attente')
-    return render(request, 'publication_attente.html', {'biens_en_attente': biens_en_attente})
+def publication_attente(request, type_publication, publication_id):
+    # Détermine quel modèle (Vendre ou Louer) récupérer
+    if type_publication == 'vente':
+        publication = get_object_or_404(Vendre, id=publication_id)
+    elif type_publication == 'location':
+        publication = get_object_or_404(Louer, id=publication_id)
+    else:
+        from django.http import Http404
+        raise Http404("Type de publication inconnu.")
 
-def publication_validee(request):
-    biens_valides = Vendre.objects.filter(statut='valide')
-    return render(request, 'publication_validee.html', {'biens_valides': biens_valides})
+    # Vérifie si le statut de la publication a été mis à jour par l'administrateur
+    # 'valide' pour Vendre, 'disponible' pour Louer
+    if (type_publication == 'vente' and publication.statut == 'valide') or \
+       (type_publication == 'location' and publication.statut == 'disponible'):
+        # Si c'est validé, rediriger vers la page de succès
+        return redirect('publication_validee', type_publication=type_publication, publication_id=publication.id)
+    
+    # Si le statut n'est pas encore 'valide'/'disponible', afficher la page d'attente
+    return render(request, 'publication_attente.html', {'publication': publication, 'type_publication': type_publication})
+
+
+def publication_valides(request, type_publication, publication_id):
+    # Récupère l'objet pour l'afficher sur la page de succès
+    if type_publication == 'vente':
+        publication = get_object_or_404(Vendre, id=publication_id)
+    elif type_publication == 'location':
+        publication = get_object_or_404(Louer, id=publication_id)
+    else:
+        from django.http import Http404
+        raise Http404("Type de publication inconnu.")
+
+    return render(request, 'publication_validee.html', {'publication': publication, 'type_publication': type_publication})

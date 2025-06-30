@@ -4,16 +4,78 @@
 <head>
     <meta charset="UTF-8">
     <title>Publication validée</title>
+    <link rel="stylesheet" href="{% static 'vendor/fontawesome-free/css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sb-admin-2.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Styles spécifiques pour centrer le contenu du message */
+        .success-message-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 56px - 30px); /* Ajuste pour la hauteur de la sidebar/nav et le padding */
+            padding: 20px;
+        }
+        .alert-custom {
+            max-width: 600px;
+            width: 100%;
+            background-color: #d4edda; /* Vert clair Bootstrap */
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+    </style>
 </head>
-<body class="bg-light">
-    <div class="container text-center mt-5">
-        <div class="alert alert-success p-5 rounded shadow">
-            <h3 class="text-success">Félicitations !</h3>
-            <p class="lead">Votre bien a été <strong>validé</strong> par l’administrateur.</p>
-            <p>Il est désormais <strong>publié</strong> et visible sur la plateforme.</p>
-            <a href="{% url 'listebien' %}" class="btn btn-success mt-3">Voir les biens</a>
+<body id="page-top">
+<div id="wrapper">
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
+            <div class="sidebar-brand-icon rotate-n-15">
+                <i class="fas fa-laugh-wink"></i>
+            </div>
+            <div class="sidebar-brand-text mx-3">Admin</div>
+        </a>
+
+        <hr class="sidebar-divider my-0">
+
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'valider_publication' %}">
+                <i class="fas fa-fw fa-check-circle"></i>
+                <span>Valider bien</span></a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'liste_biens_valides' %}">
+                <i class="fas fa-fw fa-list"></i>
+                <span>Liste de biens validés</span></a>
+        </li>
+
+        <hr class="sidebar-divider d-none d-md-block">
+    </ul>
+    <div id="content-wrapper" class="d-flex flex-column">
+        <div id="content">
+            <div class="container-fluid p-4">
+                {# --- Contenu principal du message de succès --- #}
+                <div class="success-message-container">
+                    <div class="alert alert-success alert-custom p-5 rounded shadow text-center">
+                        <h3 class="text-success">Félicitations !</h3>
+                        <p class="lead">Votre bien a été **validé** par l’administrateur.</p>
+                        <p>Il est désormais **publié** et visible sur la plateforme.</p>
+                        <hr> {# Ligne de séparation #}
+                        <p class="mb-0">
+                            <a href="{% url 'bienpublies' %}" class="btn btn-success mt-3">Voir mes biens publiés</a>
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-success mt-3">Retour au tableau de bord</a>
+                        </p>
+                    </div>
+                </div>
+                {# --- Fin du contenu principal --- #}
+            </div>
         </div>
     </div>
+</div>
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+<script src="{% static 'js/sb-admin-2.min.js' %}"></script>
 </body>
 </html>

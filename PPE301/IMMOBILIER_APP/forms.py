@@ -73,9 +73,6 @@ class PublierForm(forms.Form):
             self.fields['prix'].initial = bien.prix
             self.fields['etat'].initial = bien.etat
 
-from django import forms
-from .models import TypeBien, Utilisateur
-
 class VendreForm(forms.Form):
     type_bien = forms.ModelChoiceField(
         label="Type de bien",
@@ -90,13 +87,13 @@ class VendreForm(forms.Form):
     titre_foncier = forms.ImageField(label="Titre foncier")
     numero_titre_foncier = forms.CharField(label="Numéro du titre foncier", max_length=255)
 
+       # AJOUTEZ CE CHAMP :
     proprietaire = forms.ModelChoiceField(
-        label="Propriétaire",
-        queryset=Utilisateur.objects.filter(role='proprietaire')
+        queryset=Utilisateur.objects.all(), # Récupère tous les utilisateurs
+        empty_label="Sélectionnez un propriétaire", # Texte par défaut si aucun choix
+        label="Propriétaire"
     )
 
-from django import forms
-from .models import TypeBien, Utilisateur
 
 class LouerForm(forms.Form):
     type_bien = forms.ModelChoiceField(
@@ -110,7 +107,10 @@ class LouerForm(forms.Form):
     description = forms.CharField(label="Description", widget=forms.Textarea)
     image_principale = forms.ImageField(label="Image principale")
 
+       # AJOUTEZ CE CHAMP :
     proprietaire = forms.ModelChoiceField(
-        label="Propriétaire",
-        queryset=Utilisateur.objects.filter(role='proprietaire')
+        queryset=Utilisateur.objects.all(), # Récupère tous les utilisateurs
+        empty_label="Sélectionnez un propriétaire", # Texte par défaut si aucun choix
+        label="Propriétaire"
     )
+

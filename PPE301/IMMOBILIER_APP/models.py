@@ -34,12 +34,22 @@ class TypeBien(models.Model):
         return self.nom
 
 class Bien(models.Model):
+    STATUT_CHOICES = [
+        ('enregistre', 'Enregistré'),
+        ('publie', 'Publié'),
+    ]
     nom = models.CharField(max_length=255)
     type = models.ForeignKey(TypeBien, on_delete=models.CASCADE)
     localisation = models.CharField(max_length=255)
     prix = models.FloatField(null=True, blank=True)
     etat = models.CharField(max_length=255 ,null=True, blank=True)
     image = models.ImageField(upload_to='biens/')
+    statut = models.CharField(
+        max_length=10,
+        choices=STATUT_CHOICES,
+        default='enregistre', # Par défaut, un bien est "enregistré" lors de sa création
+    )
+
 
 class Publication(models.Model):
     titrefoncier = models.ImageField(upload_to='Piècesbiens/',null=False , blank = False)
@@ -83,6 +93,13 @@ class Vendre(models.Model):
     
 
 class Louer(models.Model):
+    STATUTS = (
+        ('en_attente', 'En attente'),
+        ('disponible', 'Disponible'), # ou 'valide' si vous préférez
+        ('loue', 'Loué'),
+        ('refuse', 'Refusé'),
+    )
+    statut = models.CharField(max_length=20, choices=STATUTS, default='en_attente')
     type_bien = models.ForeignKey(TypeBien, on_delete=models.CASCADE, default=None)
     loyer_mensuel = models.FloatField(default=0)
     durée_location = models.IntegerField(default=1)  # Durée en mois
@@ -98,4 +115,4 @@ class Louer(models.Model):
         limit_choices_to={'role': 'proprietaire'}  
     )
     def __str__(self):
-        return f"{self.type_bien} à {self.localisation} - {self.loyer_mensuel} FCFA"
+        return f"{self.type_bien} - {self.localisation} ({self.statut})"

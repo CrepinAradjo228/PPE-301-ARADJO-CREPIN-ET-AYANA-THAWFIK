@@ -11,7 +11,6 @@
 </head>
 <body id="page-top">
 <div id="wrapper">
-    <!-- Sidebar -->
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
         <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
             <div class="sidebar-brand-icon rotate-n-15">
@@ -23,7 +22,7 @@
         <hr class="sidebar-divider my-0">
 
         <li class="nav-item">
-            <a class="nav-link" href="{% url 'valider_publication' %}">
+            <a class="nav-link" href="{% url 'valider_publication' %}"> {# Corrigé pour correspondre au nom d'URL actuel #}
                 <i class="fas fa-fw fa-check-circle"></i>
                 <span>Valider bien</span></a>
         </li>
@@ -36,45 +35,86 @@
 
         <hr class="sidebar-divider d-none d-md-block">
     </ul>
-    <!-- End Sidebar -->
-
-    <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
         <div id="content">
             <div class="container-fluid p-4">
                 <h2 class="mb-4 text-center">Biens en attente de validation</h2>
+                
+                {# --- Section pour les biens à VENDRE en attente --- #}
+                <h3 class="mt-4 mb-3">Biens à vendre en attente</h3>
                 <div class="row">
-                    {% for bien in publications %}
+                    {% for bien_vente in publications_vente %} {# Itérer sur la liste des Ventes #}
                     <div class="col-md-6 col-lg-4 mb-4">
                         <div class="card shadow">
-                            <img src="{{ bien.image_principale.url }}" class="card-img-top" alt="Image principale">
+                            <img src="{{ bien_vente.image_principale.url }}" class="card-img-top" alt="Image principale">
                             <div class="card-body">
-                                <h5 class="card-title">{{ bien.type_bien }}</h5>
+                                <h5 class="card-title">{{ bien_vente.type_bien }} (Vente)</h5>
                                 <p class="card-text">
-                                    <strong>Prix:</strong> {{ bien.prix_vente }} FCFA<br>
-                                    <strong>Superficie:</strong> {{ bien.superficie }} m²<br>
-                                    <strong>Localisation:</strong> {{ bien.localisation }}<br>
-                                    <strong>État:</strong> {{ bien.etat_bien }}<br>
-                                    <strong>Propriétaire:</strong> {{ bien.proprietaire.nom }} {{ bien.proprietaire.prenom }}<br>
-                                    <strong>Titre foncier:</strong><br>
-                                    <img src="{{ bien.titre_foncier.url }}" alt="Titre foncier" class="img-fluid">
+                                    <strong>ID:</strong> {{ bien_vente.id }}<br>
+                                    <strong>Prix:</strong> {{ bien_vente.prix_vente }} FCFA<br>
+                                    <strong>Superficie:</strong> {{ bien_vente.superficie }} m²<br>
+                                    <strong>Localisation:</strong> {{ bien_vente.localisation }}<br>
+                                    <strong>État du bien:</strong> {{ bien_vente.etat_bien }}<br>
+                                    <strong>Propriétaire:</strong> {{ bien_vente.proprietaire.nom }} {{ bien_vente.proprietaire.prenom }}<br>
+                                    {# Affichage du titre foncier, s'il existe #}
+                                    {% if bien_vente.titre_foncier %}
+                                        <strong>Titre foncier:</strong><br>
+                                        <img src="{{ bien_vente.titre_foncier.url }}" alt="Titre foncier" class="img-fluid" style="max-width: 100px; height: auto;"><br>
+                                        Numéro: {{ bien_vente.numero_titre_foncier }}
+                                    {% else %}
+                                        <strong>Titre foncier:</strong> Non fourni
+                                    {% endif %}
                                 </p>
-                                <a href="{% url 'confirmer_validation' publication.id %}" class="btn btn-success w-100">Valider</a>
-
+                                {# Lien de validation pour une VENTE, AVEC le type et l'ID #}
+                                <a href="{% url 'confirmer_validation' 'vente' bien_vente.id %}" class="btn btn-success w-100 mb-2">Valider la Vente</a>
+                                {# Optionnel: Bouton de refus #}
+                                <a href="#" class="btn btn-danger w-100">Refuser la Vente</a>
                             </div>
                         </div>
                     </div>
                     {% empty %}
                     <div class="col-12 text-center">
-                        <p class="text-muted">Aucun bien en attente.</p>
+                        <p class="text-muted">Aucune vente en attente.</p>
                     </div>
                     {% endfor %}
                 </div>
+
+                {# --- Section pour les biens à LOUER en attente --- #}
+                <h3 class="mt-5 mb-3">Biens à louer en attente</h3>
+                <div class="row">
+                    {% for bien_location in publications_location %} {# Itérer sur la liste des Locations #}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card shadow">
+                            <img src="{{ bien_location.image_principale.url }}" class="card-img-top" alt="Image principale">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ bien_location.type_bien }} (Location)</h5>
+                                <p class="card-text">
+                                    <strong>ID:</strong> {{ bien_location.id }}<br>
+                                    <strong>Loyer mensuel:</strong> {{ bien_location.loyer_mensuel }} FCFA<br>
+                                    <strong>Durée de location:</strong> {{ bien_location.durée_location }}<br>
+                                    <strong>Avance:</strong> {{ bien_location.avance }}<br>
+                                    <strong>Localisation:</strong> {{ bien_location.localisation }}<br>
+                                    <strong>Propriétaire:</strong> {{ bien_location.proprietaire.nom }} {{ bien_location.proprietaire.prenom }}<br>
+                                    {# Les biens à louer n'ont pas forcément de titre foncier selon votre modèle Louer, ajustez si besoin #}
+                                </p>
+                                {# Lien de validation pour une LOCATION, AVEC le type et l'ID #}
+                                <a href="{% url 'confirmer_validation' 'location' bien_location.id %}" class="btn btn-success w-100 mb-2">Valider la Location</a>
+                                {# Optionnel: Bouton de refus #}
+                                <a href="#" class="btn btn-danger w-100">Refuser la Location</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center">
+                        <p class="text-muted">Aucune location en attente de validation.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
             </div>
         </div>
     </div>
 </div>
-<!-- Scripts -->
 <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
 <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
