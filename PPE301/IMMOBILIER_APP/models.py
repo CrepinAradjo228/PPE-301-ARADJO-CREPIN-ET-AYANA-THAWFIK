@@ -91,6 +91,10 @@ class Vendre(models.Model):
     def __str__(self):
         return f"{self.type_bien} - {self.localisation}"
     
+    @property
+    def type_bien_str(self):
+        return 'vendre'
+
 
 class Louer(models.Model):
     STATUTS = (
@@ -116,3 +120,7 @@ class Louer(models.Model):
     )
     def __str__(self):
         return f"{self.type_bien} - {self.localisation} ({self.statut})"
+    
+    @property
+    def type_bien_str(self):
+        return 'louer'

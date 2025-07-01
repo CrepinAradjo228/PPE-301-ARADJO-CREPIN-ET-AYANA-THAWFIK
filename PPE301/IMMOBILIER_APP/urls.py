@@ -27,5 +27,6 @@ urlpatterns = [
     path('dashboard-admin/', views.DashboardAdmin, name='dashboard_admin'),
     path('publication_attente/<str:type_publication>/<int:publication_id>/', views.publication_attente, name='publication_attente'),
     path('publication_validee/<str:type_publication>/<int:publication_id>/', views.publication_valides, name='publication_validee'),
+    path('properties/<str:type_bien>/<int:pk>/', views.detail_biens, name='details_bien_client'),
 ]
 

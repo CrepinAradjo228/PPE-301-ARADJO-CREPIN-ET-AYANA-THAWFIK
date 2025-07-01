@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
 
     <title>
-      Properties
+      Détails du bien - {{ bien.type_bien }} à {{ bien.localisation }}
     </title>
   </head>
   <body>
@@ -49,7 +49,7 @@
             >
               <li><a href="{% url 'home' %}">Home</a></li>
               <li class="has-children active">
-                <a href="#">Properties</a> {# Renommée pour clarté, assurez-vous que cette URL 'liste_publication' existe et pointe vers cette page #}
+                <a href="{% url 'property' %}">Properties</a>
                 <ul class="dropdown">
                   <li><a href="#">Buy Property</a></li>
                   <li><a href="#">Sell Property</a></li>
@@ -83,13 +83,12 @@
 
     <div
       class="hero page-inner overlay"
-      style="background-image: url('static/images/hero_bg_1.jpg' )" {# Correction ici pour le tag static #}
-    >
+      style="background-image: url('{% if bien.image_principale %}{{ bien.image_principale.url }}{% else %}(static/images/hero_bg_1.jpg){% endif %}')"
+    ></div>
       <div class="container">
-        <div class="row justify-content-center align-items-center">
+    <div class="row justify-content-center align-items-center">
           <div class="col-lg-9 text-center mt-5">
-            <h1 class="heading" data-aos="fade-up">Properties</h1>
-
+            <h1 class="heading" data-aos="fade-up">Détails du bien : {{ bien.type_bien }}</h1>
             <nav
               aria-label="breadcrumb"
               data-aos="fade-up"
@@ -97,11 +96,12 @@
             >
               <ol class="breadcrumb text-center justify-content-center">
                 <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'property' %}">Properties</a></li>
                 <li
                   class="breadcrumb-item active text-white-50"
                   aria-current="page"
                 >
-                  Properties
+                  Détails
                 </li>
               </ol>
             </nav>
@@ -112,70 +112,111 @@
 
     <div class="section">
       <div class="container">
-        <div class="row mb-5 align-items-center">
-          <div class="col-lg-6 text-center mx-auto">
-            <h2 class="font-weight-bold text-primary heading">
-              Featured Properties
-            </h2>
-          </div>
-        </div>
-        
-        <div class="row">
-            {% for publication in listepublications %}
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="property-item rounded overflow-hidden shadow-sm">
-                        <div class="position-relative overflow-hidden">
-                            {% if publication.image_principale %}
-                                <img class="img-fluid" src="{{ publication.image_principale.url }}" alt="Image du bien">
-                            {% else %}
-                                <img class="img-fluid" src="{% static 'images/default.jpg' %}" alt="Image par défaut">
-                            {% endif %}
-                            <div class="bg-white rounded-top text-primary fw-bold position-absolute start-0 bottom-0 mx-4 pt-1 px-3">
-                                {% if publication.prix_vente %}
-                                    En Vente
-                                {% elif publication.loyer_mensuel %}
-                                    En Location
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="property-content p-4">
-                            <h5 class="text-primary mb-3">
-                                {% if publication.prix_vente %}
-                                    {{ publication.prix_vente }} FCFA
-                                {% elif publication.loyer_mensuel %}
-                                    {{ publication.loyer_mensuel }} FCFA / mois
-                                {% endif %}
-                            </h5>
-                            <a class="d-block h5 mb-2" href="#">{{ publication.type_bien }}</a>
-                            <p><i class="icon-map-marker text-primary me-2"></i>{{ publication.localisation }}</p>
-                            
-                            {# Nous devons passer l'ID du bien et son type pour la page de détails #}
-                            {% if publication.pk and publication.type_bien_str %} {# Vérification ajoutée #}
-                                <a href="{% url 'details_bien_client' type_bien=publication.type_bien_str pk=publication.pk %}" class="btn btn-primary py-2 px-3">Voir les détails</a>
-                            {% else %}
-                                <p style="color: red; font-size: 0.9em;">Lien non disponible (données manquantes)</p>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            {% empty %}
-                <div class="col-12 text-center">
-                    <p class="text-muted">Aucune publication disponible pour le moment.</p>
-                    <p class="text-muted">Vérifiez que des biens sont bien enregistrés dans votre administration Django avec les statuts 'valide' pour les ventes et 'disponible' pour les locations.</p>
-                </div>
-            {% endfor %}
-        </div>
-        <div class="row align-items-center py-5">
-          <div class="col-lg-3">Pagination (1 of 10)</div>
-          <div class="col-lg-6 text-center">
-            <div class="custom-pagination">
-              <a href="#">1</a>
-              <a href="#" class="active">2</a>
-              <a href="#">3</a>
-              <a href="#">4</a>
-              <a href="#">5</a>
+        <div class="row justify-content-between">
+          <div class="col-lg-7">
+            <div class="img-property-details mb-4">
+              {% if bien.image_principale %}
+                  <img src="{{ bien.image_principale.url }}" alt="Image principale du bien" class="img-fluid">
+              {% else %}
+                  <img src="{% static 'images/default.jpg' %}" alt="Image par défaut" class="img-fluid">
+              {% endif %}
             </div>
-          </div>
+            <h2 class="mb-3 text-primary">{{ bien.type_bien }} à {{ bien.localisation }}</h2>
+            <p class="text-black-50 mb-4">{{ bien.description|linebreaksbr }}</p>
+
+            <div class="d-flex align-items-center mb-4">
+                {% if bien.prix_vente %}
+                    <span class="badge bg-primary fs-5 me-3">En Vente</span>
+                    <h3 class="price m-0">{{ bien.prix_vente }} FCFA</h3>
+                {% elif bien.loyer_mensuel %}
+                    <span class="badge bg-success fs-5 me-3">En Location</span>
+                    <h3 class="price m-0">{{ bien.loyer_mensuel }} FCFA / mois</h3>
+                {% endif %}
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <ul class="list-unstyled ul-check primary">
+                        {% if bien.superficie %}
+                            <li>Superficie: {{ bien.superficie }} m²</li>
+                        {% endif %}
+                        {% if bien.nombre_chambres %}
+                            <li>Chambres: {{ bien.nombre_chambres }}</li>
+                        {% endif %}
+                        {% if bien.nombre_salles_de_bain %}
+                            <li>Salles de bain: {{ bien.nombre_salles_de_bain }}</li>
+                        {% endif %}
+                        {% if bien.etat_bien %}
+                            <li>État: {{ bien.etat_bien }}</li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-unstyled ul-check primary">
+                        {% if bien.titre_foncier %}
+                            <li>Titre Foncier: {{ bien.titre_foncier }}</li>
+                        {% endif %}
+                        {% if bien.garage %}
+                            <li>Garage: Oui</li>
+                        {% else %}
+                            <li>Garage: Non</li>
+                        {% endif %}
+                        {% if bien.piscine %}
+                            <li>Piscine: Oui</li>
+                        {% else %}
+                            <li>Piscine: Non</li>
+                        {% endif %}
+                        {% if bien.balcon %}
+                            <li>Balcon: Oui</li>
+                        {% else %}
+                            <li>Balcon: Non</li>
+                        {% endif %}
+                        {% if bien.jardin %}
+                            <li>Jardin: Oui</li>
+                        {% else %}
+                            <li>Jardin: Non</li>
+                        {% endif %}
+                        {% if bien.equipements %}
+                            <li>Équipements: {{ bien.equipements }}</li>
+                        {% endif %}
+                        {% if bien.acces_handicapes %}
+                            <li>Accès handicapés: Oui</li>
+                        {% else %}
+                            <li>Accès handicapés: Non</li>
+                        {% endif %}
+                        {% if bien.loyer_mensuel %} {# Specific to Louer model #}
+                            <li>Durée minimum de location: {{ bien.durée_location }} mois</li>
+                            <li>Avance/Caution: {{ bien.avance }} FCFA</li>
+                        {% endif %}
+                    </ul>
+                </div>
+          </div> {# Ceci ferme une div précédente. Assurez-vous que le contexte HTML est correct. #}
+
+{# Les boutons "Je suis intéressé" s'affichent maintenant sans condition de connexion #}
+{% if bien.prix_vente %}
+    <a href="#" class="btn btn-success py-3 px-5 mt-4">Je suis intéressé par l'achat</a>
+{% elif bien.loyer_mensuel %}
+    <a href="#" class="btn btn-success py-3 px-5 mt-4">Je suis intéressé par la location</a>
+{% endif %}
+
+{# Message pour la connexion, avec styles CSS directement sur le lien #}
+<p class="mt-4 text-muted">
+    Veuillez 
+    <a href="{% url 'connexion' %}" style="color: white; background-color: #007bff; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 0.9em;">vous connecter</a> 
+    pour exprimer votre intérêt.
+</p>
+
+</div> {# Ceci ferme une autre div. Assurez-vous que le contexte HTML est correct. #}
+          <div class="col-lg-4">
+            <div class="bg-light p-4 rounded mb-4">
+              <h4 class="mb-3">Informations sur le Propriétaire</h4>
+              <p><strong>Nom:</strong> {{ bien.proprietaire.first_name }} {{ bien.proprietaire.last_name }}</p>
+              <p><strong>Email:</strong> {{ bien.proprietaire.email }}</p>
+              <p><strong>Téléphone:</strong> {{ bien.proprietaire.telephone }}</p> {# Assurez-vous que votre modèle Utilisateur a un champ 'telephone' #}
+              <a href="#" class="btn btn-outline-primary btn-sm mt-3">Contacter le propriétaire</a>
+            </div>
+
+            </div>
         </div>
       </div>
     </div>

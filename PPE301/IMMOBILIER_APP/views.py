@@ -82,7 +82,7 @@ def connexion_view(request):
                 if utilisateur.role == 'client':
                     return redirect('home')
                 else:
-                    return redirect('dashboard')
+                    return redirect('property')
     else:
         form = ConnexionForm()
 
@@ -141,15 +141,51 @@ def PublierBien(request, id):
     request.session['bien_en_publication_id'] = bien.id
     return redirect('choixpublication' ,id=bien.id) 
 
-def listePublication(request):
-    ventes = Vendre.objects.all()
-    locations = Louer.objects.all()
+# Dans IMMOBILIER_APP/views.py
+from django.shortcuts import render
+from .models import Vendre, Louer # Assurez-vous d'importer vos modèles
 
-    listepublications = list(ventes) + list(locations)
+def listePublication(request):
+    ventes = Vendre.objects.filter(statut='valide')
+    locations = Louer.objects.filter(statut='disponible')
+
+    listepublications = []
+
+    # Processus pour les biens en Vente
+    for bien_vente in ventes:
+        # Assurons-nous que type_bien_str et pk sont toujours disponibles
+        # même si cela ne devrait pas être nécessaire avec les @property bien définies.
+        # C'est une mesure de sécurité si le problème vient d'ailleurs.
+        if not hasattr(bien_vente, 'type_bien_str') or not bien_vente.type_bien_str:
+            bien_vente.type_bien_str = 'vendre' # Force la valeur par défaut si elle est manquante
+
+        if not hasattr(bien_vente, 'pk') or not bien_vente.pk:
+            # Ceci est critique. Si un bien n'a pas de PK, il y a un problème majeur de base de données.
+            # Nous pouvons assigner une PK bidon, mais cela cache un problème.
+            # Pour l'instant, nous allons ignorer le bien sans PK valide pour éviter l'erreur.
+            print(f"AVERTISSEMENT: Bien en vente sans PK valide, ignoré. Bien: {bien_vente}")
+            continue # Passe au bien suivant
+
+        listepublications.append(bien_vente)
+
+    # Processus pour les biens en Location
+    for bien_location in locations:
+        if not hasattr(bien_location, 'type_bien_str') or not bien_location.type_bien_str:
+            bien_location.type_bien_str = 'louer' # Force la valeur par défaut
+
+        if not hasattr(bien_location, 'pk') or not bien_location.pk:
+            print(f"AVERTISSEMENT: Bien en location sans PK valide, ignoré. Bien: {bien_location}")
+            continue # Passe au bien suivant
+
+        listepublications.append(bien_location)
+
+    # Note: Les print() de débogage des messages précédents peuvent être utiles ici
+    # pour voir si des biens sont ignorés ou si les valeurs sont "forcées".
 
     return render(request, "properties.html", {
         'listepublications': listepublications
     })
+
     
 def choix_publication(request, id): # La signature de la fonction doit accepter l'ID
     bien = get_object_or_404(Bien, id=id) 
@@ -293,3 +329,26 @@ def publication_valides(request, type_publication, publication_id):
         raise Http404("Type de publication inconnu.")
 
     return render(request, 'publication_validee.html', {'publication': publication, 'type_publication': type_publication})
+
+def detail_biens(request, type_bien, pk):
+    """
+    Vue pour afficher les détails complets d'un bien (vente ou location).
+    """
+    bien = None
+    if type_bien == 'vendre':
+        # Tente de récupérer un bien de type Vendre ou renvoie une erreur 404
+        bien = get_object_or_404(Vendre, pk=pk)
+    elif type_bien == 'louer':
+        # Tente de récupérer un bien de type Louer ou renvoie une erreur 404
+        bien = get_object_or_404(Louer, pk=pk)
+    else:
+        # Gérer le cas où le type_bien n'est ni 'vendre' ni 'louer'
+        # Vous pouvez rediriger, afficher un message d'erreur, etc.
+        # Pour l'instant, on peut simplement lever une 404 ou renvoyer sur la liste des biens
+        from django.http import Http404
+        raise Http404("Type de bien inconnu.")
+
+    context = {
+        'bien': bien,
+    }
+    return render(request, 'detailsbien.html', context)
