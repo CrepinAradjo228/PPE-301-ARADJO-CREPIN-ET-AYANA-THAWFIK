@@ -47,7 +47,7 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="{% url 'listebien' %}">
+            <a class="nav-link" href="{% url 'listebien' proprietaire_id=proprietaire_id %}">
                 <i class="fas fa-fw fa-list"></i>
                 <span>Biens enregistrés</span>
             </a>
@@ -86,7 +86,7 @@
                         {% csrf_token %}
                         {{ form.as_p }}
                         <button type="submit" class="btn btn-success">Publier</button>
-                        <a href="{% url 'choixpublication' %}" class="btn btn-secondary">Annuler</a>
+                        <a href="{% url 'choixpublication' bien.id  %}" class="btn btn-secondary">Annuler</a>
                     </form>
                 </div>
             </div>

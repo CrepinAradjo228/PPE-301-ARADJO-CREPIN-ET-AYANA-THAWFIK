@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_POST
 from django.contrib.auth.hashers import make_password , check_password
 from django.contrib import messages
-from django.views.generic import TemplateView
+
 
 def home(request):
     return render(request, 'index.html')
@@ -19,13 +19,18 @@ def landpage(request):
 def service(request):
     return render(request , 'services.html')
 def dashboard(request):
-    # Vérifie si l'utilisateur est connecté
-    if not request.session.get('utilisateur_id'):
-        return redirect('connexion')
-    # Vérifie si l'utilisateur est bien un propriétaire
-    if request.session.get('utilisateur_role') != 'proprietaire':
-        return redirect('connexion')  # Ou une page d'erreur/accès refusé
-    return render(request, 'Dashboard.html')
+    utilisateur_id = request.session.get('utilisateur_id', None)
+
+    if utilisateur_id is None:
+        return redirect('login')
+
+    utilisateur_obj = get_object_or_404(Utilisateur, id=utilisateur_id)
+
+    context = {
+        'proprietaire_id': utilisateur_obj.id,
+        # autres variables contextuelles ici
+    }
+    return render(request, 'Dashboard.html', context)
 
 
 def inscription(request):
@@ -84,7 +89,7 @@ def connexion_view(request):
                 if utilisateur.role == 'client':
                     return redirect('home')
                 else:
-                    return redirect('property')
+                    return redirect('dashboard')  # Redirection pour les propriétaires
     else:
         form = ConnexionForm()
 
@@ -105,27 +110,39 @@ def tableau_de_bord(request):
     return render(request, 'index.html')
 
 def EnregistrerBien(request):
+    # Récupérer l'id du propriétaire depuis la session AVANT l'enregistrement
+    utilisateur_id = request.session.get('utilisateur_id', None)
+
+    if utilisateur_id is None:
+        return redirect('login')
+
+    # Récupérer l'objet Utilisateur correspondant
+    proprietaire_obj = get_object_or_404(Utilisateur, pk=utilisateur_id)
+
     if request.method == "POST":
         form = BienForm(request.POST, request.FILES)
         if form.is_valid():
-            # Récupérer les données validées du formulaire
             nom = form.cleaned_data['nom']
-            type_bien = form.cleaned_data['type'] # J'utilise type_bien pour éviter le conflit avec 'type' fonction built-in
+            type_bien = form.cleaned_data['type']
             localisation = form.cleaned_data['localisation']
             prix = form.cleaned_data['prix']
             etat = form.cleaned_data['etat']
             image = form.cleaned_data['image']
 
+            # Créer le bien en l'associant au propriétaire
             Bien.objects.create(
                 nom=nom,
-                type=type_bien, # Assurez-vous d'utiliser type_bien ici
+                type=type_bien,
                 localisation=localisation,
                 prix=prix,
                 etat=etat,
                 image=image,
-                statut='enregistre',  # Le statut est défini ici explicitement
+                statut='enregistre',
+                proprietaire=proprietaire_obj,  # <-- Lien avec le propriétaire
             )
-            return redirect('listebien')
+
+            # Redirection vers la liste des biens en passant l'id requis
+            return redirect('listebien', proprietaire_id=utilisateur_id)
         else:
             print("Formulaire invalide :", form.errors)
     else:
@@ -133,9 +150,14 @@ def EnregistrerBien(request):
         
     return render(request, 'register.html', {'form': form})
 
-def listeBien(request):
-    listebiens = Bien.objects.filter(statut='enregistre')
-    context = {"listebiens": listebiens}
+def listeBien(request, proprietaire_id):
+    proprietaire_obj = get_object_or_404(Utilisateur, pk=proprietaire_id)
+    
+    biens = Bien.objects.filter(proprietaire=proprietaire_obj, statut='enregistre')
+    context = {
+       "listebiens": biens,
+        "proprietaire_concerne": proprietaire_obj, # Utile pour afficher le nom du propriétaire sur la page
+    }
     return render(request, "listebien.html", context)
 
 def PublierBien(request, id):
@@ -143,9 +165,7 @@ def PublierBien(request, id):
     request.session['bien_en_publication_id'] = bien.id
     return redirect('choixpublication' ,id=bien.id) 
 
-# Dans IMMOBILIER_APP/views.py
-from django.shortcuts import render
-from .models import Vendre, Louer # Assurez-vous d'importer vos modèles
+
 
 def listePublication(request):
     ventes = Vendre.objects.filter(statut='valide')
@@ -191,11 +211,30 @@ def listePublication(request):
     
 def choix_publication(request, id): # La signature de la fonction doit accepter l'ID
     bien = get_object_or_404(Bien, id=id) 
+    bien.statut = 'disponible'
+    bien.save()
     return render(request, 'choix_publication.html', {'bien': bien})
 
 def bienpublies(request):
-    listebiens_publies = Bien.objects.filter(statut='publie')
-    context = {"listebiens_publies": listebiens_publies}
+    # Récupérer l'id du propriétaire depuis la session
+    utilisateur_id = request.session.get('utilisateur_id', None)
+
+    if utilisateur_id is None:
+        return redirect('login')
+
+    # Récupérer l'objet Utilisateur correspondant
+    proprietaire_obj = get_object_or_404(Utilisateur, pk=utilisateur_id)
+
+    # Filtrer uniquement les biens de ce propriétaire ayant le statut 'publie'
+    listebiens_vente_publies = Vendre.objects.filter(proprietaire=proprietaire_obj, statut='disponible')
+    listebiens_location_publies = Louer.objects.filter(proprietaire=proprietaire_obj, statut='disponible')
+
+    context = {
+        "listebiens_vente_publies": listebiens_vente_publies,
+        "listebiens_location_publies": listebiens_location_publies,
+        "proprietaire_concerne": proprietaire_obj,
+    }
+
     return render(request, "bienpublies.html", context)
 
 # votre_app/views.py
@@ -259,7 +298,7 @@ def ajouter_location(request):
                 statut='en_attente' 
             )
 
-            return redirect('publication_attente_proprietaire', publication_id=nouvelle_location.id, type_publication='location')
+            return redirect('publication_attente', publication_id=nouvelle_location.id, type_publication='location')
         else:
             print("Formulaire Louer invalide :", form.errors) # Pour le débogage
     else:
@@ -268,13 +307,38 @@ def ajouter_location(request):
     return render(request, 'ajouter_location.html', {'form': form, 'bien': bien})
 
 def valider_publications(request):
+     # Afficher les biens en attente
     biens_vente_a_valider = Vendre.objects.filter(statut='en_attente')
     biens_location_a_valider = Louer.objects.filter(statut='en_attente')
-    
+
+    if request.method == 'POST':
+        bien_id = request.POST.get('bien_id')
+        bien_type = request.POST.get('bien_type')
+        action = request.POST.get('action') # 'valider' ou 'refuser'
+
+        if bien_type == 'vente':
+            bien = get_object_or_404(Vendre, pk=bien_id)
+        elif bien_type == 'location':
+            bien = get_object_or_404(Louer, pk=bien_id)
+        else:
+            messages.error(request, "Type de bien invalide.")
+            return redirect('valider_publications')
+
+        if action == 'valider':
+            bien.statut = 'publie' # Le bien est maintenant 'publie'
+            messages.success(request, f"Le bien de type {bien_type} (ID: {bien_id}) a été validé et publié.")
+        elif action == 'refuser':
+            bien.statut = 'refuse' # Le bien est 'refuse'
+            messages.info(request, f"Le bien de type {bien_type} (ID: {bien_id}) a été refusé.")
+        
+        bien.save()
+        return redirect('valider_publications') # Recharger la page pour voir les changements
+
     return render(request, 'Valider_publication.html', {
         'publications_vente': biens_vente_a_valider,
         'publications_location': biens_location_a_valider
     })
+
 
 
 
@@ -417,20 +481,25 @@ def marquer_demande_traitee(request, pk):
      messages.success(request, "La demande a été marquée comme traitée avec succès !")
      return redirect('liste_demandes_proprietaire')
 
-class DemandeEnAttenteView(TemplateView):
-    template_name = 'demande_en_attente.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['message_principal'] = "Votre demande a bien été envoyée et est en attente de traitement."
-        context['message_secondaire'] = "Le propriétaire du bien vous contactera prochainement."
-        return context
+def demande_en_attente(request):
+    """
+    Affiche la page d'attente pour un client après qu'il a soumis une demande.
+    """
+    context = {
+        'message_principal': "Votre demande a bien été reçue !",
+        'message_secondaire': "Le propriétaire du bien vous contactera prochainement."
+    }
+    return render(request, 'demande_en_attente.html', context)
 
-class DemandeTraiteeSuccesView(TemplateView):
-    template_name = 'demande_traitee.html'
+def demande_traitee_succes(request):
+    """
+    Affiche la page de succès après qu'une demande a été traitée (pour l'admin/propriétaire).
+    """
+    context = {
+        'message_principal': "La demande a été marquée comme traitée avec succès !",
+        'message_secondaire': "Les informations ont été mises à jour."
+    }
+    # Correction du nom de template pour correspondre à nos instructions précédentes
+    return render(request, 'demande_traitee.html', context)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['message_principal'] = "La demande a été marquée comme traitée avec succès !"
-        context['message_secondaire'] = "Les informations ont été mises à jour."
-        return context

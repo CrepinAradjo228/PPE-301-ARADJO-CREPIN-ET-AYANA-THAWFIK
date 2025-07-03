@@ -49,7 +49,7 @@
                     <h6 class="collapse-header">Biens :</h6>
                     <a class="collapse-item" href="#">Messagerie</a>
                     <a class="collapse-item" href="{% url 'registerbien' %}">Enregistrez un bien</a> {# Nom de l'URL ajusté si besoin #}
-                    <a class="collapse-item" href="{% url 'listebien' %}">Biens enregistrés</a>
+                    <a class="collapse-item" href="{% url 'listebien' proprietaire_id=proprietaire_id %}">Biens enregistrés</a>
                     <a class="collapse-item active" href="{% url 'bienpublies' %}">Biens publiés</a> {# Nouveau lien actif pour cette page #}
                      <h6 class="collapse-header mt-3">Demandes :</h6>
                     <a class="collapse-item active" href="{% url 'liste_demandes_proprietaire' %}">Demandes de Bien</a> {# <-- Le lien vers cette page #}
@@ -81,7 +81,7 @@
 
                 <div class="row">
                     {# La variable de contexte pour les biens publiés est 'listebiens_publies' #}
-                    {% for bien in listebiens_publies %}
+                    {% for bien in listebiens_vente_publies %}
                         <div class="col-md-4 mb-4">
                             <div class="card h-100 shadow">
                                 {% if bien.image %}
@@ -111,6 +111,40 @@
                         </div>
                     {% endfor %}
                 </div>
+
+                 <div class="row">
+                    {# La variable de contexte pour les biens publiés est 'listebiens_publies' #}
+                    {% for bien in listebiens_location_publies %}
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 shadow">
+                                {% if bien.image_principale %}
+                                    <img src="{{ bien.image_principale.url }}" class="card-img-top" alt="{{ bien.nom }}">
+                                {% else %}
+                                    <img src="{% static 'biens/background.jpeg' %}" class="card-img-top" alt="Image par défaut">
+                                {% endif %}
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ bien.nom }}</h5>
+                                    <p class="card-text">
+                                        <strong>Type :</strong> {{ bien.type_bien }}<br>
+                                        <strong>Localisation :</strong> {{ bien.localisation }}<br>
+                                        <strong>Prix :</strong> {{ bien.avance }} FCFA<br>
+                                        <strong>État :</strong> {{ bien.durée_location }}<br>
+                                        <strong>Statut :</strong> <span class="badge badge-success">{{ bien.statut|capfirst }}</span> {# Affiche le statut #}
+                                    </p>
+                                    {# Actions pour un bien publié : Modifier, Voir détails, Désactiver #}
+                                    <a href="#" class="btn btn-warning btn-sm">Modifier</a> {# Vous devrez définir cette URL et la vue #}
+                                    <a href="#" class="btn btn-info btn-sm">Détails</a> {# Vous devrez définir cette URL et la vue #}
+                                    <a href="#" class="btn btn-danger btn-sm">Supprimer</a> {# Vous devrez définir cette URL et la vue #}
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="col-12 text-center">
+                            <p class="lead">Aucun bien n'a été publié pour le moment.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+
 
             </div>
 

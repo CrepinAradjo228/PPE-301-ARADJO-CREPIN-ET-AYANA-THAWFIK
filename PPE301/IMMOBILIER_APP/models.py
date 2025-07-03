@@ -37,6 +37,7 @@ class Bien(models.Model):
     STATUT_CHOICES = [
         ('enregistre', 'Enregistré'),
         ('publie', 'Publié'),
+        ('disponible', 'Disponible'),
     ]
     nom = models.CharField(max_length=255)
     type = models.ForeignKey(TypeBien, on_delete=models.CASCADE)
@@ -49,6 +50,8 @@ class Bien(models.Model):
         choices=STATUT_CHOICES,
         default='enregistre', # Par défaut, un bien est "enregistré" lors de sa création
     )
+    proprietaire = models.ForeignKey(Utilisateur, on_delete=models.CASCADE)
+
 
 
 class Publication(models.Model):
@@ -67,11 +70,12 @@ class Publication(models.Model):
         return f"Publication pour {self.bien.nom}"
 
 class Vendre(models.Model):
-    STATUTS = (
-    ('en_attente', 'En attente'),
-    ('valide', 'Validé'),
-    ('refuse', 'Refusé'),
-    )
+    STATUTS = [
+    ('enregistre', 'Enregistré (En attente de publication)'), # Le statut initial après création par le propriétaire
+    ('en_attente', 'En attente de validation (pour l\'administrateur)'), # Statut quand il est en revue par l'admin
+    ('publie', 'Publié'), # Statut quand il est validé et visible
+    ('refuse', 'Refusé'), # Si l'admin refuse
+    ]
     statut = models.CharField(max_length=20, choices=STATUTS, default='en_attente')
     type_bien = models.ForeignKey(TypeBien, on_delete=models.CASCADE)
     prix_vente = models.FloatField()
@@ -83,11 +87,7 @@ class Vendre(models.Model):
     titre_foncier = models.ImageField(upload_to='titres_fonciers/', default="")
     numero_titre_foncier = models.CharField(max_length=255, unique=True, default="")
     
-    proprietaire = models.ForeignKey(
-        Utilisateur,  
-        on_delete=models.CASCADE,
-        limit_choices_to={'role': 'proprietaire'}  
-    )
+    proprietaire = models.ForeignKey(Utilisateur,  on_delete=models.CASCADE,limit_choices_to={'role': 'proprietaire'}  )
     def __str__(self):
         return f"{self.type_bien} - {self.localisation}"
     
@@ -97,16 +97,16 @@ class Vendre(models.Model):
 
 
 class Louer(models.Model):
-    STATUTS = (
-        ('en_attente', 'En attente'),
-        ('disponible', 'Disponible'), # ou 'valide' si vous préférez
-        ('loue', 'Loué'),
+    STATUTS = [
+        ('enregistre', 'Enregistré (En attente de publication)'),
+        ('en_attente', 'En attente de validation (pour l\'administrateur)'),
+        ('publie', 'Publié'),
         ('refuse', 'Refusé'),
-    )
+    ]
     statut = models.CharField(max_length=20, choices=STATUTS, default='en_attente')
     type_bien = models.ForeignKey(TypeBien, on_delete=models.CASCADE, default=None)
     loyer_mensuel = models.FloatField(default=0)
-    durée_location = models.IntegerField(default=1)  # Durée en mois
+    durée_location = models.IntegerField(default=1) 
     avance = models.FloatField(default=0)
     localisation = models.CharField(max_length=255, default="")
     description = models.TextField(default="")

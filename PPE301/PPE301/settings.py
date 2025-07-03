@@ -64,6 +64,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'IMMOBILIER_APP.context_processors.proprietaire_id_processor',  # Assurez-vous que le nom de votre app est correct
             ],
         },
     },

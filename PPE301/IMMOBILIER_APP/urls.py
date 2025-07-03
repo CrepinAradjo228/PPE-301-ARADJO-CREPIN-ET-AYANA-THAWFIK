@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.urls import path 
 from . import views 
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('home/', views.home , name="home"),
@@ -14,7 +16,7 @@ urlpatterns = [
     path('publierBien/<int:id>/', views.PublierBien, name='publier'),
     path('connexion/', views.connexion_view, name='connexion'),
     path('enregistrerbien/', views.EnregistrerBien, name='registerbien'),
-    path('listebien/', views.listeBien, name='listebien'),
+    path('listebien/<int:proprietaire_id>/', views.listeBien, name='listebien'),
     path('bienpublies/', views.bienpublies, name='bienpublies'),
     path('publierbien/<int:id>/', views.PublierBien, name='publierbien'),
     path('deconnexion/', views.deconnexion_view, name='deconnexion'),
@@ -30,6 +32,11 @@ urlpatterns = [
     path('properties/<str:type_bien>/<int:pk>/', views.detail_biens, name='details_bien_client'),
     path('demandebien/creer/<str:type_bien>/<int:bien_id>/', views.creer_demande_bien, name='creer_demande_bien'),
     path('proprietaire/demandes/', views.liste_demandes_proprietaire, name='liste_demandes_proprietaire'),
-    path('demande/<int:pk>/traiter/', views.marquer_demande_traitee, name='marquer_demande_traitee')
-]
+    path('demande/<int:pk>/traiter/', views.marquer_demande_traitee, name='marquer_demande_traitee'),
+    path('demande/en-attente/', views.demande_en_attente, name='demande_en_attente'),
+    path('demande/traitee/succes/', views.demande_traitee_succes, name='demande_traitee_succes')
+]   
+
+if settings.DEBUG:
+        urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

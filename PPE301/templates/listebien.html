@@ -52,7 +52,7 @@
                     <h6 class="collapse-header">Biens :</h6>
                     <a class="collapse-item" href="#">Messagerie</a>
                     <a class="collapse-item" href="{% url 'registerbien' %}">Enregistrez un bien</a>
-                    <a class="collapse-item active" href="{% url 'listebien'  %}">Biens enregistrés</a>
+                    <a class="collapse-item active" href="{% url 'listebien' proprietaire_id=proprietaire_id  %}">Biens enregistrés</a>
                     <a class="collapse-item active" href="{% url 'bienpublies' %}">Biens publiés</a>
                      <h6 class="collapse-header mt-3">Demandes :</h6>
                     <a class="collapse-item active" href="{% url 'liste_demandes_proprietaire' %}">Demandes de Bien</a> {# <-- Le lien vers cette page #}

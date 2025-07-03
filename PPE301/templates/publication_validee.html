@@ -58,7 +58,7 @@
                     <h6 class="collapse-header">Biens :</h6>
                     <a class="collapse-item" href="#">Messagerie</a>
                     <a class="collapse-item" href="{% url 'registerbien' %}">Enregistrez un bien</a>
-                    <a class="collapse-item active" href="{% url 'listebien' %}">Biens enregistrés</a>
+                    <a class="collapse-item active" href="{% url 'listebien' proprietaire_id=proprietaire_id %}">Biens enregistrés</a>
                     <a class="collapse-item active" href="{% url 'bienpublies' %}">Biens publiés</a>
                 </div>
             </div>
@@ -76,8 +76,8 @@
                         <p>Il est désormais **publié** et visible sur la plateforme.</p>
                         <hr> {# Ligne de séparation #}
                         <p class="mb-0">
-                            <a href="{% url 'listebienpublies_proprietaire' %}" class="btn btn-success mt-3">Voir mes biens publiés</a>
-                            <a href="{% url 'dashboard_proprietaire' %}" class="btn btn-outline-success mt-3">Retour au tableau de bord</a>
+                            <a href="{% url 'bienpublies' %}" class="btn btn-success mt-3">Voir mes biens publiés</a>
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-success mt-3">Retour au tableau de bord</a>
                         </p>
                     </div>
                 </div>

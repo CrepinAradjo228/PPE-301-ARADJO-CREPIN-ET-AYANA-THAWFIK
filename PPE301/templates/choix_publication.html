@@ -55,7 +55,7 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="{% url 'listebien' %}">
+            <a class="nav-link" href="{% url 'listebien' proprietaire_id=proprietaire_id %}">
                 <i class="fas fa-fw fa-list"></i>
                 <span>Biens enregistrés</span>
             </a>
@@ -101,8 +101,10 @@
                     </form>
                     
                     {# Le lien "Annuler" que vous avez demandé #}
-                    <p class="mt-3">
-                        <a href="{% url 'listebien' %}">Annuler et revenir à la liste des biens enregistrés</a>
+                    <p class="mt-3 text-center">
+                        <a href="{% url 'listebien'  proprietaire_id=proprietaire_id%}" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-arrow-alt-circle-left me-2"></i> Annuler et revenir à la liste des biens enregistrés
+                        </a>
                     </p>
                 </div>
             </div>
