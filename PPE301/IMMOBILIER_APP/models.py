@@ -124,3 +124,25 @@ class Louer(models.Model):
     @property
     def type_bien_str(self):
         return 'louer'
+
+class DemandeBien(models.Model):
+    TYPES_DEMANDE_CHOICES = (
+        ('vente', 'Demande pour une vente'),
+        ('location', 'Demande pour une location'),
+    )
+    bien_vente = models.ForeignKey(Vendre, on_delete=models.CASCADE,null=True,  blank=True, related_name='demandes_vente')
+    bien_location = models.ForeignKey(Louer, on_delete=models.CASCADE,null=True, blank=True, related_name='demandes_location')
+    nom_complet = models.CharField(max_length=100, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+    telephone = models.CharField(max_length=20, blank=True, null=True)
+    type_demande = models.CharField(max_length=10, choices=TYPES_DEMANDE_CHOICES) 
+    message = models.TextField(blank=True, null=True) 
+    date_demande = models.DateTimeField(auto_now_add=True) 
+    est_traitee = models.BooleanField(default=False) 
+
+    def __str__(self):
+        if self.bien_vente:
+            return f"Demande de {self.demandeur.username} pour vente ID {self.bien_vente.pk}"
+        elif self.bien_location:
+            return f"Demande de {self.demandeur.username} pour location ID {self.bien_location.pk}"
+        return f"Demande de {self.demandeur.username} (bien non spécifié)"

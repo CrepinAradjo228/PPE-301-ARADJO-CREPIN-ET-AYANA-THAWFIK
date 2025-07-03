@@ -51,6 +51,8 @@
                     <a class="collapse-item" href="{% url 'registerbien' %}">Enregistrez un bien</a> {# Nom de l'URL ajusté si besoin #}
                     <a class="collapse-item" href="{% url 'listebien' %}">Biens enregistrés</a>
                     <a class="collapse-item active" href="{% url 'bienpublies' %}">Biens publiés</a> {# Nouveau lien actif pour cette page #}
+                     <h6 class="collapse-header mt-3">Demandes :</h6>
+                    <a class="collapse-item active" href="{% url 'liste_demandes_proprietaire' %}">Demandes de Bien</a> {# <-- Le lien vers cette page #}
                 </div>
             </div>
         </li>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demande Traitée - Mon Projet Immobilier</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* Quelques styles pour centrer et rendre la carte jolie sans fichier CSS externe */
+        body {
+            background-color: #f8f9fa; /* Couleur de fond légère */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Prend toute la hauteur de la fenêtre */
+            margin: 0;
+        }
+        .card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            max-width: 600px;
+        }
+        .text-success {
+            color: #198754 !important; /* Vert Bootstrap */
+        }
+        .text-primary {
+            color: #0d6efd !important; /* Bleu Bootstrap */
+        }
+        .btn-primary {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0a58ca;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5c636a;
+            border-color: #565e64;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 text-center">
+                    <div class="card p-5 shadow-lg rounded-3">
+                        <i class="fas fa-check-circle fa-5x text-success mb-4"></i>
+                        <h1 class="display-4 text-primary mb-3">La demande a été marquée comme traitée avec succès !</h1>
+                        <p class="lead mb-4">Les informations ont été mises à jour.</p>
+                        <p class="text-muted">Merci d'avoir géré cette demande. Vous pouvez consulter les autres demandes ou retourner au tableau de bord.</p>
+                        
+                        <a href="{% url 'liste_demandes_admin' %}" class="btn btn-primary mt-4 py-3 px-5">Voir toutes les demandes</a>
+                        <a href="{% url 'dashboard_admin' %}" class="btn btn-secondary mt-3 py-3 px-5">Tableau de bord</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

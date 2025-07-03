@@ -28,5 +28,8 @@ urlpatterns = [
     path('publication_attente/<str:type_publication>/<int:publication_id>/', views.publication_attente, name='publication_attente'),
     path('publication_validee/<str:type_publication>/<int:publication_id>/', views.publication_valides, name='publication_validee'),
     path('properties/<str:type_bien>/<int:pk>/', views.detail_biens, name='details_bien_client'),
+    path('demandebien/creer/<str:type_bien>/<int:bien_id>/', views.creer_demande_bien, name='creer_demande_bien'),
+    path('proprietaire/demandes/', views.liste_demandes_proprietaire, name='liste_demandes_proprietaire'),
+    path('demande/<int:pk>/traiter/', views.marquer_demande_traitee, name='marquer_demande_traitee')
 ]
 

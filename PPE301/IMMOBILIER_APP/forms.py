@@ -1,5 +1,5 @@
 from django import forms
-from .models import Proprietaire, Client, TypeBien, Utilisateur
+from .models import Proprietaire, Client, TypeBien, Utilisateur,DemandeBien
 from django.core.exceptions import ValidationError
 
 class UtilisateurForm(forms.Form):
@@ -113,4 +113,16 @@ class LouerForm(forms.Form):
         empty_label="Sélectionnez un propriétaire", # Texte par défaut si aucun choix
         label="Propriétaire"
     )
+
+class DemandeBienForm(forms.Form):
+    message = forms.CharField(label="Votre message", widget=forms.Textarea(attrs={'rows': 5, 'placeholder': 'Décrivez votre intérêt ou posez vos questions...'}),required=False )
+    nom_complet = forms.CharField(label="Votre nom complet", max_length=100, required=True )
+    email = forms.EmailField(label="Votre adresse email", required=True)
+    telephone = forms.CharField(label="Votre numéro de téléphone (facultatif)", max_length=20, required=False)
+    TYPES_DEMANDE_CHOICES = (
+        ('vente', 'Demande pour une vente'),
+        ('location', 'Demande pour une location'),
+    )
+    type_operation = forms.ChoiceField(label="Type d'opération souhaité",choices=TYPES_DEMANDE_CHOICES,required=True)
+
 

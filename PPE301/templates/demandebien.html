@@ -1,0 +1,318 @@
+{% load static %} {# Ceci charge les balises statiques de Django #}
+
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="author" content="Untree.co">
+  <link rel="shortcut icon" href="{% static 'favicon.png' %}">
+
+  <meta name="description" content="Formulaire de demande d'intérêt pour un bien immobilier" />
+  <meta name="keywords" content="demande, formulaire, bien immobilier, intérêt, django" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{% static 'fonts/icomoon/style.css' %}">
+  <link rel="stylesheet" href="{% static 'fonts/flaticon/font/flaticon.css' %}">
+  <link rel="stylesheet" href="{% static 'css/tiny-slider.css' %}">
+  <link rel="stylesheet" href="{% static 'css/aos.css' %}">
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}"> {# Lien vers Bootstrap CSS #}
+
+  <title>Demande d'intérêt pour un bien</title>
+
+  <style>
+    /* Styles généraux pour le corps de la page de demande */
+    body {
+        background-color: #f8f9fa; /* Couleur de fond légère */
+        font-family: 'Roboto', sans-serif;
+        color: #343a40;
+    }
+
+    /* Centrer le contenu principal et ajouter un peu d'espace */
+    .section {
+        padding-top: 50px;
+        padding-bottom: 50px;
+    }
+
+    /* Amélioration des titres et paragraphes */
+    .section h2 {
+        color: #1a202c;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .section p.text-muted {
+        font-size: 1.1em;
+        line-height: 1.6;
+    }
+
+    /* Styles pour les cartes (détails du bien et formulaire) */
+    .card {
+        border: none;
+        border-radius: 10px;
+        overflow: hidden; /* Pour que les coins de l'image soient arrondis avec la carte */
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08); /* Ombre douce */
+    }
+
+    .card-header {
+        font-weight: 700;
+        font-size: 1.2em;
+        padding: 15px 20px;
+    }
+
+    .card-body {
+        padding: 25px;
+    }
+
+    /* Styles pour les images du bien */
+    .card-body img {
+        border-radius: 8px; /* Bords légèrement arrondis pour l'image */
+        margin-bottom: 20px;
+    }
+
+    /* Styles pour les labels de formulaire */
+    /* Cible directement les balises label qui sont dans un div.mb-3 */
+    .mb-3 label {
+        font-weight: 500;
+        color: #495057;
+        margin-bottom: 8px;
+        display: block; /* S'assure que le label prend toute la largeur */
+    }
+
+    /* Styles pour les champs de formulaire (inputs, textarea, select) */
+    /* Ces sélecteurs ciblent directement les éléments HTML du formulaire */
+    .mb-3 input[type="text"],
+    .mb-3 input[type="email"],
+    .mb-3 input[type="tel"],
+    .mb-3 textarea,
+    .mb-3 select { /* Ajoutez d'autres types d'inputs si vous en avez (ex: date, number) */
+        display: block; /* S'assure que le champ prend toute la largeur */
+        width: 100%; /* S'assure que le champ prend toute la largeur disponible */
+        padding: 10px 15px;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: #495057;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem; /* Correspond à border-radius-sm de Bootstrap */
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        -webkit-appearance: none; /* Pour corriger l'apparence par défaut sur certains navigateurs */
+        -moz-appearance: none;
+        appearance: none;
+    }
+
+    /* Styles pour l'état :focus (quand le champ est sélectionné) */
+    .mb-3 input[type="text"]:focus,
+    .mb-3 input[type="email"]:focus,
+    .mb-3 input[type="tel"]:focus,
+    .mb-3 textarea:focus,
+    .mb-3 select:focus {
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+    }
+
+    /* Styles spécifiques pour le Textarea du message */
+    .mb-3 textarea {
+        resize: vertical; /* Permet de redimensionner verticalement */
+        min-height: 100px;
+    }
+
+    /* Ajustement des marges pour les div.mb-3 qui contiennent chaque champ */
+    .mb-3 {
+        margin-bottom: 1rem !important; /* Important pour s'assurer que l'espacement est appliqué */
+    }
+
+    /* Styles pour les boutons */
+    .btn {
+        border-radius: 5px;
+        font-weight: 600;
+        padding: 10px 20px;
+        transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+        border-color: #545b62;
+    }
+
+    /* Styles pour les messages d'alerte */
+    .alert {
+        border-radius: 5px;
+        font-size: 1em;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border-color: #f5c6cb;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border-color: #c3e6cb;
+    }
+
+    .alert-warning {
+        background-color: #fff3cd;
+        color: #856404;
+        border-color: #ffeeba;
+    }
+
+    /* Styles pour les petits textes utilitaires */
+    .form-text {
+        font-size: 0.85em;
+        color: #6c757d;
+        margin-top: 5px;
+    }
+
+    /* Styles pour les messages d'erreur de Django (ul.errorlist) */
+    ul.errorlist {
+        color: #dc3545; /* Rouge pour les erreurs */
+        list-style-type: none; /* Pas de puces */
+        padding-left: 0;
+        margin-top: 5px;
+        font-size: 0.9em;
+    }
+
+    /* Masquer le preloader après le chargement */
+    #overlayer {
+        display: none; /* Cache la surcouche */
+    }
+
+    .loader {
+        display: none; /* Cache l'indicateur de chargement */
+    }
+  </style>
+
+</head>
+<body>
+
+  {# Mobile menu / burger icon, si vous voulez le garder pour les petits écrans #}
+  <div class="site-mobile-menu site-navbar-target">
+    <div class="site-mobile-menu-header">
+      <div class="site-mobile-menu-close">
+        <span class="icofont-close js-menu-toggle"></span>
+      </div>
+    </div>
+    <div class="site-mobile-menu-body"></div>
+  </div>
+
+
+  <div class="section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <h2 class="mb-4 text-center">Formulaire de Demande d'Intérêt</h2>
+                <p class="text-center text-muted mb-5">Remplissez ce formulaire pour envoyer votre demande au propriétaire du bien.</p>
+
+                {# Affichage des messages Django #}
+                {% if messages %}
+                    <div class="mb-4">
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% if bien %}
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            Détails du bien
+                        </div>
+                        <div class="card-body">
+                            {% if bien.image_principale %}
+                                <img src="{{ bien.image_principale.url }}" class="img-fluid rounded mb-3" alt="Image du bien" style="max-height: 200px; object-fit: cover; width: 100%;">
+                            {% else %}
+                                <img src="{% static 'images/default.jpg' %}" class="img-fluid rounded mb-3" alt="Image par défaut" style="max-height: 200px; object-fit: cover; width: 100%;">
+                            {% endif %}
+                            <h4 class="card-title">{{ bien.type_bien }} - {{ bien.localisation }}</h4>
+                            {% if bien.prix_vente %}
+                                <p class="card-text"><strong>Prix de vente:</strong> {{ bien.prix_vente }} FCFA</p>
+                            {% elif bien.loyer_mensuel %}
+                                <p class="card-text"><strong>Loyer mensuel:</strong> {{ bien.loyer_mensuel }} FCFA / mois</p>
+                            {% endif %}
+                            <p class="card-text"><strong>Description:</strong> {{ bien.description|truncatechars:150|default:"Aucune description." }}</p>
+                            <p class="card-text"><small class="text-muted">ID du bien: {{ bien.pk }}</small></p>
+                            <p class="card-text"><small class="text-muted">Type d'opération: {% if type_bien == 'vendre' %}Vente{% else %}Location{% endif %}</small></p>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning text-center" role="alert">
+                        Impossible de charger les détails du bien.
+                    </div>
+                {% endif %}
+
+                <div class="card shadow-sm mb-5">
+                    <div class="card-header bg-success text-white">
+                        Vos informations de contact
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %} {# Très important pour la sécurité #}
+                            
+                            {# Affichage des champs du formulaire Django #}
+                            {% for field in form %}
+                                <div class="mb-3"> {# Ce div.mb-3 contient le label, le champ et les erreurs #}
+                                    <label for="{{ field.id_for_label }}">{% if field.field.required %}<span class="text-danger">*</span>{% endif %} {{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <div class="form-text">{{ field.help_text }}</div>
+                                    {% endif %}
+                                    {% for error in field.errors %}
+                                        <div class="alert alert-danger mt-1">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+
+                            <button type="submit" class="btn btn-success py-2 px-4 mt-3">Envoyer ma demande</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <p class="text-center"><a href="javascript:history.back()" class="btn btn-secondary py-2 px-4">Retour à la page précédente</a></p>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  {# Inclure vos scripts JS ici si nécessaire pour le fonctionnement de votre thème #}
+  <script src="{% static 'js/bootstrap.bundle.min.js'%}"></script>
+  <script src="{% static 'js/tiny-slider.js'%}"></script>
+  <script src="{% static 'js/aos.js' %}"></script>
+  <script src="{% static 'js/navbar.js' %}"></script>
+  <script src="{% static 'js/counter.js' %}"></script>
+  <script src="{% static 'js/custom.js' %}"></script>
+
+  <div id="overlayer"></div>
+  <div class="loader">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,10 +1,12 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render , redirect,get_object_or_404
-from .models import Proprietaire,Client,Utilisateur,Bien,Publication,Vendre,Louer
-from .forms import UtilisateurForm,ConnexionForm,BienForm,PublierForm,VendreForm,LouerForm
-from django.contrib.auth.decorators import login_required
+from .models import Proprietaire,Client,Utilisateur,Bien,Publication,Vendre,Louer,DemandeBien
+from .forms import UtilisateurForm,ConnexionForm,BienForm,PublierForm,VendreForm,LouerForm,DemandeBienForm
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.views.decorators.http import require_POST
 from django.contrib.auth.hashers import make_password , check_password
 from django.contrib import messages
+from django.views.generic import TemplateView
 
 def home(request):
     return render(request, 'index.html')
@@ -352,3 +354,83 @@ def detail_biens(request, type_bien, pk):
         'bien': bien,
     }
     return render(request, 'detailsbien.html', context)
+
+
+def creer_demande_bien(request, type_bien, bien_id):
+    bien = None
+    if type_bien == 'vendre':
+        bien = get_object_or_404(Vendre, pk=bien_id)
+    elif type_bien == 'location':
+        bien = get_object_or_404(Louer, pk=bien_id)
+    else:
+        messages.error(request, 'Type de bien invalide.')
+        return redirect('some_error_page')
+
+    if request.method == 'POST':
+        form = DemandeBienForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            # Créer la demande
+            demande_bien = DemandeBien(
+                nom_complet = data['nom_complet'],
+                email = data['email'],
+                telephone = data['telephone'],
+                message = data['message'],
+                type_demande = type_bien,
+                bien_vente = bien if type_bien == 'vendre' else None,
+                bien_location = bien if type_bien == 'location' else None,
+            )
+            demande_bien.save()
+
+            messages.success(request, 'Votre demande a été envoyée avec succès ! Le propriétaire vous contactera bientôt.')
+            return redirect('demande_en_attente')  # Redirige vers la page des biens ou une autre page pertinente
+        else:
+            messages.error(request, 'Veuillez corriger les erreurs dans le formulaire.')
+    else:
+        form = DemandeBienForm()
+
+    context = {
+        'form': form,
+        'bien': bien,
+        'type_bien': type_bien,
+    }
+    return render(request, 'demandebien.html', context)
+
+def is_proprietaire(user):
+    # Adaptez cette logique à votre modèle Utilisateur
+    # Par exemple, si vous avez un champ 'role' ou si is_staff suffit
+    return user.is_authenticated and (user.is_staff or getattr(user, 'role', '') == 'proprietaire')
+
+
+def liste_demandes_proprietaire(request):  
+    demandes = DemandeBien.objects.all().order_by('-date_demande')
+    context = {
+        'demandes': demandes
+    }
+    return render(request, 'proprietaire_demande.html', context)
+
+@require_POST
+def marquer_demande_traitee(request, pk):
+     demande = get_object_or_404(DemandeBien, pk=pk)
+     demande.est_traitee = True
+     demande.save()
+     messages.success(request, "La demande a été marquée comme traitée avec succès !")
+     return redirect('liste_demandes_proprietaire')
+
+class DemandeEnAttenteView(TemplateView):
+    template_name = 'demande_en_attente.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['message_principal'] = "Votre demande a bien été envoyée et est en attente de traitement."
+        context['message_secondaire'] = "Le propriétaire du bien vous contactera prochainement."
+        return context
+
+class DemandeTraiteeSuccesView(TemplateView):
+    template_name = 'demande_traitee.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['message_principal'] = "La demande a été marquée comme traitée avec succès !"
+        context['message_secondaire'] = "Les informations ont été mises à jour."
+        return context
