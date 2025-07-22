@@ -34,6 +34,12 @@
                 <span>Liste de biens validés</span></a>
         </li>
 
+         <li class="nav-item">
+            <a class="nav-link" href="{% url 'liste_transactions' %}">
+                <i class="fas fa-fw fa-list"></i>
+                <span>Historique des transactions</span></a>
+        </li>
+
         <hr class="sidebar-divider d-none d-md-block">
     </ul>
     <!-- End Sidebar -->
@@ -41,6 +47,19 @@
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
         <div id="content">
+            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item dropdown no-arrow">
+                        <a class="nav-link dropdown-toggle" href="#">
+                            <span class="mr-2 d-none d-lg-inline text-gray-600 small">Bienvenue Admin</span>
+                            <img class="img-profile rounded-circle" src="{% static 'images/undraw_profile.svg' %}">
+                        </a>
+                    </li>
+                </ul>
+            </nav>
             <div class="container-fluid p-4">
                 <h2 class="mb-4 text-center">Liste des biens validés</h2>
                 <div class="row">

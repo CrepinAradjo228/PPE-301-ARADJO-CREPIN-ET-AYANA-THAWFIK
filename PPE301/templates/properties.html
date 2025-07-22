@@ -81,34 +81,31 @@
       </div>
     </nav>
 
-    <div
-      class="hero page-inner overlay"
-      style="background-image: url('static/images/hero_bg_1.jpg' )" {# Correction ici pour le tag static #}
-    >
-      <div class="container">
-        <div class="row justify-content-center align-items-center">
-          <div class="col-lg-9 text-center mt-5">
-            <h1 class="heading" data-aos="fade-up">Properties</h1>
+   <div class="hero page-inner overlay" style="background-image: url('static/images/hero_bg_1.jpg')">
+  <div class="container">
+    <div class="row justify-content-center align-items-center">
+      <div class="col-lg-9 text-center mt-5">
+        <h1 class="heading" data-aos="fade-up">Properties</h1>
+        
+        <!-- Formulaire de recherche ajouté ici -->
+        <h1 class="heading" data-aos="fade-up">Easiest way to find your dream home</h1>
+        <form id="propertySearchForm" action="#" class="narrow-w form-search d-flex align-items-stretch mb-3" data-aos="fade-up" data-aos-delay="200">
+          <input type="text" id="propertySearchInput" class="form-control px-4" placeholder="Entrer la localisation et le type de bien .ex Lomé, Apartment" />
+          <button type="submit" class="btn btn-primary">Search</button>
+        </form>
 
-            <nav
-              aria-label="breadcrumb"
-              data-aos="fade-up"
-              data-aos-delay="200"
-            >
-              <ol class="breadcrumb text-center justify-content-center">
-                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-                <li
-                  class="breadcrumb-item active text-white-50"
-                  aria-current="page"
-                >
-                  Properties
-                </li>
-              </ol>
-            </nav>
-          </div>
-        </div>
+        <nav aria-label="breadcrumb" data-aos="fade-up" data-aos-delay="200">
+          <ol class="breadcrumb text-center justify-content-center">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item active text-white-50" aria-current="page">
+              Properties
+            </li>
+          </ol>
+        </nav>
       </div>
     </div>
+  </div>
+</div>
 
     <div class="section">
       <div class="container">
@@ -273,7 +270,7 @@
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
-
+    <script src="{% static 'js/property-search.js' %}"></script>
     <script src=" {% static 'js/bootstrap.bundle.min.js'%}"></script>
     <script src="{% static 'js/tiny-slider.js'%}"></script>
     <script src="{% static 'js/aos.js' %}"></script>

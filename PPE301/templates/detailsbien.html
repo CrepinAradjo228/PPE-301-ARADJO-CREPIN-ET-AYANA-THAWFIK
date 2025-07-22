@@ -140,14 +140,8 @@
                         {% if bien.superficie %}
                             <li>Superficie: {{ bien.superficie }} m²</li>
                         {% endif %}
-                        {% if bien.nombre_chambres %}
-                            <li>Chambres: {{ bien.nombre_chambres }}</li>
-                        {% endif %}
-                        {% if bien.nombre_salles_de_bain %}
-                            <li>Salles de bain: {{ bien.nombre_salles_de_bain }}</li>
-                        {% endif %}
-                        {% if bien.etat_bien %}
-                            <li>État: {{ bien.etat_bien }}</li>
+                        {% if bien.etat %}
+                            <li>État: {{ bien.etat }}</li>
                         {% endif %}
                     </ul>
                 </div>
@@ -155,34 +149,6 @@
                     <ul class="list-unstyled ul-check primary">
                         {% if bien.titre_foncier %}
                             <li>Titre Foncier: {{ bien.titre_foncier }}</li>
-                        {% endif %}
-                        {% if bien.garage %}
-                            <li>Garage: Oui</li>
-                        {% else %}
-                            <li>Garage: Non</li>
-                        {% endif %}
-                        {% if bien.piscine %}
-                            <li>Piscine: Oui</li>
-                        {% else %}
-                            <li>Piscine: Non</li>
-                        {% endif %}
-                        {% if bien.balcon %}
-                            <li>Balcon: Oui</li>
-                        {% else %}
-                            <li>Balcon: Non</li>
-                        {% endif %}
-                        {% if bien.jardin %}
-                            <li>Jardin: Oui</li>
-                        {% else %}
-                            <li>Jardin: Non</li>
-                        {% endif %}
-                        {% if bien.equipements %}
-                            <li>Équipements: {{ bien.equipements }}</li>
-                        {% endif %}
-                        {% if bien.acces_handicapes %}
-                            <li>Accès handicapés: Oui</li>
-                        {% else %}
-                            <li>Accès handicapés: Non</li>
                         {% endif %}
                         {% if bien.loyer_mensuel %} {# Specific to Louer model #}
                             <li>Durée minimum de location: {{ bien.durée_location }} mois</li>
@@ -213,7 +179,7 @@
               <p><strong>Nom:</strong> {{ bien.proprietaire.nom }} {{ bien.proprietaire.prenom }}</p>
               <p><strong>Email:</strong> {{ bien.proprietaire.email }}</p>
               <p><strong>Téléphone:</strong> {{ bien.proprietaire.numero }}</p> {# Assurez-vous que votre modèle Utilisateur a un champ 'telephone' #}
-              <a href="#" class="btn btn-outline-primary btn-sm mt-3">Contacter le propriétaire</a>
+              <a href="https://wa.me/{{ bien.proprietaire.numero }}/?text=Bonjour,%20j'aimerais%20avoir%20plus%20d'informations%20sur%20le%20bien" class="btn btn-outline-primary btn-sm mt-3">Contacter le proprietaire</a>
             </div>
 
             </div>

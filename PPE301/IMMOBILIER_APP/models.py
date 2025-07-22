@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 import datetime
+from django.utils import timezone
 # Create your models here.
 
 class Utilisateur(models.Model):
@@ -71,10 +72,10 @@ class Publication(models.Model):
 
 class Vendre(models.Model):
     STATUTS = [
-    ('enregistre', 'Enregistré (En attente de publication)'), # Le statut initial après création par le propriétaire
-    ('en_attente', 'En attente de validation (pour l\'administrateur)'), # Statut quand il est en revue par l'admin
-    ('publie', 'Publié'), # Statut quand il est validé et visible
-    ('refuse', 'Refusé'), # Si l'admin refuse
+    ('enregistre', 'Enregistré (En attente de publication)'), 
+    ('en_attente', 'En attente de validation (pour l\'administrateur)'), 
+    ('publie', 'Publié'), 
+    ('refuse', 'Refusé'), 
     ]
     statut = models.CharField(max_length=20, choices=STATUTS, default='en_attente')
     type_bien = models.ForeignKey(TypeBien, on_delete=models.CASCADE)
@@ -137,7 +138,8 @@ class DemandeBien(models.Model):
     telephone = models.CharField(max_length=20, blank=True, null=True)
     type_demande = models.CharField(max_length=10, choices=TYPES_DEMANDE_CHOICES) 
     message = models.TextField(blank=True, null=True) 
-    date_demande = models.DateTimeField(auto_now_add=True) 
+    date_demande = models.DateTimeField(default=timezone.now) 
+    date_traitement = models.DateTimeField(null=True, blank=True)
     est_traitee = models.BooleanField(default=False) 
 
     def __str__(self):
@@ -146,3 +148,84 @@ class DemandeBien(models.Model):
         elif self.bien_location:
             return f"Demande de {self.demandeur.username} pour location ID {self.bien_location.pk}"
         return f"Demande de {self.demandeur.username} (bien non spécifié)"
+
+
+# Nouvelle définition des STATUT_BIEN pour clarifier
+STATUT_BIEN_TRANSACTION_CHOICES = [
+    ('vendu', 'Vendu'),
+    ('loue', 'Loué'),
+    ('annule', 'Annulé'), # Optionnel si vous voulez suivre les transactions annulées aussi
+]
+
+class Transaction(models.Model):
+    # Clé étrangère vers le bien vendu ou loué (peut être NULL si un bien est supprimé, mais mieux de le garder)
+    bien_vente = models.ForeignKey(
+        Vendre,
+        on_delete=models.SET_NULL, # Le bien n'est pas supprimé si la transaction l'est
+        null=True, blank=True,
+        related_name='transactions_vente',
+        verbose_name="Bien Vendu"
+    )
+    bien_location = models.ForeignKey(
+        Louer,
+        on_delete=models.SET_NULL, # Le bien n'est pas supprimé si la transaction l'est
+        null=True, blank=True,
+        related_name='transactions_location',
+        verbose_name="Bien Loué"
+    )
+
+    # Clé étrangère vers la demande qui a mené à cette transaction
+    demande = models.OneToOneField(
+        DemandeBien,
+        on_delete=models.SET_NULL, # La demande n'est pas supprimée si la transaction l'est
+        null=True, blank=True,
+        related_name='transaction_liee',
+        verbose_name="Demande Associée"
+    )
+
+    # Détails du propriétaire (pour un historique même si le propriétaire est supprimé)
+    proprietaire = models.ForeignKey(
+        Utilisateur,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='transactions_proprietaire',
+        verbose_name="Propriétaire du Bien"
+    )
+
+    # Détails du client (celui qui a fait la demande)
+    client_nom = models.CharField(max_length=100, verbose_name="Nom du Client")
+    client_email = models.EmailField(verbose_name="Email du Client")
+    client_telephone = models.CharField(max_length=20, blank=True, null=True, verbose_name="Téléphone du Client")
+
+    # Type de transaction (Vendu ou Loué)
+    type_transaction = models.CharField(
+        max_length=10,
+        choices=STATUT_BIEN_TRANSACTION_CHOICES,
+        verbose_name="Type de Transaction"
+    )
+
+    # Date de la transaction
+    date_transaction = models.DateTimeField(default=timezone.now, verbose_name="Date de la Transaction")
+
+    # Montant de la transaction (prix de vente ou loyer mensuel initial/avance)
+    montant_transaction = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True, verbose_name="Montant de la Transaction")
+
+    # Champ pour le statut final du bien après transaction (ex: 'vendu', 'loue')
+    statut_bien_apres_transaction = models.CharField(
+        max_length=10,
+        choices=STATUT_BIEN_TRANSACTION_CHOICES,
+        verbose_name="Statut du Bien Après Transaction"
+    )
+
+    class Meta:
+        verbose_name = "Transaction"
+        verbose_name_plural = "Transactions"
+        ordering = ['-date_transaction'] # Ordonner par la date la plus récente
+
+    def __str__(self):
+        bien_info = ""
+        if self.bien_vente:
+            bien_info = f"Bien Vente ID: {self.bien_vente.id}"
+        elif self.bien_location:
+            bien_info = f"Bien Location ID: {self.bien_location.id}"
+        return f"Transaction {self.type_transaction} - {bien_info} avec {self.client_nom} le {self.date_transaction.strftime('%Y-%m-%d')}"

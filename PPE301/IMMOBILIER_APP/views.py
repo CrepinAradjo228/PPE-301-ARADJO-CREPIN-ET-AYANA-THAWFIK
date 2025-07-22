@@ -1,11 +1,14 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render , redirect,get_object_or_404
-from .models import Proprietaire,Client,Utilisateur,Bien,Publication,Vendre,Louer,DemandeBien
+from .models import Proprietaire,Client,Utilisateur,Bien,Publication,Vendre,Louer,DemandeBien,Transaction
 from .forms import UtilisateurForm,ConnexionForm,BienForm,PublierForm,VendreForm,LouerForm,DemandeBienForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_POST
 from django.contrib.auth.hashers import make_password , check_password
 from django.contrib import messages
+from django.urls import reverse
+from django.db import transaction as db_transaction
+from django.utils import timezone
 
 
 def home(request):
@@ -18,11 +21,12 @@ def landpage(request):
     return render(request , 'homepage.html')
 def service(request):
     return render(request , 'services.html')
+
 def dashboard(request):
     utilisateur_id = request.session.get('utilisateur_id', None)
 
     if utilisateur_id is None:
-        return redirect('login')
+        return redirect('connexion')
 
     utilisateur_obj = get_object_or_404(Utilisateur, id=utilisateur_id)
 
@@ -220,13 +224,13 @@ def bienpublies(request):
     utilisateur_id = request.session.get('utilisateur_id', None)
 
     if utilisateur_id is None:
-        return redirect('login')
+        return redirect('connexion')
 
     # Récupérer l'objet Utilisateur correspondant
     proprietaire_obj = get_object_or_404(Utilisateur, pk=utilisateur_id)
 
     # Filtrer uniquement les biens de ce propriétaire ayant le statut 'publie'
-    listebiens_vente_publies = Vendre.objects.filter(proprietaire=proprietaire_obj, statut='disponible')
+    listebiens_vente_publies = Vendre.objects.filter(proprietaire=proprietaire_obj, statut='valide')
     listebiens_location_publies = Louer.objects.filter(proprietaire=proprietaire_obj, statut='disponible')
 
     context = {
@@ -325,7 +329,7 @@ def valider_publications(request):
             return redirect('valider_publications')
 
         if action == 'valider':
-            bien.statut = 'publie' # Le bien est maintenant 'publie'
+            bien.statut = 'disponible' # Le bien est maintenant 'publie'
             messages.success(request, f"Le bien de type {bien_type} (ID: {bien_id}) a été validé et publié.")
         elif action == 'refuser':
             bien.statut = 'refuse' # Le bien est 'refuse'
@@ -466,21 +470,114 @@ def is_proprietaire(user):
     return user.is_authenticated and (user.is_staff or getattr(user, 'role', '') == 'proprietaire')
 
 
-def liste_demandes_proprietaire(request):  
-    demandes = DemandeBien.objects.all().order_by('-date_demande')
+def liste_demandes_proprietaire(request):
+    utilisateur_id = request.session.get('utilisateur_id', None)
+    if not utilisateur_id:
+        messages.error(request, "Vous devez être connecté pour voir cette page.")
+        return redirect('connexion')
+
+    proprietaire_obj = get_object_or_404(Utilisateur, pk=utilisateur_id)
+
+    demandes_vente = DemandeBien.objects.filter(
+        bien_vente__proprietaire=proprietaire_obj
+    ).exclude(est_traitee=True)
+
+    demandes_location = DemandeBien.objects.filter(
+        bien_location__proprietaire=proprietaire_obj
+    ).exclude(est_traitee=True)
+
+    toutes_les_demandes = list(demandes_vente) + list(demandes_location)
+    toutes_les_demandes.sort(key=lambda x: x.date_demande, reverse=True)
+
     context = {
-        'demandes': demandes
+        "demandes": toutes_les_demandes,
+        "proprietaire_id": utilisateur_id,
     }
     return render(request, 'proprietaire_demande.html', context)
 
-@require_POST
-def marquer_demande_traitee(request, pk):
-     demande = get_object_or_404(DemandeBien, pk=pk)
-     demande.est_traitee = True
-     demande.save()
-     messages.success(request, "La demande a été marquée comme traitée avec succès !")
-     return redirect('liste_demandes_proprietaire')
 
+def marquer_demande_traitee(request, pk):
+    if request.method == 'POST':
+        demande = get_object_or_404(DemandeBien, pk=pk)
+
+        # Vérification si le bien appartient bien au propriétaire connecté (sécurité)
+        utilisateur_id = request.session.get('utilisateur_id')
+        if not utilisateur_id:
+            messages.error(request, "Erreur d'authentification.")
+            return redirect('connexion') # Ou page d'erreur
+        
+        proprietaire_concerne = get_object_or_404(Utilisateur, pk=utilisateur_id)
+
+        # Assurez-vous que la demande concerne un bien de ce propriétaire
+        if demande.bien_vente and demande.bien_vente.proprietaire != proprietaire_concerne:
+            messages.error(request, "Vous n'êtes pas autorisé à traiter cette demande de vente.")
+            return redirect('liste_demandes_proprietaire')
+        if demande.bien_location and demande.bien_location.proprietaire != proprietaire_concerne:
+            messages.error(request, "Vous n'êtes pas autorisé à traiter cette demande de location.")
+            return redirect('liste_demandes_proprietaire')
+
+        if demande.est_traitee:
+            messages.warning(request, "Cette demande a déjà été traitée.")
+            return redirect('liste_demandes_proprietaire')
+
+    try:
+            with db_transaction.atomic():
+                demande.est_traitee = True
+                demande.date_traitement = timezone.now()
+                demande.save()
+
+                bien = None
+                type_transaction = ""
+                montant_transaction = 0
+                nom_bien_pour_message = "" # Variable pour stocker le nom du bien pour le message
+
+                if demande.bien_vente:
+                    bien = demande.bien_vente
+                    type_transaction = 'vendu'
+                    montant_transaction = bien.prix_vente
+                    bien.statut = 'vendu'
+                    bien.save()
+                    # Correction ici: utilisez bien.type_bien pour le message
+                    nom_bien_pour_message = bien.type_bien
+                    messages.success(request, f"Le bien en vente '{nom_bien_pour_message}' a été marqué comme VENDU. Transaction enregistrée.")
+
+                elif demande.bien_location:
+                    bien = demande.bien_location
+                    type_transaction = 'loue'
+                    montant_transaction = bien.loyer_mensuel
+                    bien.statut = 'loue'
+                    bien.save()
+                    # Correction ici: utilisez bien.type_bien pour le message (ou un autre champ pertinent)
+                    nom_bien_pour_message = bien.type_bien
+                    messages.success(request, f"Le bien en location '{nom_bien_pour_message}' a été marqué comme LOUÉ. Transaction enregistrée.")
+                else:
+                    messages.error(request, "Le bien associé à cette demande est introuvable.")
+                    raise ValueError("Bien non trouvé pour la demande.")
+
+                # Créer l'objet Transaction
+                Transaction.objects.create(
+                    bien_vente=demande.bien_vente,
+                    bien_location=demande.bien_location,
+                    demande=demande,
+                    proprietaire=proprietaire_concerne,
+                    client_nom=demande.nom_complet,
+                    client_email=demande.email,
+                    client_telephone=demande.telephone,
+                    type_transaction=type_transaction,
+                    montant_transaction=montant_transaction,
+                    date_transaction=timezone.now(),
+                    statut_bien_apres_transaction=type_transaction,
+                )
+
+                messages.success(request, f"La demande ID {pk} a été traitée et la transaction enregistrée.")
+                return redirect('liste_demandes_proprietaire')
+                
+    except Exception as e:
+            messages.error(request, f"Une erreur est survenue lors du traitement de la demande: {e}")
+            return redirect('liste_demandes_proprietaire')
+    
+    messages.error(request, "Méthode non autorisée.")
+    return redirect('liste_demandes_proprietaire')
 
 def demande_en_attente(request):
     """
@@ -503,3 +600,12 @@ def demande_traitee_succes(request):
     # Correction du nom de template pour correspondre à nos instructions précédentes
     return render(request, 'demande_traitee.html', context)
 
+def liste_transactions(request):
+   
+
+    transactions = Transaction.objects.all().order_by('-date_transaction') # Récupère toutes les transactions
+
+    context = {
+        'transactions': transactions,
+    }
+    return render(request, 'liste_transactions.html', context) # Nom du template à créer

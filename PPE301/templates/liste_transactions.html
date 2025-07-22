@@ -1,0 +1,167 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Historique des Transactions</title>
+    <link rel="stylesheet" href="{% static 'vendor/fontawesome-free/css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sb-admin-2.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .table img {
+            max-width: 60px; /* Taille réduite pour les images dans le tableau */
+            height: auto;
+            border-radius: 4px;
+        }
+        .table th, .table td {
+            vertical-align: middle; /* Aligner le contenu des cellules au milieu */
+            font-size: 0.9rem; /* Taille de police légèrement plus petite */
+        }
+    </style>
+</head>
+<body id="page-top">
+<div id="wrapper">
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
+            <div class="sidebar-brand-icon rotate-n-15">
+                <i class="fas fa-laugh-wink"></i>
+            </div>
+            <div class="sidebar-brand-text mx-3">Admin</div>
+        </a>
+
+        <hr class="sidebar-divider my-0">
+
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'valider_publication' %}">
+                <i class="fas fa-fw fa-check-circle"></i>
+                <span>Valider bien</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'liste_biens_valides' %}">
+                <i class="fas fa-fw fa-list"></i>
+                <span>Liste de biens validés</span>
+            </a>
+        </li>
+        
+        <li class="nav-item active"> {# Nouveau lien actif pour cette page #}
+            <a class="nav-link" href="{% url 'liste_transactions' %}">
+                <i class="fas fa-fw fa-exchange-alt"></i> {# Icône pour les transactions #}
+                <span>Historique Transactions</span>
+            </a>
+        </li>
+
+        <hr class="sidebar-divider d-none d-md-block">
+    </ul>
+    <div id="content-wrapper" class="d-flex flex-column">
+        <div id="content">
+            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item dropdown no-arrow">
+                        <a class="nav-link dropdown-toggle" href="#">
+                            <span class="mr-2 d-none d-lg-inline text-gray-600 small">Bienvenue Admin</span>
+                            <img class="img-profile rounded-circle" src="{% static 'images/undraw_profile.svg' %}">
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="container-fluid p-4">
+                <h2 class="mb-4 text-center">Historique des Transactions</h2>
+
+                {% if messages %}
+                    <div class="row justify-content-center">
+                        <div class="col-12">
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Détails des Transactions Effectuées</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            {% if transactions %}
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>ID Trans.</th>
+                                            <th>Type transaction</th>
+                                            <th>Bien (ID)</th>
+                                            <th>Image Bien</th>
+                                            <th>Propriétaire</th>
+                                            <th>Client</th>
+                                            <th>Email Client</th>
+                                            <th>Téléphone Client</th>
+                                            <th>Montant</th>
+                                            <th>Date Trans.</th>
+                                            <th>Statut Bien</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for transaction in transactions %}
+                                            <tr>
+                                                <td>{{ transaction.pk }}</td>
+                                                <td><span class="badge {% if transaction.type_transaction == 'vendu' %}badge-danger{% else %}badge-primary{% endif %}">{{ transaction.type_transaction|capfirst }}</span></td>
+                                                <td>
+                                                    {% if transaction.bien_vente %}
+                                                        Vente: {{ transaction.bien_vente.id }}
+                                                    {% elif transaction.bien_location %}
+                                                        Location: {{ transaction.bien_location.id }}
+                                                    {% else %}
+                                                        N/A (Bien Supprimé)
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if transaction.bien_vente and transaction.bien_vente.image_principale %}
+                                                        <img src="{{ transaction.bien_vente.image_principale.url }}" alt="Bien Vente">
+                                                    {% elif transaction.bien_location and transaction.bien_location.image_principale %}
+                                                        <img src="{{ transaction.bien_location.image_principale.url }}" alt="Bien Location">
+                                                    {% else %}
+                                                        <img src="{% static 'biens/background.jpeg' %}" alt="Image par défaut">
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ transaction.proprietaire.nom }} {{ transaction.proprietaire.prenom }}</td>
+                                                <td>{{ transaction.client_nom }}</td>
+                                                <td>{{ transaction.client_email }}</td>
+                                                <td>{{ transaction.client_telephone|default:"N/A" }}</td>
+                                                <td>{{ transaction.montant_transaction|floatformat:0 }} FCFA</td>
+                                                <td>{{ transaction.date_transaction|date:"d M Y H:i" }}</td>
+                                                <td><span class="badge badge-success">{{ transaction.statut_bien_apres_transaction|capfirst }}</span></td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <div class="alert alert-info text-center" role="alert">
+                                    <h4 class="alert-heading">Aucune transaction enregistrée pour l'instant !</h4>
+                                    <p>Le proprietaire doit finaliser  demandes de biens pour voir l'historique ici.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+<script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+</body>
+</html>

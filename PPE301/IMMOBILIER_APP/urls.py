@@ -32,7 +32,8 @@ urlpatterns = [
     path('properties/<str:type_bien>/<int:pk>/', views.detail_biens, name='details_bien_client'),
     path('demandebien/creer/<str:type_bien>/<int:bien_id>/', views.creer_demande_bien, name='creer_demande_bien'),
     path('proprietaire/demandes/', views.liste_demandes_proprietaire, name='liste_demandes_proprietaire'),
-    path('demande/<int:pk>/traiter/', views.marquer_demande_traitee, name='marquer_demande_traitee'),
+    path('Proprietaires/demandes/traiter/<int:pk>/', views.marquer_demande_traitee, name='marquer_demande_traitee'),
+    path('admin/transactions/', views.liste_transactions, name='liste_transactions'), # Nouvelle URL pour les transactions
     path('demande/en-attente/', views.demande_en_attente, name='demande_en_attente'),
     path('demande/traitee/succes/', views.demande_traitee_succes, name='demande_traitee_succes')
 ]   
