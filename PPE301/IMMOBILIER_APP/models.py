@@ -87,6 +87,7 @@ class Vendre(models.Model):
     image_principale = models.ImageField(upload_to='biens_vendus/')
     titre_foncier = models.ImageField(upload_to='titres_fonciers/', default="")
     numero_titre_foncier = models.CharField(max_length=255, unique=True, default="")
+    cloturer = models.BooleanField(default=False, help_text="Indique si la vente est clôturée ou non")
     
     proprietaire = models.ForeignKey(Utilisateur,  on_delete=models.CASCADE,limit_choices_to={'role': 'proprietaire'}  )
     def __str__(self):
@@ -95,6 +96,9 @@ class Vendre(models.Model):
     @property
     def type_bien_str(self):
         return 'vendre'
+    
+    
+   
 
 
 class Louer(models.Model):
@@ -126,6 +130,9 @@ class Louer(models.Model):
     def type_bien_str(self):
         return 'louer'
 
+    
+    
+
 class DemandeBien(models.Model):
     TYPES_DEMANDE_CHOICES = (
         ('vente', 'Demande pour une vente'),
@@ -140,6 +147,7 @@ class DemandeBien(models.Model):
     message = models.TextField(blank=True, null=True) 
     date_demande = models.DateTimeField(default=timezone.now) 
     date_traitement = models.DateTimeField(null=True, blank=True)
+    duree_location_mois = models.PositiveIntegerField(null=True, blank=True, help_text="Durée minimale souhaitée par le client (en mois)")
     est_traitee = models.BooleanField(default=False) 
 
     def __str__(self):
@@ -149,6 +157,25 @@ class DemandeBien(models.Model):
             return f"Demande de {self.demandeur.username} pour location ID {self.bien_location.pk}"
         return f"Demande de {self.demandeur.username} (bien non spécifié)"
 
+    def _traiter_vente(self):
+        """
+        Clôture le bien mis en vente si une transaction 'vendu' est associée à cette demande.
+        """
+        if self.bien_vente:
+            transaction = Transaction.objects.filter(
+                demande=self,
+                statut_bien_apres_transaction='vendu'
+            ).first()
+            if transaction:
+                bien = self.bien_vente
+                bien.statut = 'vendu'
+                bien.cloturer = True
+                bien.save()
+
+               
+            
+           
+
 
 # Nouvelle définition des STATUT_BIEN pour clarifier
 STATUT_BIEN_TRANSACTION_CHOICES = [
@@ -157,7 +184,7 @@ STATUT_BIEN_TRANSACTION_CHOICES = [
     ('annule', 'Annulé'), # Optionnel si vous voulez suivre les transactions annulées aussi
 ]
 
-class Transaction(models.Model):
+class Transaction(models.Model):  
     # Clé étrangère vers le bien vendu ou loué (peut être NULL si un bien est supprimé, mais mieux de le garder)
     bien_vente = models.ForeignKey(
         Vendre,
@@ -198,11 +225,7 @@ class Transaction(models.Model):
     client_telephone = models.CharField(max_length=20, blank=True, null=True, verbose_name="Téléphone du Client")
 
     # Type de transaction (Vendu ou Loué)
-    type_transaction = models.CharField(
-        max_length=10,
-        choices=STATUT_BIEN_TRANSACTION_CHOICES,
-        verbose_name="Type de Transaction"
-    )
+    type_transaction = models.CharField(max_length=10,choices=STATUT_BIEN_TRANSACTION_CHOICES,verbose_name="Type de Transaction")
 
     # Date de la transaction
     date_transaction = models.DateTimeField(default=timezone.now, verbose_name="Date de la Transaction")
@@ -211,11 +234,11 @@ class Transaction(models.Model):
     montant_transaction = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True, verbose_name="Montant de la Transaction")
 
     # Champ pour le statut final du bien après transaction (ex: 'vendu', 'loue')
-    statut_bien_apres_transaction = models.CharField(
-        max_length=10,
-        choices=STATUT_BIEN_TRANSACTION_CHOICES,
-        verbose_name="Statut du Bien Après Transaction"
-    )
+    statut_bien_apres_transaction = models.CharField(max_length=10,choices=STATUT_BIEN_TRANSACTION_CHOICES,verbose_name="Statut du Bien Après Transaction")
+
+    date_fin_location = models.DateField(null=True, blank=True)
+    date_debut_location = models.DateField(null=True, blank=True, verbose_name="Date de Début de Location")
+
 
     class Meta:
         verbose_name = "Transaction"

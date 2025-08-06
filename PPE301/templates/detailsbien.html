@@ -147,9 +147,6 @@
                 </div>
                 <div class="col-md-6">
                     <ul class="list-unstyled ul-check primary">
-                        {% if bien.titre_foncier %}
-                            <li>Titre Foncier: {{ bien.titre_foncier }}</li>
-                        {% endif %}
                         {% if bien.loyer_mensuel %} {# Specific to Louer model #}
                             <li>Durée minimum de location: {{ bien.durée_location }} mois</li>
                             <li>Avance/Caution: {{ bien.avance }} FCFA</li>
@@ -158,11 +155,24 @@
                 </div>
           </div> {# Ceci ferme une div précédente. Assurez-vous que le contexte HTML est correct. #}
 
-{# Les boutons "Je suis intéressé" s'affichent maintenant sans condition de connexion #}
-{% if bien.prix_vente %}
-    <a href="{% url 'creer_demande_bien' type_bien='vendre' bien_id=bien.pk %}" class="btn btn-success py-3 px-5 mt-4">Je suis intéressé par l'achat</a>
+    {% if bien.prix_vente %}
+    <a href="{% url 'creer_demande_bien' type_bien='vendre' bien_id=bien.pk %}" class="btn btn-success py-3 px-5 mt-4">
+        Je suis intéressé par l'achat
+    </a>
 {% elif bien.loyer_mensuel %}
-    <a href="{% url 'creer_demande_bien' type_bien='louer' bien_id=bien.pk %}" class="btn btn-success py-3 px-5 mt-4">Je suis intéressé par la location</a>
+    {% if bien.statut == 'loue' and transaction and transaction.date_fin_location %}
+        <div class="alert alert-warning mt-3">
+            <strong>Ce bien est actuellement loué.</strong><br>
+            Disponible à nouveau après le {{ transaction.date_fin_location|date:"d F Y" }}.
+        </div>
+        <button class="btn btn-secondary py-3 px-5 mt-2" disabled>
+            Je suis intéressé par la location
+        </button>
+    {% else %}
+        <a href="{% url 'creer_demande_bien' type_bien='louer' bien_id=bien.pk %}" class="btn btn-success py-3 px-5 mt-4">
+            Je suis intéressé par la location
+        </a>
+    {% endif %}
 {% endif %}
 
 {# Message pour la connexion, avec styles CSS directement sur le lien #}

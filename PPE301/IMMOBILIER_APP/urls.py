@@ -35,6 +35,7 @@ urlpatterns = [
     path('Proprietaires/demandes/traiter/<int:pk>/', views.marquer_demande_traitee, name='marquer_demande_traitee'),
     path('admin/transactions/', views.liste_transactions, name='liste_transactions'), # Nouvelle URL pour les transactions
     path('demande/en-attente/', views.demande_en_attente, name='demande_en_attente'),
+     path('error/', views.page_erreur, name='some_error_page'),
     path('demande/traitee/succes/', views.demande_traitee_succes, name='demande_traitee_succes')
 ]   
 

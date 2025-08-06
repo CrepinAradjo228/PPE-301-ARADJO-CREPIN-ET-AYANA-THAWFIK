@@ -87,6 +87,7 @@
     .mb-3 input[type="text"],
     .mb-3 input[type="email"],
     .mb-3 input[type="tel"],
+    .mb-3 input[type="number"],
     .mb-3 textarea,
     .mb-3 select { /* Ajoutez d'autres types d'inputs si vous en avez (ex: date, number) */
         display: block; /* S'assure que le champ prend toute la largeur */
@@ -270,14 +271,31 @@
                     <div class="card-header bg-success text-white">
                         Vos informations de contact
                     </div>
-                    <div class="card-body">
-                        <form method="post">
-                            {% csrf_token %} {# Très important pour la sécurité #}
-                            
-                            {# Affichage des champs du formulaire Django #}
-                            {% for field in form %}
-                                <div class="mb-3"> {# Ce div.mb-3 contient le label, le champ et les erreurs #}
-                                    <label for="{{ field.id_for_label }}">{% if field.field.required %}<span class="text-danger">*</span>{% endif %} {{ field.label }}</label>
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        {# CHAMP PERSONNALISÉ POUR LA DURÉE DE LOCATION EN MOIS #}
+                        <div class="mb-3">
+                            <label for="{{ form.duree_location_mois.id_for_label }}">
+                                <span class="text-danger">*</span> {{ form.duree_location_mois.label }}
+                            </label>
+                            {{ form.duree_location_mois }}
+                            {% if form.duree_location_mois.help_text %}
+                                <div class="form-text">{{ form.duree_location_mois.help_text }}</div>
+                            {% endif %}
+                            {% for error in form.duree_location_mois.errors %}
+                                <div class="alert alert-danger mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        {# Les autres champs #}
+                        {% for field in form %}
+                            {% if field.name != 'duree_location_mois' %}
+                                <div class="mb-3">
+                                    <label for="{{ field.id_for_label }}">
+                                        {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                                        {{ field.label }}
+                                    </label>
                                     {{ field }}
                                     {% if field.help_text %}
                                         <div class="form-text">{{ field.help_text }}</div>
@@ -286,11 +304,16 @@
                                         <div class="alert alert-danger mt-1">{{ error }}</div>
                                     {% endfor %}
                                 </div>
-                            {% endfor %}
+                            {% endif %}
+                        {% endfor %}
 
+                        {% if bien.statut == 'loue' %}
+                            <button class="btn btn-secondary" disabled>Déjà loué</button>
+                        {% else %}
                             <button type="submit" class="btn btn-success py-2 px-4 mt-3">Envoyer ma demande</button>
-                        </form>
-                    </div>
+                        {% endif %}             
+                </form>
+
                 </div>
                 
                 <p class="text-center"><a href="javascript:history.back()" class="btn btn-secondary py-2 px-4">Retour à la page précédente</a></p>

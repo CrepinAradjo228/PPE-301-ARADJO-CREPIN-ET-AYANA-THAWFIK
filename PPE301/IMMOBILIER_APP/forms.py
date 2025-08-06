@@ -119,6 +119,8 @@ class DemandeBienForm(forms.Form):
     nom_complet = forms.CharField(label="Votre nom complet", max_length=100, required=True )
     email = forms.EmailField(label="Votre adresse email", required=True)
     telephone = forms.CharField(label="Votre numéro de téléphone (facultatif)", max_length=20, required=False)
+    duree_location_mois = forms.IntegerField(label="Durée minimale souhaitée (en mois)", min_value=1, required=False, help_text="Indiquez la durée minimale souhaitée pour la location (en mois)")
+
     TYPES_DEMANDE_CHOICES = (
         ('vente', 'Demande pour une vente'),
         ('location', 'Demande pour une location'),

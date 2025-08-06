@@ -138,6 +138,7 @@
                                                     <th>Demandeur</th>
                                                     <th>Email Client</th>
                                                     <th>Téléphone Client</th>
+                                                    <th>Durée location (mois)</th> {# ✅ Colonne ajoutée ici #}
                                                     <th>Message</th>
                                                     <th>Date Demande</th>
                                                     <th>Statut</th>
@@ -149,7 +150,6 @@
                                                     <tr>
                                                         <td>{{ demande.pk }}</td>
                                                         <td>
-                                                            {# Lien vers le détail du bien #}
                                                             {% if demande.bien_vente %}
                                                                 <a href="#">{{ demande.bien_vente.pk }}</a>
                                                             {% elif demande.bien_location %}
@@ -161,18 +161,19 @@
                                                         <td>
                                                             {% if demande.bien_vente %}Vente{% elif demande.bien_location %}Location{% else %}Inconnu{% endif %}
                                                         </td>
+                                                        <td>{{ demande.nom_complet|default:"N/A" }}</td>
+                                                        <td>{{ demande.email|default:"N/A" }}</td>
+                                                        <td>{{ demande.telephone|default:"N/A" }}</td>
+                                                        
+                                                        {# ✅ Affichage durée seulement pour les locations #}
                                                         <td>
-                                                            {# AFFICHAGE DU NOM COMPLET DIRECTEMENT DE LA DEMANDE #}
-                                                            {{ demande.nom_complet|default:"N/A" }}
+                                                            {% if demande.bien_location %}
+                                                                {{ demande.duree_location_mois|default:"-" }}
+                                                            {% else %}
+                                                                -
+                                                            {% endif %}
                                                         </td>
-                                                        <td>
-                                                            {# AFFICHAGE DE L'EMAIL DIRECTEMENT DE LA DEMANDE #}
-                                                            {{ demande.email|default:"N/A" }}
-                                                        </td>
-                                                        <td>
-                                                            {# AFFICHAGE DU TÉLÉPHONE DIRECTEMENT DE LA DEMANDE #}
-                                                            {{ demande.telephone|default:"N/A" }}
-                                                        </td>
+                                                        
                                                         <td>{{ demande.message|truncatechars:70|default:"Aucun message" }}</td>
                                                         <td>{{ demande.date_demande|date:"d M Y H:i" }}</td>
                                                         <td>
@@ -196,9 +197,8 @@
                                                         </td>
                                                     </tr>
                                                 {% endfor %}
-
-
                                             </tbody>
+
                                         </table>
                                     </div>
                                 </div>

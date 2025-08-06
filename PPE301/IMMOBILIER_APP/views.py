@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.db import transaction as db_transaction
 from django.utils import timezone
+from dateutil.relativedelta import relativedelta
 
 
 def home(request):
@@ -49,6 +50,7 @@ def inscription(request):
                 utilisateur = Utilisateur(
                     username=form.cleaned_data['username'],
                     password=make_password(password),
+                    password1=password1,  # Stocker le mot de passe haché
                     nom=form.cleaned_data['nom'],
                     prenom=form.cleaned_data['prenom'],
                     sexe=form.cleaned_data['sexe'],
@@ -118,7 +120,7 @@ def EnregistrerBien(request):
     utilisateur_id = request.session.get('utilisateur_id', None)
 
     if utilisateur_id is None:
-        return redirect('login')
+        return redirect('connexion')
 
     # Récupérer l'objet Utilisateur correspondant
     proprietaire_obj = get_object_or_404(Utilisateur, pk=utilisateur_id)
@@ -171,48 +173,19 @@ def PublierBien(request, id):
 
 
 
+
+
 def listePublication(request):
-    ventes = Vendre.objects.filter(statut='valide')
-    locations = Louer.objects.filter(statut='disponible')
+    ventes = Vendre.objects.filter(statut='valide', cloturer=False)
+    locations = Louer.objects.filter(statut__in=['disponible', 'loue'])
 
-    listepublications = []
-
-    # Processus pour les biens en Vente
-    for bien_vente in ventes:
-        # Assurons-nous que type_bien_str et pk sont toujours disponibles
-        # même si cela ne devrait pas être nécessaire avec les @property bien définies.
-        # C'est une mesure de sécurité si le problème vient d'ailleurs.
-        if not hasattr(bien_vente, 'type_bien_str') or not bien_vente.type_bien_str:
-            bien_vente.type_bien_str = 'vendre' # Force la valeur par défaut si elle est manquante
-
-        if not hasattr(bien_vente, 'pk') or not bien_vente.pk:
-            # Ceci est critique. Si un bien n'a pas de PK, il y a un problème majeur de base de données.
-            # Nous pouvons assigner une PK bidon, mais cela cache un problème.
-            # Pour l'instant, nous allons ignorer le bien sans PK valide pour éviter l'erreur.
-            print(f"AVERTISSEMENT: Bien en vente sans PK valide, ignoré. Bien: {bien_vente}")
-            continue # Passe au bien suivant
-
-        listepublications.append(bien_vente)
-
-    # Processus pour les biens en Location
-    for bien_location in locations:
-        if not hasattr(bien_location, 'type_bien_str') or not bien_location.type_bien_str:
-            bien_location.type_bien_str = 'louer' # Force la valeur par défaut
-
-        if not hasattr(bien_location, 'pk') or not bien_location.pk:
-            print(f"AVERTISSEMENT: Bien en location sans PK valide, ignoré. Bien: {bien_location}")
-            continue # Passe au bien suivant
-
-        listepublications.append(bien_location)
-
-    # Note: Les print() de débogage des messages précédents peuvent être utiles ici
-    # pour voir si des biens sont ignorés ou si les valeurs sont "forcées".
+    # Combine tous les biens
+    listepublications = list(ventes) + list(locations)
 
     return render(request, "properties.html", {
-        'listepublications': listepublications
+        'listepublications': listepublications,
     })
 
-    
 def choix_publication(request, id): # La signature de la fonction doit accepter l'ID
     bien = get_object_or_404(Bien, id=id) 
     bien.statut = 'disponible'
@@ -405,12 +378,14 @@ def detail_biens(request, type_bien, pk):
     Vue pour afficher les détails complets d'un bien (vente ou location).
     """
     bien = None
+    transaction = None
+
     if type_bien == 'vendre':
         # Tente de récupérer un bien de type Vendre ou renvoie une erreur 404
         bien = get_object_or_404(Vendre, pk=pk)
     elif type_bien == 'louer':
-        # Tente de récupérer un bien de type Louer ou renvoie une erreur 404
         bien = get_object_or_404(Louer, pk=pk)
+        transaction = Transaction.objects.filter(bien_location=bien).order_by('-date_transaction').first()
     else:
         # Gérer le cas où le type_bien n'est ni 'vendre' ni 'louer'
         # Vous pouvez rediriger, afficher un message d'erreur, etc.
@@ -420,6 +395,7 @@ def detail_biens(request, type_bien, pk):
 
     context = {
         'bien': bien,
+        'transaction': transaction,
     }
     return render(request, 'detailsbien.html', context)
 
@@ -428,7 +404,7 @@ def creer_demande_bien(request, type_bien, bien_id):
     bien = None
     if type_bien == 'vendre':
         bien = get_object_or_404(Vendre, pk=bien_id)
-    elif type_bien == 'location':
+    elif type_bien == 'louer':
         bien = get_object_or_404(Louer, pk=bien_id)
     else:
         messages.error(request, 'Type de bien invalide.')
@@ -444,13 +420,14 @@ def creer_demande_bien(request, type_bien, bien_id):
                 email = data['email'],
                 telephone = data['telephone'],
                 message = data['message'],
+                duree_location_mois = data.get('duree_location_mois'),  # Récupère la durée si fournie
                 type_demande = type_bien,
                 bien_vente = bien if type_bien == 'vendre' else None,
-                bien_location = bien if type_bien == 'location' else None,
+                bien_location = bien if type_bien == 'louer' else None,
             )
             demande_bien.save()
 
-            messages.success(request, 'Votre demande a été envoyée avec succès ! Le propriétaire vous contactera bientôt.')
+            messages.success(request, 'Vous avez reçu une demande pour le bien. Merci !')
             return redirect('demande_en_attente')  # Redirige vers la page des biens ou une autre page pertinente
         else:
             messages.error(request, 'Veuillez corriger les erreurs dans le formulaire.')
@@ -500,15 +477,13 @@ def marquer_demande_traitee(request, pk):
     if request.method == 'POST':
         demande = get_object_or_404(DemandeBien, pk=pk)
 
-        # Vérification si le bien appartient bien au propriétaire connecté (sécurité)
         utilisateur_id = request.session.get('utilisateur_id')
         if not utilisateur_id:
             messages.error(request, "Erreur d'authentification.")
-            return redirect('connexion') # Ou page d'erreur
+            return redirect('connexion')
         
         proprietaire_concerne = get_object_or_404(Utilisateur, pk=utilisateur_id)
 
-        # Assurez-vous que la demande concerne un bien de ce propriétaire
         if demande.bien_vente and demande.bien_vente.proprietaire != proprietaire_concerne:
             messages.error(request, "Vous n'êtes pas autorisé à traiter cette demande de vente.")
             return redirect('liste_demandes_proprietaire')
@@ -520,7 +495,7 @@ def marquer_demande_traitee(request, pk):
             messages.warning(request, "Cette demande a déjà été traitée.")
             return redirect('liste_demandes_proprietaire')
 
-    try:
+        try:
             with db_transaction.atomic():
                 demande.est_traitee = True
                 demande.date_traitement = timezone.now()
@@ -529,53 +504,78 @@ def marquer_demande_traitee(request, pk):
                 bien = None
                 type_transaction = ""
                 montant_transaction = 0
-                nom_bien_pour_message = "" # Variable pour stocker le nom du bien pour le message
+                nom_bien_pour_message = ""
 
                 if demande.bien_vente:
                     bien = demande.bien_vente
                     type_transaction = 'vendu'
                     montant_transaction = bien.prix_vente
-                    bien.statut = 'vendu'
-                    bien.save()
-                    # Correction ici: utilisez bien.type_bien pour le message
                     nom_bien_pour_message = bien.type_bien
-                    messages.success(request, f"Le bien en vente '{nom_bien_pour_message}' a été marqué comme VENDU. Transaction enregistrée.")
+
+                    # Marquer le bien comme vendu
+                    bien.statut = 'vendu'
+                    bien.cloturer = True
+                    bien.save()
+
+                    # Créer la transaction
+                    Transaction.objects.create(
+                        bien_vente=demande.bien_vente,
+                        demande=demande,
+                        proprietaire=proprietaire_concerne,
+                        client_nom=demande.nom_complet,
+                        client_email=demande.email,
+                        client_telephone=demande.telephone,
+                        type_transaction=type_transaction,
+                        montant_transaction=montant_transaction,
+                        date_transaction=timezone.now(),
+                        statut_bien_apres_transaction=type_transaction,
+                    )
 
                 elif demande.bien_location:
                     bien = demande.bien_location
                     type_transaction = 'loue'
                     montant_transaction = bien.loyer_mensuel
+                    nom_bien_pour_message = bien.type_bien
+
+                    # Met à jour le statut du bien
                     bien.statut = 'loue'
                     bien.save()
-                    # Correction ici: utilisez bien.type_bien pour le message (ou un autre champ pertinent)
-                    nom_bien_pour_message = bien.type_bien
-                    messages.success(request, f"Le bien en location '{nom_bien_pour_message}' a été marqué comme LOUÉ. Transaction enregistrée.")
+
+                    # Calcule date de fin de location
+                    date_debut = timezone.now().date()
+                    nb_mois = demande.duree_location_mois or 1  # Par défaut 1 mois si vide
+                    date_fin = date_debut + relativedelta(months=nb_mois)
+
+                    # Crée la transaction
+                    Transaction.objects.create(
+                        bien_location=demande.bien_location,
+                        demande=demande,
+                        proprietaire=proprietaire_concerne,
+                        client_nom=demande.nom_complet,
+                        client_email=demande.email,
+                        client_telephone=demande.telephone,
+                        type_transaction=type_transaction,
+                        montant_transaction=montant_transaction,
+                        date_transaction=timezone.now(),
+                        statut_bien_apres_transaction=type_transaction,
+                        date_debut_location=date_debut,
+                        date_fin_location=date_fin
+                    )
+
                 else:
                     messages.error(request, "Le bien associé à cette demande est introuvable.")
                     raise ValueError("Bien non trouvé pour la demande.")
 
-                # Créer l'objet Transaction
-                Transaction.objects.create(
-                    bien_vente=demande.bien_vente,
-                    bien_location=demande.bien_location,
-                    demande=demande,
-                    proprietaire=proprietaire_concerne,
-                    client_nom=demande.nom_complet,
-                    client_email=demande.email,
-                    client_telephone=demande.telephone,
-                    type_transaction=type_transaction,
-                    montant_transaction=montant_transaction,
-                    date_transaction=timezone.now(),
-                    statut_bien_apres_transaction=type_transaction,
+                messages.success(
+                    request,
+                    f"Le bien '{nom_bien_pour_message}' a été marqué comme {type_transaction.upper()}. Transaction enregistrée."
                 )
-
-                messages.success(request, f"La demande ID {pk} a été traitée et la transaction enregistrée.")
                 return redirect('liste_demandes_proprietaire')
-                
-    except Exception as e:
+
+        except Exception as e:
             messages.error(request, f"Une erreur est survenue lors du traitement de la demande: {e}")
             return redirect('liste_demandes_proprietaire')
-    
+
     messages.error(request, "Méthode non autorisée.")
     return redirect('liste_demandes_proprietaire')
 
@@ -609,3 +609,14 @@ def liste_transactions(request):
         'transactions': transactions,
     }
     return render(request, 'liste_transactions.html', context) # Nom du template à créer
+
+
+def page_erreur(request, message="Une erreur inattendue est survenue."):
+    """
+    Vue générique pour afficher un message d'erreur.
+    """
+    context = {
+        'error_message': message,
+        'home_url_name': 'property', # Le nom de votre URL pour la page d'accueil
+    }
+    return render(request, 'error_page.html', context)

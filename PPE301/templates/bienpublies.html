@@ -93,10 +93,10 @@
                                 <div class="card-body">
                                     <h5 class="card-title">{{ bien.nom }}</h5>
                                     <p class="card-text">
-                                        <strong>Type :</strong> {{ bien.type }}<br>
+                                        <strong>Type :</strong> {{ bien.type_bien }}<br>
                                         <strong>Localisation :</strong> {{ bien.localisation }}<br>
-                                        <strong>Prix :</strong> {{ bien.prix }} FCFA<br>
-                                        <strong>État :</strong> {{ bien.etat }}<br>
+                                        <strong>Prix :</strong> {{ bien.prix_vente }} FCFA<br>
+                                        <strong>État :</strong> {{ bien.etat_bien }}<br>
                                         <strong>Statut :</strong> <span class="badge badge-success">{{ bien.statut|capfirst }}</span> {# Affiche le statut #}
                                     </p>
                                     {# Actions pour un bien publié : Modifier, Voir détails, Désactiver #}
@@ -129,7 +129,7 @@
                                         <strong>Type :</strong> {{ bien.type_bien }}<br>
                                         <strong>Localisation :</strong> {{ bien.localisation }}<br>
                                         <strong>Prix :</strong> {{ bien.avance }} FCFA<br>
-                                        <strong>État :</strong> {{ bien.durée_location }}<br>
+                                        <strong>Durée de Location :</strong> {{ bien.durée_location }} Mois minimum<br>
                                         <strong>Statut :</strong> <span class="badge badge-success">{{ bien.statut|capfirst }}</span> {# Affiche le statut #}
                                     </p>
                                     {# Actions pour un bien publié : Modifier, Voir détails, Désactiver #}
