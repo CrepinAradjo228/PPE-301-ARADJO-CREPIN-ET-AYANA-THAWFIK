@@ -17,7 +17,7 @@ services:
           property: connectionString
 
 databases:
-  - name: projetdjango-db
+  - name: immobilier-db
     databaseName: IMMOBILIER_APP
     user: immobilier_user
     plan: free
