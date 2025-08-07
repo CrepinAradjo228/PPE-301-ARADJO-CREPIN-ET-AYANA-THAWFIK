@@ -3,8 +3,8 @@ services:
     name: projetdjango-web
     env: docker
     plan: free
-    repo: https://github.com/Thawfik/PPE-301-ARADJO-CREPIN-ET-AYANA-THAWFIK.git
-    branch: Master
+    repo: https://github.com/CrepinAradjo228/PPE-301-ARADJO-CREPIN-ET-AYANA-THAWFIK.git
+    branch: master
     buildCommand: "docker build -t projetdjango-web ."
     region: frankfurt
     envVars:
