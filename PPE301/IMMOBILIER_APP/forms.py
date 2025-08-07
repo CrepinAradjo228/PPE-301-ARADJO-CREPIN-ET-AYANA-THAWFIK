@@ -1,5 +1,5 @@
 from django import forms
-from .models import Proprietaire, Client, TypeBien, Utilisateur,DemandeBien
+from .models import Proprietaire, Client, TypeBien, Utilisateur,DemandeBien,RenouvelerLocation
 from django.core.exceptions import ValidationError
 
 class UtilisateurForm(forms.Form):
@@ -89,7 +89,7 @@ class VendreForm(forms.Form):
 
        # AJOUTEZ CE CHAMP :
     proprietaire = forms.ModelChoiceField(
-        queryset=Utilisateur.objects.all(), # Récupère tous les utilisateurs
+        queryset=Utilisateur.objects.filter(role='proprietaire'), # Récupère tous les utilisateurs
         empty_label="Sélectionnez un propriétaire", # Texte par défaut si aucun choix
         label="Propriétaire"
     )
@@ -109,10 +109,11 @@ class LouerForm(forms.Form):
 
        # AJOUTEZ CE CHAMP :
     proprietaire = forms.ModelChoiceField(
-        queryset=Utilisateur.objects.all(), # Récupère tous les utilisateurs
+        queryset=Utilisateur.objects.filter(role='proprietaire'), # Récupère tous les utilisateurs
         empty_label="Sélectionnez un propriétaire", # Texte par défaut si aucun choix
         label="Propriétaire"
     )
+
 
 class DemandeBienForm(forms.Form):
     message = forms.CharField(label="Votre message", widget=forms.Textarea(attrs={'rows': 5, 'placeholder': 'Décrivez votre intérêt ou posez vos questions...'}),required=False )
@@ -127,4 +128,15 @@ class DemandeBienForm(forms.Form):
     )
     type_operation = forms.ChoiceField(label="Type d'opération souhaité",choices=TYPES_DEMANDE_CHOICES,required=True)
 
+
+class RenouvelerLocationForm(forms.ModelForm):
+    nom_complet = forms.CharField(label="Votre nom complet", max_length=100, required=True)
+    email = forms.EmailField(label="Votre adresse email", required=True)
+    telephone = forms.CharField(label="Votre numéro de téléphone (facultatif)", max_length=20, required=False)
+    duree_nouvelle_location = forms.IntegerField(
+        label="Durée de renouvellement souhaitée (en mois)",
+        min_value=1,
+        required=True,
+        help_text="Indiquez la durée de renouvellement souhaitée pour la location (en mois)"
+    )
 

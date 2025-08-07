@@ -165,14 +165,21 @@
             <strong>Ce bien est actuellement loué.</strong><br>
             Disponible à nouveau après le {{ transaction.date_fin_location|date:"d F Y" }}.
         </div>
-        <button class="btn btn-secondary py-3 px-5 mt-2" disabled>
+        <!--<button class="btn btn-secondary py-3 px-5 mt-2" disabled>
             Je suis intéressé par la location
-        </button>
+        </button> -->
+        
     {% else %}
         <a href="{% url 'creer_demande_bien' type_bien='louer' bien_id=bien.pk %}" class="btn btn-success py-3 px-5 mt-4">
             Je suis intéressé par la location
         </a>
     {% endif %}
+{% endif %}
+
+{% if bien.statut == 'loue' and bien.date_fin_location and bien.date_fin_location > today %}
+    <a href="{% url 'renouveler_location' bien.id %}" class="btn btn-primary">
+        Renouveler ma location
+    </a>
 {% endif %}
 
 {# Message pour la connexion, avec styles CSS directement sur le lien #}

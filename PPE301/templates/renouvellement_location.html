@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Renouveler la Location</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/fontawesome-free/css/all.min.css' %}">
+    <style>
+        body {
+            background: #f8f9fc;
+        }
+        .card {
+            border-radius: 1rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .form-title {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .btn-renew {
+            background-color: #4e73df;
+            color: white;
+        }
+        .btn-renew:hover {
+            background-color: #2e59d9;
+        }
+    </style>
+</head>
+<body>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card p-4">
+                <h2 class="text-center form-title mb-4">Renouveler la Location</h2>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="nom_complet">Nom Complet</label>
+                        <input type="text" name="nom_complet" id="nom_complet" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Adresse Email</label>
+                        <input type="email" name="email" id="email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="telephone">Téléphone</label>
+                        <input type="text" name="telephone" id="telephone" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="duree_nouvelle_location">Nouvelle Durée (en mois)</label>
+                        <input type="number" name="duree_nouvelle_location" id="duree_nouvelle_location" class="form-control" min="1" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-renew btn-block mt-4">
+                        <i class="fas fa-sync-alt"></i> Demander le Renouvellement
+                    </button>
+                </form>
+
+                <div class="text-center mt-3">
+                    <a href="{% url 'property' %}" class="text-muted"><i class="fas fa-arrow-left"></i> Retour à l'accueil</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

@@ -135,10 +135,11 @@
                                                     <th>ID Demande</th>
                                                     <th>Bien (ID)</th>
                                                     <th>Type Bien</th>
+                                                    <th>Type de Demande</th> <!-- ✅ Nouvelle colonne -->
                                                     <th>Demandeur</th>
                                                     <th>Email Client</th>
                                                     <th>Téléphone Client</th>
-                                                    <th>Durée location (mois)</th> {# ✅ Colonne ajoutée ici #}
+                                                    <th>Durée location (mois)</th>
                                                     <th>Message</th>
                                                     <th>Date Demande</th>
                                                     <th>Statut</th>
@@ -159,13 +160,25 @@
                                                             {% endif %}
                                                         </td>
                                                         <td>
-                                                            {% if demande.bien_vente %}Vente{% elif demande.bien_location %}Location{% else %}Inconnu{% endif %}
+                                                            {% if demande.bien_vente %}Vente
+                                                            {% elif demande.bien_location %}Location
+                                                            {% else %}Inconnu
+                                                            {% endif %}
                                                         </td>
+
+                                                        <!-- ✅ Affiche le type de demande (renouvellement ou normal) -->
+                                                        <td>
+                                                            {% if demande.type_demande == 'renouvellement' %}
+                                                                <span class="badge badge-info">Renouvellement de location</span>
+                                                            {% else %}
+                                                                <span class="badge badge-secondary">{{ demande.type_demande|capfirst }}</span>
+                                                            {% endif %}
+                                                        </td>
+
                                                         <td>{{ demande.nom_complet|default:"N/A" }}</td>
                                                         <td>{{ demande.email|default:"N/A" }}</td>
                                                         <td>{{ demande.telephone|default:"N/A" }}</td>
                                                         
-                                                        {# ✅ Affichage durée seulement pour les locations #}
                                                         <td>
                                                             {% if demande.bien_location %}
                                                                 {{ demande.duree_location_mois|default:"-" }}
@@ -173,7 +186,7 @@
                                                                 -
                                                             {% endif %}
                                                         </td>
-                                                        
+
                                                         <td>{{ demande.message|truncatechars:70|default:"Aucun message" }}</td>
                                                         <td>{{ demande.date_demande|date:"d M Y H:i" }}</td>
                                                         <td>
@@ -198,6 +211,7 @@
                                                     </tr>
                                                 {% endfor %}
                                             </tbody>
+
 
                                         </table>
                                     </div>

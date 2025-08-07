@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render , redirect,get_object_or_404
-from .models import Proprietaire,Client,Utilisateur,Bien,Publication,Vendre,Louer,DemandeBien,Transaction
-from .forms import UtilisateurForm,ConnexionForm,BienForm,PublierForm,VendreForm,LouerForm,DemandeBienForm
+from .models import Proprietaire,Client,Utilisateur,Bien,Publication,Vendre,Louer,DemandeBien,Transaction,RenouvelerLocation    
+from .forms import UtilisateurForm,ConnexionForm,BienForm,PublierForm,VendreForm,LouerForm,DemandeBienForm,RenouvelerLocationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_POST
 from django.contrib.auth.hashers import make_password , check_password
@@ -10,6 +10,7 @@ from django.urls import reverse
 from django.db import transaction as db_transaction
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
+from datetime import date
 
 
 def home(request):
@@ -175,16 +176,31 @@ def PublierBien(request, id):
 
 
 
+from datetime import date
+
 def listePublication(request):
     ventes = Vendre.objects.filter(statut='valide', cloturer=False)
+    
+    # Inclure les locations disponibles ou louées
     locations = Louer.objects.filter(statut__in=['disponible', 'loue'])
 
-    # Combine tous les biens
-    listepublications = list(ventes) + list(locations)
+    for location in locations:
+        # Récupérer la dernière transaction liée à ce bien
+        last_transaction = location.transactions_location.order_by('-date_fin_location').first()
 
+        if location.statut == 'loue' and last_transaction and last_transaction.date_fin_location:
+            if last_transaction.date_fin_location < date.today():
+                location.statut = 'disponible'
+                location.save()
+
+    # Rafraîchir les locations après les éventuelles mises à jour
+    locations = Louer.objects.filter(statut__in=['disponible', 'loue'])
+
+    listepublications = list(ventes) + list(locations)
     return render(request, "properties.html", {
         'listepublications': listepublications,
     })
+
 
 def choix_publication(request, id): # La signature de la fonction doit accepter l'ID
     bien = get_object_or_404(Bien, id=id) 
@@ -410,25 +426,45 @@ def creer_demande_bien(request, type_bien, bien_id):
         messages.error(request, 'Type de bien invalide.')
         return redirect('some_error_page')
 
+    is_renouvellement = request.GET.get('renouvellement') == '1'
+
     if request.method == 'POST':
         form = DemandeBienForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
+
+            # Vérifier si c'est une demande de renouvellement
+            if request.POST.get('is_renouvellement') == 'true':
+                # Vérification de l'ancien locataire via les transactions
+                ancien_client = Transaction.objects.filter(
+                    bien_location=bien,
+                    client__email=data['email'],
+                    client__nom_complet=data['nom_complet']
+                ).exists()
+
+                if not ancien_client:
+                    messages.error(request, "Vous ne pouvez pas renouveler cette location car aucune location précédente n'a été trouvée avec vos informations.")
+                    return redirect('page_erreur_renouvellement')
+
+                type_demande_value = 'renouvellement'
+            else:
+                type_demande_value = type_bien
+
             # Créer la demande
             demande_bien = DemandeBien(
                 nom_complet = data['nom_complet'],
                 email = data['email'],
                 telephone = data['telephone'],
                 message = data['message'],
-                duree_location_mois = data.get('duree_location_mois'),  # Récupère la durée si fournie
-                type_demande = type_bien,
+                duree_location_mois = data.get('duree_location_mois'),
+                type_demande = type_demande_value,
                 bien_vente = bien if type_bien == 'vendre' else None,
                 bien_location = bien if type_bien == 'louer' else None,
             )
             demande_bien.save()
 
-            messages.success(request, 'Vous avez reçu une demande pour le bien. Merci !')
-            return redirect('demande_en_attente')  # Redirige vers la page des biens ou une autre page pertinente
+            messages.success(request, 'Votre demande a été envoyée avec succès.')
+            return redirect('demande_en_attente')
         else:
             messages.error(request, 'Veuillez corriger les erreurs dans le formulaire.')
     else:
@@ -438,6 +474,7 @@ def creer_demande_bien(request, type_bien, bien_id):
         'form': form,
         'bien': bien,
         'type_bien': type_bien,
+        'is_renouvellement': is_renouvellement,
     }
     return render(request, 'demandebien.html', context)
 
@@ -475,85 +512,130 @@ def liste_demandes_proprietaire(request):
 
 def marquer_demande_traitee(request, pk):
     if request.method == 'POST':
-        demande = get_object_or_404(DemandeBien, pk=pk)
-
         utilisateur_id = request.session.get('utilisateur_id')
         if not utilisateur_id:
             messages.error(request, "Erreur d'authentification.")
             return redirect('connexion')
-        
+
         proprietaire_concerne = get_object_or_404(Utilisateur, pk=utilisateur_id)
 
-        if demande.bien_vente and demande.bien_vente.proprietaire != proprietaire_concerne:
-            messages.error(request, "Vous n'êtes pas autorisé à traiter cette demande de vente.")
-            return redirect('liste_demandes_proprietaire')
-        if demande.bien_location and demande.bien_location.proprietaire != proprietaire_concerne:
-            messages.error(request, "Vous n'êtes pas autorisé à traiter cette demande de location.")
-            return redirect('liste_demandes_proprietaire')
+        # Vérifie s'il s'agit d'une demande normale
+        demande = DemandeBien.objects.filter(pk=pk).first()
+        renouvellement = RenouvelerLocation.objects.filter(pk=pk).first()
 
-        if demande.est_traitee:
-            messages.warning(request, "Cette demande a déjà été traitée.")
+        if not demande and not renouvellement:
+            messages.error(request, "Demande introuvable.")
             return redirect('liste_demandes_proprietaire')
 
         try:
             with db_transaction.atomic():
-                demande.est_traitee = True
-                demande.date_traitement = timezone.now()
-                demande.save()
+                if demande:
+                    # Vérifications d'autorisation
+                    if demande.bien_vente and demande.bien_vente.proprietaire != proprietaire_concerne:
+                        messages.error(request, "Vous n'êtes pas autorisé à traiter cette demande de vente.")
+                        return redirect('liste_demandes_proprietaire')
+                    if demande.bien_location and demande.bien_location.proprietaire != proprietaire_concerne:
+                        messages.error(request, "Vous n'êtes pas autorisé à traiter cette demande de location.")
+                        return redirect('liste_demandes_proprietaire')
 
-                bien = None
-                type_transaction = ""
-                montant_transaction = 0
-                nom_bien_pour_message = ""
+                    if demande.est_traitee:
+                        messages.warning(request, "Cette demande a déjà été traitée.")
+                        return redirect('liste_demandes_proprietaire')
 
-                if demande.bien_vente:
-                    bien = demande.bien_vente
-                    type_transaction = 'vendu'
-                    montant_transaction = bien.prix_vente
-                    nom_bien_pour_message = bien.type_bien
+                    demande.est_traitee = True
+                    demande.date_traitement = timezone.now()
+                    demande.save()
 
-                    # Marquer le bien comme vendu
-                    bien.statut = 'vendu'
-                    bien.cloturer = True
-                    bien.save()
+                    bien = None
+                    type_transaction = ""
+                    montant_transaction = 0
+                    nom_bien_pour_message = ""
 
-                    # Créer la transaction
-                    Transaction.objects.create(
-                        bien_vente=demande.bien_vente,
-                        demande=demande,
-                        proprietaire=proprietaire_concerne,
-                        client_nom=demande.nom_complet,
-                        client_email=demande.email,
-                        client_telephone=demande.telephone,
-                        type_transaction=type_transaction,
-                        montant_transaction=montant_transaction,
-                        date_transaction=timezone.now(),
-                        statut_bien_apres_transaction=type_transaction,
+                    if demande.bien_vente:
+                        bien = demande.bien_vente
+                        type_transaction = 'vendu'
+                        montant_transaction = bien.prix_vente
+                        nom_bien_pour_message = bien.type_bien
+
+                        bien.statut = 'vendu'
+                        bien.cloturer = True
+                        bien.save()
+
+                        Transaction.objects.create(
+                            bien_vente=bien,
+                            demande=demande,
+                            proprietaire=proprietaire_concerne,
+                            client_nom=demande.nom_complet,
+                            client_email=demande.email,
+                            client_telephone=demande.telephone,
+                            type_transaction=type_transaction,
+                            montant_transaction=montant_transaction,
+                            date_transaction=timezone.now(),
+                            statut_bien_apres_transaction=type_transaction,
+                        )
+
+                    elif demande.bien_location:
+                        bien = demande.bien_location
+                        type_transaction = 'loue'
+                        montant_transaction = bien.loyer_mensuel
+                        nom_bien_pour_message = bien.type_bien
+
+                        bien.statut = 'loue'
+                        bien.save()
+
+                        date_debut = timezone.now().date()
+                        nb_mois = demande.duree_location_mois or 1
+                        date_fin = date_debut + relativedelta(months=nb_mois)
+
+                        Transaction.objects.create(
+                            bien_location=bien,
+                            demande=demande,
+                            proprietaire=proprietaire_concerne,
+                            client_nom=demande.nom_complet,
+                            client_email=demande.email,
+                            client_telephone=demande.telephone,
+                            type_transaction=type_transaction,
+                            montant_transaction=montant_transaction,
+                            date_transaction=timezone.now(),
+                            statut_bien_apres_transaction=type_transaction,
+                            date_debut_location=date_debut,
+                            date_fin_location=date_fin
+                        )
+
+                    messages.success(
+                        request,
+                        f"Le bien '{nom_bien_pour_message}' a été marqué comme {type_transaction.upper()}. Transaction enregistrée."
                     )
+                    return redirect('liste_demandes_proprietaire')
 
-                elif demande.bien_location:
-                    bien = demande.bien_location
-                    type_transaction = 'loue'
+                elif renouvellement:
+                    if renouvellement.traite:
+                        messages.warning(request, "Cette demande de renouvellement a déjà été traitée.")
+                        return redirect('liste_demandes_proprietaire')
+
+                    if renouvellement.bien.proprietaire != proprietaire_concerne:
+                        messages.error(request, "Vous n'êtes pas autorisé à traiter ce renouvellement.")
+                        return redirect('liste_demandes_proprietaire')
+
+                    renouvellement.traite = True
+                    renouvellement.save()
+
+                    bien = renouvellement.bien
+                    type_transaction = 'toujours loué'
                     montant_transaction = bien.loyer_mensuel
                     nom_bien_pour_message = bien.type_bien
 
-                    # Met à jour le statut du bien
-                    bien.statut = 'loue'
-                    bien.save()
-
-                    # Calcule date de fin de location
                     date_debut = timezone.now().date()
-                    nb_mois = demande.duree_location_mois or 1  # Par défaut 1 mois si vide
+                    nb_mois = renouvellement.duree_nouvelle_location or 1
                     date_fin = date_debut + relativedelta(months=nb_mois)
 
-                    # Crée la transaction
                     Transaction.objects.create(
-                        bien_location=demande.bien_location,
-                        demande=demande,
+                        bien_location=bien,
+                        renouvellement=renouvellement,
                         proprietaire=proprietaire_concerne,
-                        client_nom=demande.nom_complet,
-                        client_email=demande.email,
-                        client_telephone=demande.telephone,
+                        client_nom=renouvellement.nom_complet,
+                        client_email=renouvellement.email,
+                        client_telephone=renouvellement.telephone,
                         type_transaction=type_transaction,
                         montant_transaction=montant_transaction,
                         date_transaction=timezone.now(),
@@ -562,22 +644,20 @@ def marquer_demande_traitee(request, pk):
                         date_fin_location=date_fin
                     )
 
-                else:
-                    messages.error(request, "Le bien associé à cette demande est introuvable.")
-                    raise ValueError("Bien non trouvé pour la demande.")
-
-                messages.success(
-                    request,
-                    f"Le bien '{nom_bien_pour_message}' a été marqué comme {type_transaction.upper()}. Transaction enregistrée."
-                )
-                return redirect('liste_demandes_proprietaire')
+                    messages.success(
+                        request,
+                        f"Renouvellement accepté pour le bien '{nom_bien_pour_message}'. Transaction 'TOUJOURS LOUÉ' enregistrée."
+                    )
+                    return redirect('liste_demandes_proprietaire')
 
         except Exception as e:
-            messages.error(request, f"Une erreur est survenue lors du traitement de la demande: {e}")
+            messages.error(request, f"Erreur lors du traitement : {e}")
             return redirect('liste_demandes_proprietaire')
 
     messages.error(request, "Méthode non autorisée.")
     return redirect('liste_demandes_proprietaire')
+    
+
 
 def demande_en_attente(request):
     """
@@ -620,3 +700,35 @@ def page_erreur(request, message="Une erreur inattendue est survenue."):
         'home_url_name': 'property', # Le nom de votre URL pour la page d'accueil
     }
     return render(request, 'error_page.html', context)
+
+def renouveler_location(request, bien_id):
+    bien = get_object_or_404(Louer, pk=bien_id)
+
+    if request.method == 'POST':
+        form = RenouvelerLocationForm(request.POST)
+        if form.is_valid():
+            nom = form.cleaned_data['nom_complet']
+            email = form.cleaned_data['email']
+
+            # Vérifie que le client a déjà loué ce bien
+            deja_client = Transaction.objects.filter(
+                bien_location=bien,
+                nom_complet=nom,
+                email=email
+            ).exists()
+
+            if not deja_client:
+                messages.error(request, "Vous n'avez jamais loué ce bien. Requête rejetée.")
+            else:
+                renouvellement = form.save(commit=False)
+                renouvellement.bien = bien
+                renouvellement.save()
+                messages.success(request, "Votre demande de renouvellement a été envoyée au propriétaire.")
+            return redirect('detail_biens', type_bien='louer', pk=bien.pk)
+    else:
+        form = RenouvelerLocationForm()
+
+    return render(request, 'renouvellement_location.html', {
+        'form': form,
+        'bien': bien
+    })

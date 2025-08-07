@@ -149,6 +149,7 @@ class DemandeBien(models.Model):
     date_traitement = models.DateTimeField(null=True, blank=True)
     duree_location_mois = models.PositiveIntegerField(null=True, blank=True, help_text="Durée minimale souhaitée par le client (en mois)")
     est_traitee = models.BooleanField(default=False) 
+    
 
     def __str__(self):
         if self.bien_vente:
@@ -252,3 +253,16 @@ class Transaction(models.Model):
         elif self.bien_location:
             bien_info = f"Bien Location ID: {self.bien_location.id}"
         return f"Transaction {self.type_transaction} - {bien_info} avec {self.client_nom} le {self.date_transaction.strftime('%Y-%m-%d')}"
+
+class RenouvelerLocation(models.Model):
+    nom_complet = models.CharField(max_length=255)
+    email = models.EmailField()
+    telephone = models.CharField(max_length=20)
+    duree_nouvelle_location = models.PositiveIntegerField(help_text="Durée en mois")
+    bien = models.ForeignKey(Louer, on_delete=models.CASCADE)
+    date_renouvellement_demande = models.DateTimeField(auto_now_add=True)
+    traite = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.nom_complet} - {self.bien.titre}"
+

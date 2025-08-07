@@ -112,38 +112,62 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for transaction in transactions %}
-                                            <tr>
-                                                <td>{{ transaction.pk }}</td>
-                                                <td><span class="badge {% if transaction.type_transaction == 'vendu' %}badge-danger{% else %}badge-primary{% endif %}">{{ transaction.type_transaction|capfirst }}</span></td>
-                                                <td>
-                                                    {% if transaction.bien_vente %}
-                                                        Vente: {{ transaction.bien_vente.id }}
-                                                    {% elif transaction.bien_location %}
-                                                        Location: {{ transaction.bien_location.id }}
-                                                    {% else %}
-                                                        N/A (Bien Supprimé)
-                                                    {% endif %}
-                                                </td>
-                                                <td>
-                                                    {% if transaction.bien_vente and transaction.bien_vente.image_principale %}
-                                                        <img src="{{ transaction.bien_vente.image_principale.url }}" alt="Bien Vente">
-                                                    {% elif transaction.bien_location and transaction.bien_location.image_principale %}
-                                                        <img src="{{ transaction.bien_location.image_principale.url }}" alt="Bien Location">
-                                                    {% else %}
-                                                        <img src="{% static 'biens/background.jpeg' %}" alt="Image par défaut">
-                                                    {% endif %}
-                                                </td>
-                                                <td>{{ transaction.proprietaire.nom }} {{ transaction.proprietaire.prenom }}</td>
-                                                <td>{{ transaction.client_nom }}</td>
-                                                <td>{{ transaction.client_email }}</td>
-                                                <td>{{ transaction.client_telephone|default:"N/A" }}</td>
-                                                <td>{{ transaction.montant_transaction|floatformat:0 }} FCFA</td>
-                                                <td>{{ transaction.date_transaction|date:"d M Y H:i" }}</td>
-                                                <td><span class="badge badge-success">{{ transaction.statut_bien_apres_transaction|capfirst }}</span></td>
-                                            </tr>
-                                        {% endfor %}
+                                            {% for transaction in transactions %}
+                                                <tr>
+                                                    <td>{{ transaction.pk }}</td>
+
+                                                    <td>
+                                                        {% if transaction.type_transaction == 'vendu' %}
+                                                            <span class="badge badge-danger">Vente</span>
+                                                        {% elif transaction.type_transaction == 'loué' %}
+                                                            <span class="badge badge-primary">Location</span>
+                                                        {% elif transaction.type_transaction == 'toujours loué' %}
+                                                            <span class="badge badge-info">Renouvellement</span>
+                                                        {% else %}
+                                                            <span class="badge badge-secondary">{{ transaction.type_transaction }}</span>
+                                                        {% endif %}
+                                                    </td>
+
+                                                    <td>
+                                                        {% if transaction.bien_vente %}
+                                                            Vente: {{ transaction.bien_vente.id }}
+                                                        {% elif transaction.bien_location %}
+                                                            Location: {{ transaction.bien_location.id }}
+                                                        {% else %}
+                                                            N/A (Bien Supprimé)
+                                                        {% endif %}
+                                                    </td>
+
+                                                    <td>
+                                                        {% if transaction.bien_vente and transaction.bien_vente.image_principale %}
+                                                            <img src="{{ transaction.bien_vente.image_principale.url }}" alt="Bien Vente">
+                                                        {% elif transaction.bien_location and transaction.bien_location.image_principale %}
+                                                            <img src="{{ transaction.bien_location.image_principale.url }}" alt="Bien Location">
+                                                        {% else %}
+                                                            <img src="{% static 'biens/background.jpeg' %}" alt="Image par défaut">
+                                                        {% endif %}
+                                                    </td>
+
+                                                    <td>{{ transaction.proprietaire.nom }} {{ transaction.proprietaire.prenom }}</td>
+                                                    <td>{{ transaction.client_nom }}</td>
+                                                    <td>{{ transaction.client_email }}</td>
+                                                    <td>{{ transaction.client_telephone|default:"N/A" }}</td>
+                                                    <td>{{ transaction.montant_transaction|floatformat:0 }} FCFA</td>
+                                                    <td>{{ transaction.date_transaction|date:"d M Y H:i" }}</td>
+
+                                                    <td>
+                                                        <span class="badge badge-success">
+                                                            {% if transaction.type_transaction == 'toujours loué' %}
+                                                                Location Renouvelée
+                                                            {% else %}
+                                                                {{ transaction.statut_bien_apres_transaction|capfirst }}
+                                                            {% endif %}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
                                     </tbody>
+
                                 </table>
                             {% else %}
                                 <div class="alert alert-info text-center" role="alert">
