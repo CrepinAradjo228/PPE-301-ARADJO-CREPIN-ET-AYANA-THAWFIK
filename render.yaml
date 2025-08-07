@@ -6,8 +6,6 @@ services:
     repo: https://github.com/Thawfik/PPE-301-ARADJO-CREPIN-ET-AYANA-THAWFIK.git
     branch: master
     buildCommand: "docker build -t projetdjango-web ."
-    runCommand: "gunicorn PPE301.wsgi:application --bind 0.0.0.0:8000"
-    dockerfile: Dockerfile
     region: frankfurt
     envVars:
       - key: DEBUG
