@@ -6,6 +6,7 @@ services:
     repo: https://github.com/CrepinAradjo228/PPE-301-ARADJO-CREPIN-ET-AYANA-THAWFIK.git
     branch: master
     buildCommand: "docker build -t projetdjango-web ."
+    dockerfile: Dockerfile  
     region: frankfurt
     envVars:
       - key: DEBUG
