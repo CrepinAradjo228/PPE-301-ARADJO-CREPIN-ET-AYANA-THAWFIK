@@ -4,7 +4,7 @@ services:
     env: docker
     plan: free
     repo: https://github.com/Thawfik/PPE-301-ARADJO-CREPIN-ET-AYANA-THAWFIK.git
-    branch: master
+    branch: Master
     buildCommand: "docker build -t projetdjango-web ."
     region: frankfurt
     envVars:
