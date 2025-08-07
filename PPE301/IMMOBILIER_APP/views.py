@@ -21,8 +21,8 @@ def contact(request):
     return render(request , 'contact.html')
 def landpage(request):
     return render(request , 'homepage.html')
-def service(request):
-    return render(request , 'services.html')
+def homepage(request):
+    return render(request , 'landpage.html')
 
 def dashboard(request):
     utilisateur_id = request.session.get('utilisateur_id', None)

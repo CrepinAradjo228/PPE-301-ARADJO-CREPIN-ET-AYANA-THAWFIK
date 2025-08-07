@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: projetdjango-web
+    env: docker
+    plan: free
+    repo: https://github.com/Thawfik/PPE-301-ARADJO-CREPIN-ET-AYANA-THAWFIK.git
+    branch: main
+    region: frankfurt
+    envVars:
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: immobilier-db
+          property: connectionString
+
+databases:
+  - name: projetdjango-db
+    databaseName: IMMOBILIER_APP
+    user: immobilier_user
+    plan: free

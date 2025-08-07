@@ -22,8 +22,8 @@
                 <button><i class="fas fa-search"></i></button>
             </div>
             <div class="auth-links">
-                <a href="#" class="btn-text">Se connecter</a>
-                <a href="#" class="btn-primary-small">S'inscrire</a>
+                <a href="{% url 'connexion' %}" class="btn-text">Se connecter</a>
+                <a href="{% url 'inscription' %}" class="btn-primary-small">S'inscrire</a>
             </div>
             <div class="header-icons">
                 <a href="#" class="menu-icon"><i class="fas fa-bars"></i></a> </div>
@@ -36,7 +36,7 @@
                 <div class="hero-content">
                     <h1>Trouvez le bien de vos rêves</h1>
                     <p>Des milliers d'annonces à découvrir, partout en France.</p>
-                    <button class="btn-primary">Commencer ma recherche</button>
+                    <a class="btn-outline" href="{% url 'inscription' %}">Commencer ma recherche</a>
                 </div>
             </div>
         </section>
@@ -70,7 +70,7 @@
                 <h2>Annonces mises en avant</h2>
                 <div class="listing-grid">
                     <div class="listing-card">
-                        <img src="https://via.placeholder.com/300x200?text=Maison+Moderne" alt="Maison Moderne">
+                        <img src="{% static 'images/img_1.jpg' %}" alt="Maison Moderne">
                         <div class="card-content">
                             <h3>Maison 4 pièces à Lyon</h3>
                             <p class="price">450 000 €</p>
@@ -84,7 +84,7 @@
                     </div>
 
                     <div class="listing-card">
-                        <img src="https://via.placeholder.com/300x200?text=Appartement+Cosy" alt="Appartement Cosy">
+                        <img src="{% static 'images/img_2.jpg' %}" alt="Appartement Cosy">
                         <div class="card-content">
                             <h3>Appartement T2 à Paris</h3>
                             <p class="price">1 200 € / mois</p>
@@ -98,7 +98,7 @@
                     </div>
 
                     <div class="listing-card">
-                        <img src="https://via.placeholder.com/300x200?text=Villa+avec+Piscine" alt="Villa avec Piscine">
+                        <img src="{% static 'images/img_3.jpg' %}" alt="Villa avec Piscine">
                         <div class="card-content">
                             <h3>Villa 6 pièces à Nice</h3>
                             <p class="price">980 000 €</p>
@@ -112,21 +112,14 @@
                     </div>
                 </div>
                 <div class="view-more">
-                    <a href="#" class="btn-outline">Voir toutes les annonces</a>
+                    <a href="{% url 'inscription' %}" class="btn-outline">Voir toutes les annonces</a>
                 </div>
             </div>
         </section>
     </main>
 
     <footer class="main-footer">
-        <div class="container">
-            <nav class="bottom-nav">
-                <a href="#" class="nav-item active"><i class="fas fa-home"></i><span>Accueil</span></a>
-                <a href="#" class="nav-item"><i class="fas fa-search"></i><span>Rechercher</span></a>
-                <a href="#" class="nav-item"><i class="fas fa-heart"></i><span>Favoris</span></a>
-                <a href="#" class="nav-item"><i class="fas fa-bell"></i><span>Alertes</span></a>
-                <a href="#" class="nav-item"><i class="fas fa-ellipsis-h"></i><span>Plus</span></a>
-            </nav>
+        <div class="container"> 
             <div class="footer-links">
                 <p>&copy; 2025 ImmobApp. Tous droits réservés.</p>
                 <ul>
