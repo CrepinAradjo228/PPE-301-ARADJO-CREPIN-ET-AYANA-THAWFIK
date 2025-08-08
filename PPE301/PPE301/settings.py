@@ -90,8 +90,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'iwwamo_app',
         'USER': 'iwwamo_user',
-        'PASSWORD': 'vtWO8t5mR5RCyRJRRG4NTqfiG4kRxRhP',
-        'HOST': 'dpg-d2ahppu3jp1c73altfl0-a.oregon-postgres.render.com',
+        'PASSWORD': 'NhMcNkmKw8wsFRP8MlXuFCiwheLuKpAM',
+        'HOST': 'dpg-d2b5eper433s739fgkug-a.oregon-postgres.render.com',
         'PORT': '5432',
         'OPTIONS': {
             'sslmode': 'require',
