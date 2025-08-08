@@ -132,10 +132,10 @@
                                         <strong>Durée de Location :</strong> {{ bien.durée_location }} Mois minimum<br>
                                         <strong>Statut :</strong> <span class="badge badge-success">{{ bien.statut|capfirst }}</span> {# Affiche le statut #}
                                     </p>
-                                   {% if bien.statut == 'valide' %}
+                                   {% if publication.type == 'vente' %}
                                         <a href="{% url 'modifier_vente' publication.id %}" class="btn btn-primary">Modifier</a>
                                         <a href="{% url 'supprimer_vente' publication.id %}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette vente ?');">Supprimer</a>
-                                    {% elif bien.statut == 'disponible' %}
+                                    {% elif publication.type == 'location' %}
                                         <a href="{% url 'modifier_location' publication.id %}" class="btn btn-primary">Modifier</a>
                                         <a href="{% url 'supprimer_location' publication.id %}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette location ?');">Supprimer</a>
                                     {% endif %}
