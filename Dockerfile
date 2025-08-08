@@ -21,4 +21,4 @@ EXPOSE 8000
 WORKDIR /app/PPE301
 
 # Lancer les migrations et le serveur gunicorn
-CMD ["sh", "-c", "python manage.py migrate && gunicorn PPE301.wsgi:application --bind 0.0.0.0:8000"]
+CMD ["sh", "-c", "python manage.py collectstatic --noinput && python manage.py migrate && gunicorn PPE301.wsgi:application --bind 0.0.0.0:8000"]
