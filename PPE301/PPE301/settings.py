@@ -88,7 +88,7 @@ WSGI_APPLICATION = 'PPE301.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'iwwamo_app',
+        'NAME': 'iwwamo_app_71xn',
         'USER': 'iwwamo_user',
         'PASSWORD': 'NhMcNkmKw8wsFRP8MlXuFCiwheLuKpAM',
         'HOST': 'dpg-d2b5eper433s739fgkug-a.oregon-postgres.render.com',
