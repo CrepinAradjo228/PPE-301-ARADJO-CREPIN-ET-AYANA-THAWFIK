@@ -79,11 +79,17 @@ WSGI_APPLICATION = 'PPE301.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
-        conn_max_age=600,
-        ssl_require=True
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'immobilier_app',
+        'USER': 'immobilier_user',
+        'PASSWORD': 'vtWO8t5mR5RCyRJRRG4NTqfiG4kRxRhP',
+        'HOST': 'dpg-d2ahppu3jp1c73altfl0-a.oregon-postgres.render.com',
+        'PORT': '5432',
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
+    }
 }
 
 
