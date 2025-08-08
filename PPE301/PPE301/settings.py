@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 
+import dj_database_url
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -77,15 +79,9 @@ WSGI_APPLICATION = 'PPE301.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME':  'mobilier',
-        'USER': 'postgres',
-        'PASSWORD': 'Thawfik',
-        'HOST': 'localhost',  # ou l'adresse IP de votre serveur MySQL
-        'PORT': '5432',       # port par défaut pour MySQ
-        
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL')
+    )
 }
 
 
