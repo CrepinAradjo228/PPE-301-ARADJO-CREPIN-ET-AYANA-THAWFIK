@@ -74,10 +74,7 @@ class PublierForm(forms.Form):
             self.fields['etat'].initial = bien.etat
 
 class VendreForm(forms.Form):
-    type_bien = forms.ModelChoiceField(
-        label="Type de bien",
-        queryset=TypeBien.objects.all()
-    )
+    type_bien = forms.CharField(label="Type de bien", max_length=255)
     prix_vente = forms.FloatField(label="Prix de vente")
     superficie = forms.FloatField(label="Superficie en m²")
     localisation = forms.CharField(label="Localisation", max_length=255)
@@ -96,10 +93,7 @@ class VendreForm(forms.Form):
 
 
 class LouerForm(forms.Form):
-    type_bien = forms.ModelChoiceField(
-        label="Type de bien",
-        queryset=TypeBien.objects.all()
-    )
+    type_bien = forms.CharField(label="Type de bien", max_length=255)
     loyer_mensuel = forms.FloatField(label="Loyer mensuel (FCFA)")
     durée_location = forms.IntegerField(label="Durée minimale (en mois)")
     avance = forms.FloatField(label="Montant de la caution (avance)")

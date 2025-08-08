@@ -78,7 +78,7 @@ class Vendre(models.Model):
     ('refuse', 'Refusé'), 
     ]
     statut = models.CharField(max_length=20, choices=STATUTS, default='en_attente')
-    type_bien = models.ForeignKey(TypeBien, on_delete=models.CASCADE)
+    type_bien = models.CharField(max_length=255)
     prix_vente = models.FloatField()
     superficie = models.FloatField()  # en m²
     localisation = models.CharField(max_length=255)
@@ -109,7 +109,7 @@ class Louer(models.Model):
         ('refuse', 'Refusé'),
     ]
     statut = models.CharField(max_length=20, choices=STATUTS, default='en_attente')
-    type_bien = models.ForeignKey(TypeBien, on_delete=models.CASCADE, default=None)
+    type_bien = models.CharField(max_length=255, default="")
     loyer_mensuel = models.FloatField(default=0)
     durée_location = models.IntegerField(default=1) 
     avance = models.FloatField(default=0)
