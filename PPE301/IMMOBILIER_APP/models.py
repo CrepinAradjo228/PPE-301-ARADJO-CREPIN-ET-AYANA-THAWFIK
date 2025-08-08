@@ -41,7 +41,7 @@ class Bien(models.Model):
         ('disponible', 'Disponible'),
     ]
     nom = models.CharField(max_length=255)
-    type = models.ForeignKey(TypeBien, on_delete=models.CASCADE)
+    type = models.CharField(max_length=255)
     localisation = models.CharField(max_length=255)
     prix = models.FloatField(null=True, blank=True)
     etat = models.CharField(max_length=255 ,null=True, blank=True)
