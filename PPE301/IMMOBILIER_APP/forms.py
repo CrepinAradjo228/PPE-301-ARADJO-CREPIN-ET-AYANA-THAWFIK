@@ -30,7 +30,7 @@ class ConnexionForm(forms.Form):
 
 class BienForm(forms.Form):
     nom = forms.CharField(label="Nom du bien",max_length=255)
-    type = forms.ModelChoiceField(label="Type de bien",queryset=TypeBien.objects.all())
+    type = forms.CharField(label="Type de bien",max_length=255)
     localisation = forms.CharField(label="Localisation", max_length=255)
     prix = forms.FloatField(label="Prix du bien")
     etat = forms.CharField(label="Etat du bien",max_length=255)
