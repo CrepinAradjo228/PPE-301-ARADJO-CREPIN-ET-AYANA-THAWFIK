@@ -160,3 +160,7 @@ LOGIN_URL = '/connexion/'
 #Images et vidéos 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_AUTOREFRESH = True
+
