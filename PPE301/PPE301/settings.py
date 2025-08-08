@@ -88,8 +88,8 @@ WSGI_APPLICATION = 'PPE301.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'immobilier_app',
-        'USER': 'immobilier_user',
+        'NAME': 'iwwamo_app',
+        'USER': 'iwwamo_user',
         'PASSWORD': 'vtWO8t5mR5RCyRJRRG4NTqfiG4kRxRhP',
         'HOST': 'dpg-d2ahppu3jp1c73altfl0-a.oregon-postgres.render.com',
         'PORT': '5432',

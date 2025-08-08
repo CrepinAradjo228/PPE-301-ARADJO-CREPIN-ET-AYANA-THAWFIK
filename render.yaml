@@ -1,11 +1,11 @@
 services:
   - type: web
-    name: projetdjango-web
+    name: iwwamo-web
     env: docker
     plan: free
     repo: https://github.com/CrepinAradjo228/PPE-301-ARADJO-CREPIN-ET-AYANA-THAWFIK.git
     branch: master
-    buildCommand: "docker build -t projetdjango-web ."
+    buildCommand: "docker build -t iwwamo-web ."
     region: frankfurt
     envVars:
       - key: DEBUG
@@ -14,11 +14,11 @@ services:
         generateValue: true
       - key: DATABASE_URL
         fromDatabase:
-          name: immobilier-db
+          name: iwwamo-db
           property: connectionString
 
 databases:
-  - name: immobilier-db
-    databaseName: immobilier_app
-    user: immobilier_user
+  - name: iwwamo-db
+    databaseName: iwwamo_app
+    user: iwwamo_user
     plan: free
