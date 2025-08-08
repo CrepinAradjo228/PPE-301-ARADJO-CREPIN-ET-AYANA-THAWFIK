@@ -99,10 +99,9 @@
                                         <strong>État :</strong> {{ bien.etat_bien }}<br>
                                         <strong>Statut :</strong> <span class="badge badge-success">{{ bien.statut|capfirst }}</span> {# Affiche le statut #}
                                     </p>
-                                    {# Actions pour un bien publié : Modifier, Voir détails, Désactiver #}
-                                    <a href="#" class="btn btn-warning btn-sm">Modifier</a> {# Vous devrez définir cette URL et la vue #}
-                                    <a href="#" class="btn btn-info btn-sm">Détails</a> {# Vous devrez définir cette URL et la vue #}
-                                    <a href="#" class="btn btn-danger btn-sm">Supprimer</a> {# Vous devrez définir cette URL et la vue #}
+                                    <a href="{% url 'modifier_vente' bien.id %}" class="btn btn-primary">Modifier</a>
+                                    <a href="{% url 'supprimer_vente' bien.id %}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette vente ?');">Supprimer</a>
+                                    
                                 </div>
                             </div>
                         </div>
@@ -132,14 +131,9 @@
                                         <strong>Durée de Location :</strong> {{ bien.durée_location }} Mois minimum<br>
                                         <strong>Statut :</strong> <span class="badge badge-success">{{ bien.statut|capfirst }}</span> {# Affiche le statut #}
                                     </p>
-                                   {% if bien.statut == 'valide' %}
-                                        <a href="{% url 'modifier_vente' bien.id %}" class="btn btn-primary">Modifier</a>
-                                        <a href="{% url 'supprimer_vente' bien.id %}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette vente ?');">Supprimer</a>
-                                    {% elif bien.statut == 'disponible' %}
                                         <a href="{% url 'modifier_location' bien.id %}" class="btn btn-primary">Modifier</a>
                                         <a href="{% url 'supprimer_location' bien.id %}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette location ?');">Supprimer</a>
-                                    {% endif %}
-                                </div>
+                                                
                             </div>
                         </div>
                     {% empty %}
