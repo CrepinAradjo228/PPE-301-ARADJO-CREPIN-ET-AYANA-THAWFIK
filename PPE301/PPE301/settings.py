@@ -27,7 +27,13 @@ SECRET_KEY = 'django-insecure-efe-wtasg%xqk75_#^vjkuwzrie%h)xs0ot%_nw-po%vzhfsu&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'projetdjango-web.onrender.com',  # ← Ajoutez cette ligne
+    # Ou pour accepter tous les domaines Render :
+    '.onrender.com',  # ← Cette ligne accepte tous les sous-domaines .onrender.com
+]
 
 
 # Application definition
