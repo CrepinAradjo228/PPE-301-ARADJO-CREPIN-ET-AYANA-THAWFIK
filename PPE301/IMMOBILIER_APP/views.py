@@ -354,7 +354,7 @@ def liste_biens_valides(request):
     return render(request, 'Bienvalidés.html', {'biens_valides': biens_valides})
 
 def DashboardAdmin(request):
-    return render(request, 'AdminDashboard.html')
+    return render(request, 'adminDashboard.html')
 
 def publication_attente(request, type_publication, publication_id):
     # Détermine quel modèle (Vendre ou Louer) récupérer
