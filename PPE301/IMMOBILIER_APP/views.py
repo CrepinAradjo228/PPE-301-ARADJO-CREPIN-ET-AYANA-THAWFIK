@@ -746,7 +746,8 @@ def modifier_vente(request, vente_id):
                     continue  # Garder l'image existante
                 setattr(vente, field_name, value)
             vente.save()
-            return redirect('bienpublies', vente_id=vente.id)
+            messages.success(request, 'La vente a été modifiée avec succès!')
+            return redirect('bienpublies')
     else:
         # Préremplissage avec les données existantes (sauf images)
         initial_data = {
@@ -773,9 +774,13 @@ def modifier_location(request, location_id):
         if form.is_valid():
             # Mise à jour manuelle de l'objet location avec les données du formulaire
             for field_name, value in form.cleaned_data.items():
+                if field_name == 'image_principale' and not value:
+                    continue 
                 setattr(location, field_name, value)
             location.save()
-            return redirect('bienpublies', location_id=location.id)
+            messages.success(request, 'La location a été modifiée avec succès!')
+            return redirect('bienpublies')
+        
     else:
         # Préremplissage avec les données existantes
         initial_data = {
@@ -790,14 +795,14 @@ def modifier_location(request, location_id):
 
     return render(request, 'modifier_location.html', {'form': form, 'location': location})
 
-def supprimer_vente(vente_id):
-    vente = get_object_or_404(Vendre, id=vente_id)
+def supprimer_vente(ventesupp_id):
+    vente = get_object_or_404(Vendre, id=ventesupp_id)
     vente.delete()
     return redirect('bienpublies')  # Ou une autre vue où tu listes les ventes
 
 
-def supprimer_location(location_id):
-    location = get_object_or_404(Louer, id=location_id)
+def supprimer_location(locationsupp_id):
+    location = get_object_or_404(Louer, id=locationsupp_id)
     location.delete()
     return redirect('bienpublies')  # Ou une autre vue où tu listes les locations
 
