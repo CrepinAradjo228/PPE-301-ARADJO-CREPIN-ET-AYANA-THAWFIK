@@ -100,7 +100,7 @@
                                         <strong>Statut :</strong> <span class="badge badge-success">{{ bien.statut|capfirst }}</span> {# Affiche le statut #}
                                     </p>
                                     <a href="{% url 'modifier_vente' bien.id %}" class="btn btn-primary">Modifier</a>
-                                    <a href="{% url 'supprimer_vente' vente.id %}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette vente ?');">Supprimer</a>
+                                    <a href="{% url 'supprimer_vente' bien.id %}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette vente ?');">Supprimer</a>
                                     
                                 </div>
                             </div>
@@ -132,7 +132,7 @@
                                         <strong>Statut :</strong> <span class="badge badge-success">{{ bien.statut|capfirst }}</span> {# Affiche le statut #}
                                     </p>
                                         <a href="{% url 'modifier_location' bien.id %}" class="btn btn-primary">Modifier</a>
-                                        <a href="{% url 'supprimer_location' location.id %}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette location ?');">Supprimer</a>
+                                        <a href="{% url 'supprimer_location' bien.id %}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette location ?');">Supprimer</a>
 
                             </div>
                         </div>
