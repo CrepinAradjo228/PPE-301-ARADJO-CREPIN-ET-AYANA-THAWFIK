@@ -742,7 +742,7 @@ def modifier_vente(request, vente_id):
             form.save()
             return redirect('bienpublies', vente_id=vente.id)  # À adapter selon ta vue de détail
     else:
-        form = VendreForm()
+        form = VendreForm(instance=vente)
 
     return render(request, 'modifier_vente.html', {'form': form, 'vente': vente})
 
@@ -756,7 +756,7 @@ def modifier_location(request, location_id):
             form.save()
             return redirect('bienpublies', location_id=location.id)
     else:
-        form = LouerForm()
+        form = LouerForm(instance=location)
 
     return render(request, 'modifier_location.html', {'form': form, 'location': location})
 
