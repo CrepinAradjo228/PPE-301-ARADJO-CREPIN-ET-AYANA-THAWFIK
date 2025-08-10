@@ -753,6 +753,7 @@ def modifier_vente(request, vente_id):
             # 3. Mettre à jour l'objet Vendre avec les données traitées
             for field, value in donnees.items():
                 setattr(vente, field, value)
+            # 4. Enregistrer les modifications dans la base de données
             vente.save()
             messages.success(request, 'La vente a été modifiée avec succès!')
             return redirect('bienpublies')
@@ -782,31 +783,32 @@ def modifier_location(request, location_id):
         louerform = LouerForm(request.POST, request.FILES)
 
         if louerform.is_valid():
-            donnees = louerform.cleaned_data
+                donnees = louerform.cleaned_data
 
-            # Gérer l'image de manière conditionnelle
-            if 'image_principale' not in request.FILES:
-                donnees['image_principale'] = location.image_principale
+                # Gérer l'image de manière conditionnelle
+                if 'image_principale' not in request.FILES:
+                    donnees['image_principale'] = location.image_principale
 
-            # Mettre à jour l'objet Louer
-            for field, value in donnees.items():
-                setattr(location, field, value)
-            location.save()
-            messages.success(request, 'La location a été modifiée avec succès!')
-            return redirect('bienpublies')
+                # Mettre à jour l'objet Louer
+                for field, value in donnees.items():
+                    setattr(location, field, value)
+                    
+                location.save()
+                messages.success(request, 'La location a été modifiée avec succès!')
+                return redirect('bienpublies')
         else:
-            # AJOUTER CE BLOC POUR AFFICHER LES ERREURS DU FORMULAIRE
-            print(louerform.errors)
-            messages.error(request, 'Veuillez corriger les erreurs du formulaire.')       
+                # AJOUTER CE BLOC POUR AFFICHER LES ERREURS DU FORMULAIRE
+                print("Formulaire invalide " , louerform.errors)
+                messages.error(request, 'Veuillez corriger les erreurs du formulaire.')       
     else:
-        louerform = LouerForm(initial={
-            'type_bien': location.type_bien,
-            'loyer_mensuel': location.loyer_mensuel,
-            'durée_location': location.durée_location,
-            'avance': location.avance,
-            'localisation': location.localisation,
-            'description': location.description,
-        })
+            louerform = LouerForm(initial={
+                'type_bien': location.type_bien,
+                'loyer_mensuel': location.loyer_mensuel,
+                'durée_location': location.durée_location,
+                'avance': location.avance,
+                'localisation': location.localisation,
+                'description': location.description,
+            })
     return render(request, 'modifier_location.html', {'form': louerform, 'location': location})
 
 def supprimer_vente(request,vente_id):

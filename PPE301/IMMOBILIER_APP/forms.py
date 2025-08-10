@@ -80,8 +80,8 @@ class VendreForm(forms.Form):
     localisation = forms.CharField(label="Localisation", max_length=255)
     description = forms.CharField(label="Description", widget=forms.Textarea)
     etat_bien = forms.CharField(label="État du bien", max_length=255)
-    image_principale = forms.ImageField(label="Image principale")
-    titre_foncier = forms.ImageField(label="Titre foncier")
+    image_principale = forms.ImageField(label="Image principale", required=False)
+    titre_foncier = forms.ImageField(label="Titre foncier", required=False)
     numero_titre_foncier = forms.CharField(label="Numéro du titre foncier", max_length=255)
 
        # AJOUTEZ CE CHAMP :
@@ -99,7 +99,7 @@ class LouerForm(forms.Form):
     avance = forms.FloatField(label="Montant de la caution (avance)")
     localisation = forms.CharField(label="Localisation", max_length=255)
     description = forms.CharField(label="Description", widget=forms.Textarea)
-    image_principale = forms.ImageField(label="Image principale")
+    image_principale = forms.ImageField(label="Image principale", required=False)
 
        # AJOUTEZ CE CHAMP :
     proprietaire = forms.ModelChoiceField(
