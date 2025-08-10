@@ -795,13 +795,13 @@ def modifier_location(request, location_id):
 
     return render(request, 'modifier_location.html', {'form': form, 'location': location})
 
-def supprimer_vente(vente_id):
+def supprimer_vente(request,vente_id):
     vente = get_object_or_404(Vendre, id=vente_id)
     vente.delete()
     return redirect('bienpublies')  # Ou une autre vue où tu listes les ventes
 
 
-def supprimer_location(location_id):
+def supprimer_location(request, location_id):
     location = get_object_or_404(Louer, id=location_id)
     location.delete()
     return redirect('bienpublies')  # Ou une autre vue où tu listes les locations
