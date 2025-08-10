@@ -736,39 +736,30 @@ def renouveler_location(request, bien_id):
 def modifier_vente(request, vente_id):
     vente = Vendre.objects.get(id=vente_id)
     if request.method == 'POST':
-        venteform = VendreForm(request.POST,request.FILES)
-
+        venteform = VendreForm(request.POST, request.FILES)
         if venteform.is_valid():
-          type = venteform.cleaned_data["type_bien"]
-          prix = venteform.cleaned_data["prix_vente"]
-          superficie = venteform.cleaned_data["superficie"]
-          localisation = venteform.cleaned_data["localisation"]
-          description = venteform.cleaned_data["description"]
-          etat_bien = venteform.cleaned_data["etat_bien"]
-          numero_titre_foncier = venteform.cleaned_data["numero_titre_foncier"]
+            # 1. Copier les données validées dans un dictionnaire
+            donnees = venteform.cleaned_data
+            
+            # 2. Gérer les images de manière conditionnelle
+            # Si aucune nouvelle image principale n'a été uploadée, conserver l'ancienne
+            if 'image_principale' not in request.FILES:
+                donnees['image_principale'] = vente.image_principale
+            
+            # Si aucun nouveau titre foncier n'a été uploadé, conserver l'ancien
+            if 'titre_foncier' not in request.FILES:
+                donnees['titre_foncier'] = vente.titre_foncier
 
-          vente.type_bien = type
-          vente.prix_vente = prix
-          vente.superficie = superficie
-          vente.localisation = localisation
-          vente.description = description
-          vente.etat_bien = etat_bien
-          vente.numero_titre_foncier = numero_titre_foncier
+            # 3. Mettre à jour l'objet Vendre avec les données traitées
+            for field, value in donnees.items():
+                setattr(vente, field, value)
 
-          # Gestion des images
-          if 'image_principale' in venteform.cleaned_data:
-              vente.image_principale = venteform.cleaned_data['image_principale']
-          if 'titre_foncier' in venteform.cleaned_data:
-              vente.titre_foncier = venteform.cleaned_data['titre_foncier']
-
-          for field, value in venteform.cleaned_data.items():
-              setattr(vente, field, value)
-
-          vente.save()
-          messages.success(request, 'La vente a été modifiée avec succès!')
-          return redirect('bienpublies')
+            # 4. Enregistrer les modifications dans la base de données
+            vente.save()
+            messages.success(request, 'La vente a été modifiée avec succès!')
+            return redirect('bienpublies')
     else:
-        # Préremplissage avec les données existantes (sauf images)
+        # Préremplissage du formulaire pour le GET
         venteform = VendreForm(initial={
             'type_bien': vente.type_bien,
             'prix_vente': vente.prix_vente,
@@ -777,46 +768,33 @@ def modifier_vente(request, vente_id):
             'description': vente.description,
             'etat_bien': vente.etat_bien,
             'numero_titre_foncier': vente.numero_titre_foncier,
-            # Les images ne sont pas préremplies (impossible avec les navigateurs)
         })
-
     return render(request, 'modifier_vente.html', {'form': venteform, 'vente': vente})
+
 def modifier_location(request, location_id):
     location = Louer.objects.get(id=location_id)
     if request.method == 'POST':
         louerform = LouerForm(request.POST, request.FILES)
 
         if louerform.is_valid():
-            type_bien = louerform.cleaned_data["type_bien"]
-            loyer_mensuel = louerform.cleaned_data["loyer_mensuel"]
-            duree_location = louerform.cleaned_data["durée_location"]
-            avance = louerform.cleaned_data["avance"]
-            localisation = louerform.cleaned_data["localisation"]
-            description = louerform.cleaned_data["description"]
+            donnees = louerform.cleaned_data
 
-            location.type_bien = type_bien
-            location.loyer_mensuel = loyer_mensuel
-            location.durée_location = duree_location
-            location.avance = avance
-            location.localisation = localisation
-            location.description = description
+            # Gérer l'image de manière conditionnelle
+            if 'image_principale' not in request.FILES:
+                donnees['image_principale'] = location.image_principale
 
-            # Gestion des images
-            if 'image_principale' in louerform.cleaned_data:
-                location.image_principale = louerform.cleaned_data['image_principale']
-
-            for field, value in louerform.cleaned_data.items():
+            # Mettre à jour l'objet Louer
+            for field, value in donnees.items():
                 setattr(location, field, value)
-
+                
             location.save()
             messages.success(request, 'La location a été modifiée avec succès!')
             return redirect('bienpublies')
     else:
-        # Préremplissage avec les données existantes (sauf images)
         louerform = LouerForm(initial={
             'type_bien': location.type_bien,
             'loyer_mensuel': location.loyer_mensuel,
-            'durée_location': location.durée_location,
+            'durée_location': location.duree_location,
             'avance': location.avance,
             'localisation': location.localisation,
             'description': location.description,
