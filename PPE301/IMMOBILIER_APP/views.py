@@ -756,7 +756,7 @@ def modifier_vente(request, vente_id):
             # 4. Enregistrer les modifications dans la base de données
             vente.save()
             messages.success(request, 'La vente a été modifiée avec succès!')
-            return redirect('connexion')
+            return redirect('bienpublies')
         else:
             # AJOUTER CE BLOC POUR AFFICHER LES ERREURS DU FORMULAIRE
             print(venteform.errors)
@@ -795,7 +795,7 @@ def modifier_location(request, location_id):
                     
                 location.save()
                 messages.success(request, 'La location a été modifiée avec succès!')
-                return redirect('connexion')
+                return redirect('bienpublies')
         else:
                 # AJOUTER CE BLOC POUR AFFICHER LES ERREURS DU FORMULAIRE
                 print("Formulaire invalide " , louerform.errors)
