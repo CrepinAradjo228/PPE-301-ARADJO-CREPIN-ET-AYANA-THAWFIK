@@ -794,7 +794,7 @@ def modifier_location(request, location_id):
         louerform = LouerForm(initial={
             'type_bien': location.type_bien,
             'loyer_mensuel': location.loyer_mensuel,
-            'durée_location': location.duree_location,
+            'durée_location': location.durée_location,
             'avance': location.avance,
             'localisation': location.localisation,
             'description': location.description,
