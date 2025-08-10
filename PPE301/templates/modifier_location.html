@@ -84,12 +84,82 @@
                 <div class="card shadow p-4">
                     <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
-                        {{ form.as_p }}
+                        
+                        <!-- Champs texte normaux -->
+                        <p>
+                            {{ form.type_bien.label_tag }}
+                            {{ form.type_bien }}
+                            {% if form.type_bien.errors %}
+                                <div class="text-danger">{{ form.type_bien.errors }}</div>
+                            {% endif %}
+                        </p>
+                        
+                        <p>
+                            {{ form.loyer_mensuel.label_tag }}
+                            {{ form.loyer_mensuel }}
+                            {% if form.loyer_mensuel.errors %}
+                                <div class="text-danger">{{ form.loyer_mensuel.errors }}</div>
+                            {% endif %}
+                        </p>
+                        
+                        <p>
+                            {{ form.durée_location.label_tag }}
+                            {{ form.durée_location }}
+                            {% if form.durée_location.errors %}
+                                <div class="text-danger">{{ form.durée_location.errors }}</div>
+                            {% endif %}
+                        </p>
+                        
+                        <p>
+                            {{ form.avance.label_tag }}
+                            {{ form.avance }}
+                            {% if form.avance.errors %}
+                                <div class="text-danger">{{ form.avance.errors }}</div>
+                            {% endif %}
+                        </p>
+                        
+                        <p>
+                            {{ form.localisation.label_tag }}
+                            {{ form.localisation }}
+                            {% if form.localisation.errors %}
+                                <div class="text-danger">{{ form.localisation.errors }}</div>
+                            {% endif %}
+                        </p>
+                        
+                        <p>
+                            {{ form.description.label_tag }}
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-danger">{{ form.description.errors }}</div>
+                            {% endif %}
+                        </p>
+                        
+                        <!-- GESTION SPECIALE DE L'IMAGE -->
+                        
+                        <!-- Image principale -->
+                        <p>
+                            <label for="{{ form.image_principale.id_for_label }}">{{ form.image_principale.label }}</label>
+                            {% if location.image_principale %}
+                                <div class="current-image mb-2 p-2 border rounded">
+                                    <p class="mb-1"><strong>Image actuelle :</strong></p>
+                                    <img src="{{ location.image_principale.url }}" alt="Image actuelle" 
+                                        class="img-thumbnail mb-2" style="max-width: 200px; max-height: 150px;">
+                                    <p class="text-muted small mb-0">⚠️ Sélectionnez une nouvelle image pour la remplacer (optionnel)</p>
+                                </div>
+                            {% else %}
+                                <p class="text-muted small">Aucune image actuellement</p>
+                            {% endif %}
+                            {{ form.image_principale }}
+                            {% if form.image_principale.errors %}
+                                <div class="text-danger">{{ form.image_principale.errors }}</div>
+                            {% endif %}
+                        </p>
+                        
                         <button type="submit" class="btn btn-success">Enregistrer les modifications</button>
                         <a href="{% url 'bienpublies' %}" class="btn btn-secondary">Annuler</a>
                     </form>
                 </div>
-            </div>
+</div>
 
         </div>
         <!-- End Main Content -->

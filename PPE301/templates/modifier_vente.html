@@ -71,17 +71,113 @@
             <!-- End Topbar -->
 
             <div class="main-content">
-                <h2 class="h4 mb-4 text-gray-800">Modifier les informations de vente</h2>
-                <div class="card shadow p-4">
-                    <form method="POST" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <button type="submit" class="btn btn-success">Enregistrer les modifications</button>
-                        <a href="{% url 'bienpublies' %}" class="btn btn-secondary">Annuler</a>
-                    </form>
-                </div>
-            </div>
-        </div>
+    <h2 class="h4 mb-4 text-gray-800">Modifier les informations de vente</h2>
+    <div class="card shadow p-4">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Champs texte normaux -->
+            <p>
+                {{ form.type_bien.label_tag }}
+                {{ form.type_bien }}
+                {% if form.type_bien.errors %}
+                    <div class="text-danger">{{ form.type_bien.errors }}</div>
+                {% endif %}
+            </p>
+            
+            <p>
+                {{ form.prix_vente.label_tag }}
+                {{ form.prix_vente }}
+                {% if form.prix_vente.errors %}
+                    <div class="text-danger">{{ form.prix_vente.errors }}</div>
+                {% endif %}
+            </p>
+            
+            <p>
+                {{ form.superficie.label_tag }}
+                {{ form.superficie }}
+                {% if form.superficie.errors %}
+                    <div class="text-danger">{{ form.superficie.errors }}</div>
+                {% endif %}
+            </p>
+            
+            <p>
+                {{ form.localisation.label_tag }}
+                {{ form.localisation }}
+                {% if form.localisation.errors %}
+                    <div class="text-danger">{{ form.localisation.errors }}</div>
+                {% endif %}
+            </p>
+            
+            <p>
+                {{ form.description.label_tag }}
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="text-danger">{{ form.description.errors }}</div>
+                {% endif %}
+            </p>
+            
+            <p>
+                {{ form.etat_bien.label_tag }}
+                {{ form.etat_bien }}
+                {% if form.etat_bien.errors %}
+                    <div class="text-danger">{{ form.etat_bien.errors }}</div>
+                {% endif %}
+            </p>
+            
+            <p>
+                {{ form.numero_titre_foncier.label_tag }}
+                {{ form.numero_titre_foncier }}
+                {% if form.numero_titre_foncier.errors %}
+                    <div class="text-danger">{{ form.numero_titre_foncier.errors }}</div>
+                {% endif %}
+            </p>
+            
+            <!-- GESTION SPECIALE DES IMAGES -->
+            
+            <!-- Image principale -->
+            <p>
+                <label for="{{ form.image_principale.id_for_label }}">{{ form.image_principale.label }}</label>
+                {% if vente.image_principale %}
+                    <div class="current-image mb-2 p-2 border rounded">
+                        <p class="mb-1"><strong>Image actuelle :</strong></p>
+                        <img src="{{ vente.image_principale.url }}" alt="Image actuelle" 
+                             class="img-thumbnail mb-2" style="max-width: 200px; max-height: 150px;">
+                        <p class="text-muted small mb-0">⚠️ Sélectionnez une nouvelle image pour la remplacer (optionnel)</p>
+                    </div>
+                {% else %}
+                    <p class="text-muted small">Aucune image actuellement</p>
+                {% endif %}
+                {{ form.image_principale }}
+                {% if form.image_principale.errors %}
+                    <div class="text-danger">{{ form.image_principale.errors }}</div>
+                {% endif %}
+            </p>
+            
+            <!-- Titre foncier -->
+            <p>
+                <label for="{{ form.titre_foncier.id_for_label }}">{{ form.titre_foncier.label }}</label>
+                {% if vente.titre_foncier %}
+                    <div class="current-image mb-2 p-2 border rounded">
+                        <p class="mb-1"><strong>Titre foncier actuel :</strong></p>
+                        <img src="{{ vente.titre_foncier.url }}" alt="Titre foncier actuel" 
+                             class="img-thumbnail mb-2" style="max-width: 200px; max-height: 150px;">
+                        <p class="text-muted small mb-0">⚠️ Sélectionnez un nouveau fichier pour le remplacer (optionnel)</p>
+                    </div>
+                {% else %}
+                    <p class="text-muted small">Aucun titre foncier actuellement</p>
+                {% endif %}
+                {{ form.titre_foncier }}
+                {% if form.titre_foncier.errors %}
+                    <div class="text-danger">{{ form.titre_foncier.errors }}</div>
+                {% endif %}
+            </p>
+            
+            <button type="submit" class="btn btn-success">Enregistrer les modifications</button>
+            <a href="{% url 'bienpublies' %}" class="btn btn-secondary">Annuler</a>
+        </form>
+    </div>
+</div>
 
         <!-- Footer -->
         <footer class="sticky-footer bg-white mt-5">
