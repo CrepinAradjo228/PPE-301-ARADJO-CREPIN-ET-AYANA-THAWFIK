@@ -753,15 +753,16 @@ def modifier_vente(request, vente_id):
             # 3. Mettre à jour l'objet Vendre avec les données traitées
             for field, value in donnees.items():
                 setattr(vente, field, value)
+            vente.save()
+            messages.success(request, 'La vente a été modifiée avec succès!')
+            return redirect('bienpublies')
         else:
             # AJOUTER CE BLOC POUR AFFICHER LES ERREURS DU FORMULAIRE
             print(venteform.errors)
             messages.error(request, 'Veuillez corriger les erreurs du formulaire.')
 
             # 4. Enregistrer les modifications dans la base de données
-            vente.save()
-            messages.success(request, 'La vente a été modifiée avec succès!')
-            return redirect('bienpublies')
+            
     else:
         # Préremplissage du formulaire pour le GET
         venteform = VendreForm(initial={
@@ -790,14 +791,13 @@ def modifier_location(request, location_id):
             # Mettre à jour l'objet Louer
             for field, value in donnees.items():
                 setattr(location, field, value)
-        else:
-            # AJOUTER CE BLOC POUR AFFICHER LES ERREURS DU FORMULAIRE
-            print(louerform.errors)
-            messages.error(request, 'Veuillez corriger les erreurs du formulaire.')
-                
             location.save()
             messages.success(request, 'La location a été modifiée avec succès!')
             return redirect('bienpublies')
+        else:
+            # AJOUTER CE BLOC POUR AFFICHER LES ERREURS DU FORMULAIRE
+            print(louerform.errors)
+            messages.error(request, 'Veuillez corriger les erreurs du formulaire.')       
     else:
         louerform = LouerForm(initial={
             'type_bien': location.type_bien,
