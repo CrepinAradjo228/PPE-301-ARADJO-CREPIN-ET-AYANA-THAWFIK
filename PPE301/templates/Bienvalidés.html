@@ -62,8 +62,10 @@
             </nav>
             <div class="container-fluid p-4">
                 <h2 class="mb-4 text-center">Liste des biens validés</h2>
+
+                <h3 class="mt-4 mb-3">Bien en Vente validés</h3>
                 <div class="row">
-                    {% for bien in biens_valides %}
+                    {% for bien in vente_valides %}
                     <div class="col-md-6 col-lg-4 mb-4">
                         <div class="card shadow">
                             <img src="{{ bien.image_principale.url }}" class="card-img-top" alt="Image principale">
@@ -83,9 +85,37 @@
                     </div>
                     {% empty %}
                     <div class="col-12 text-center">
-                        <p class="text-muted">Aucun bien validé pour le moment.</p>
+                        <p class="text-muted">Aucun bien en vente validé pour le moment.</p>
                     </div>
                     {% endfor %}
+                    
+                <h3 class="mt-5 mb-3">Biens à louer validés</h3>
+                <div class="row">
+                    {% for bien in location_valides %} {# Itérer sur la liste des Locations #}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card shadow">
+                            <img src="{{ bien.image_principale.url }}" class="card-img-top" alt="Image principale">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ bien.type_bien }}</h5>
+                                <p class="card-text">
+                                    <strong>Loyer mensuel:</strong> {{ bien.loyer_mensuel }} FCFA<br>
+                                    <strong>Durée de location:</strong> {{ bien.durée_location }}<br>
+                                    <strong>Avance:</strong> {{ bien.avance }}<br>
+                                    <strong>Localisation:</strong> {{ bien.localisation }}<br>
+                                    <strong>Propriétaire:</strong> {{ bien.proprietaire.nom }} {{ bien.proprietaire.prenom }}<br>
+                                    {# Les biens à louer n'ont pas forcément de titre foncier selon votre modèle Louer, ajustez si besoin #}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center">
+                        <p class="text-muted">Aucune location validés pour le moment.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+
                 </div>
             </div>
         </div>

@@ -350,8 +350,12 @@ def confirmer_validation(request, type_publication, publication_id):
     return redirect('valider_publication')
 
 def liste_biens_valides(request):
-    biens_valides = Vendre.objects.filter(statut='valide')
-    return render(request, 'Bienvalidés.html', {'biens_valides': biens_valides})
+    vente_valides = Vendre.objects.filter(statut='valide')
+    location_valides = Louer.objects.filter(statut='disponible')
+
+   
+    
+    return render(request, 'Bienvalidés.html', {'vente_valides' : vente_valides , 'locations_valides': location_valides})
 
 def DashboardAdmin(request):
     return render(request, 'adminDashboard.html')
