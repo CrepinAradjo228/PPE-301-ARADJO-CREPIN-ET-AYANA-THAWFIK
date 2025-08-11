@@ -172,6 +172,13 @@
                     <div class="text-danger">{{ form.titre_foncier.errors }}</div>
                 {% endif %}
             </p>
+                    <p>
+                        {{ form.proprietaire.label_tag }}
+                        {{ form.proprietaire }}
+                        {% if form.proprietaire.errors %}
+                        <div class="text-danger">{{ form.proprietaire.errors }}</div>
+                        {% endif %}
+                    </p>
 
             <button type="submit" class="btn btn-success">Enregistrer les modifications</button>
             <a href="{% url 'bienpublies' %}" class="btn btn-secondary">Annuler</a>

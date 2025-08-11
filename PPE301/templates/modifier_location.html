@@ -153,7 +153,14 @@
                             {% if form.image_principale.errors %}
                                 <div class="text-danger">{{ form.image_principale.errors }}</div>
                             {% endif %}
-                        </p>
+                            </p>
+                            <p>
+                                {{ form.proprietaire.label_tag }}
+                                {{ form.proprietaire }}
+                                {% if form.proprietaire.errors %}
+                                <div class="text-danger">{{ form.proprietaire.errors }}</div>
+                                {% endif %}
+                            </p>
                         
                         <button type="submit" class="btn btn-success">Enregistrer les modifications</button>
                         <a href="{% url 'bienpublies' %}" class="btn btn-secondary">Annuler</a>

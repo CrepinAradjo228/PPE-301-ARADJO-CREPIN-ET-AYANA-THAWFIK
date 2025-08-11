@@ -753,6 +753,8 @@ def modifier_vente(request, vente_id):
             # Si aucun nouveau titre foncier n'a été uploadé, conserver l'ancien
             if 'titre_foncier' not in request.FILES:
                 donnees['titre_foncier'] = vente.titre_foncier
+            
+            donnees['proprietaire'] = vente.proprietaire
 
             # 3. Mettre à jour l'objet Vendre avec les données traitées
             for field, value in donnees.items():
@@ -763,7 +765,7 @@ def modifier_vente(request, vente_id):
             return redirect('bienpublies')
         else:
             # AJOUTER CE BLOC POUR AFFICHER LES ERREURS DU FORMULAIRE
-            print(venteform.errors)
+            print("Formulaire invalide " , venteform.errors)
             messages.error(request, 'Veuillez corriger les erreurs du formulaire.')
 
             # 4. Enregistrer les modifications dans la base de données
@@ -778,6 +780,7 @@ def modifier_vente(request, vente_id):
             'description': vente.description,
             'etat_bien': vente.etat_bien,
             'numero_titre_foncier': vente.numero_titre_foncier,
+            'proprietaire': vente.proprietaire,
         })
     return render(request, 'modifier_vente.html', {'form': venteform, 'vente': vente})
 
@@ -788,6 +791,8 @@ def modifier_location(request, location_id):
 
         if louerform.is_valid():
                 donnees = louerform.cleaned_data
+
+                donnees['proprietaire'] = location.proprietaire
 
                 # Gérer l'image de manière conditionnelle
                 if 'image_principale' not in request.FILES:
@@ -812,6 +817,7 @@ def modifier_location(request, location_id):
                 'avance': location.avance,
                 'localisation': location.localisation,
                 'description': location.description,
+                'proprietaire': location.proprietaire,
             })
     return render(request, 'modifier_location.html', {'form': louerform, 'location': location})
 
