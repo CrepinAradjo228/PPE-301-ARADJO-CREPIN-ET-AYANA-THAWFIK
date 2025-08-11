@@ -353,9 +353,7 @@ def liste_biens_valides(request):
     vente_valides = Vendre.objects.filter(statut='valide')
     location_valides = Louer.objects.filter(statut='disponible')
 
-   
-    
-    return render(request, 'Bienvalidés.html', {'vente_valides' : vente_valides , 'locations_valides': location_valides})
+    return render(request, 'Bienvalidés.html', {'vente_valides' : vente_valides , 'location_valides': location_valides})
 
 def DashboardAdmin(request):
     return render(request, 'adminDashboard.html')
