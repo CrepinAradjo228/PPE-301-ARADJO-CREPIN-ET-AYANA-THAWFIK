@@ -1,0 +1,487 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Valider les documents | IWAMMO</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
+    <link rel="stylesheet" href="{% static 'vendor/fontawesome-free/css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sb-admin-2.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-color: #f0f2f5;
+        }
+
+        .card-transaction {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .card-transaction:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header-custom {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e3e6f0;
+            cursor: pointer;
+        }
+
+        .card-header-custom h6 {
+            font-size: 1.1rem;
+            color: #4e73df;
+        }
+
+        .card-header-custom .status-badge {
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .doc-list, .cni-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .doc-list li, .cni-list li {
+            text-align: center;
+        }
+
+        .document-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #555;
+            transition: color 0.2s;
+        }
+
+        .document-link:hover {
+            color: #4e73df;
+        }
+
+        .document-link i {
+            font-size: 3rem;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #e3e6f0;
+            transition: transform 0.2s;
+        }
+
+        .document-link:hover i {
+            transform: scale(1.05);
+        }
+
+        .document-link .doc-title {
+            margin-top: 5px;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .document-link img {
+            width: 80px;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid #e3e6f0;
+            transition: transform 0.2s;
+        }
+
+        .document-link:hover img {
+            transform: scale(1.05);
+        }
+
+        .cni-container {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f8f9fc;
+        }
+
+        .cni-container strong {
+            display: block;
+            margin-bottom: 10px;
+            color: #5a5c69;
+        }
+
+        .empty-state {
+            padding: 40px;
+            border-radius: 10px;
+            background-color: #ffffff;
+            border: 1px dashed #e3e6f0;
+        }
+
+        .validation-section {
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #e8f5e8;
+            border: 1px solid #d4edda;
+        }
+
+        .sidebar-brand-icon {
+            animation: bounce-in 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+        }
+        @keyframes bounce-in {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body id="page-top">
+<div id="wrapper">
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'dashboard_admin' %}">
+            <div class="sidebar-brand-icon rotate-n-15">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <div class="sidebar-brand-text mx-3">IWAMMO Admin</div>
+        </a>
+        <hr class="sidebar-divider my-0">
+        
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'dashboard_admin' %}">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>Tableau de bord</span>
+            </a>
+        </li>
+
+        <hr class="sidebar-divider">
+        <div class="sidebar-heading">Gestion des biens</div>
+
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'valider_publication' %}">
+                <i class="fas fa-fw fa-check-circle"></i>
+                <span>Valider les publications</span>
+            </a>
+        </li>
+        
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'liste_biens_valides' %}">
+                <i class="fas fa-fw fa-list"></i>
+                <span>Biens validés</span>
+            </a>
+        </li>
+
+        <hr class="sidebar-divider">
+        <div class="sidebar-heading">Gestion des documents</div>
+
+        <li class="nav-item active">
+            <a class="nav-link" href="{% url 'liste_documents_a_valider' %}">
+                <i class="fas fa-fw fa-file-invoice"></i>
+                <span>Valider les documents</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'liste_documents_valides' %}">
+                <i class="fas fa-fw fa-file-alt"></i>
+                <span>Documents validés</span>
+            </a>
+        </li>
+
+        <hr class="sidebar-divider">
+        <div class="sidebar-heading">Rapports & Statistiques</div>
+
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'liste_transactions' %}">
+                <i class="fas fa-fw fa-money-bill-wave"></i>
+                <span>Historique des transactions</span>
+            </a>
+        </li>
+    </ul>
+    <div id="content-wrapper" class="d-flex flex-column">
+        <div id="content">
+            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item dropdown no-arrow">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="mr-2 d-none d-lg-inline text-gray-600 small">Bienvenue Admin</span>
+                            <img class="img-profile rounded-circle" src="{% static 'images/undraw_profile.svg' %}">
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Profil
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Déconnexion
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+            <div class="container-fluid p-4">
+                <h2 class="mb-4 text-center text-primary font-weight-bold">Documents en attente de validation</h2>
+
+                {% if documents_en_attente %}
+                    {% for doc in documents_en_attente %}
+                        <div class="card card-transaction shadow mb-4">
+                            <div class="card-header card-header-custom py-3 d-flex justify-content-between align-items-center" data-toggle="collapse" href="#transaction-{{ doc.pk }}" role="button" aria-expanded="false" aria-controls="transaction-{{ doc.pk }}">
+                                <h6 class="m-0 font-weight-bold">
+                                    Transaction #{{ doc.pk }}
+                                    <span class="badge badge-warning ml-2 status-badge">En attente</span>
+                                </h6>
+                                <span class="text-muted small">
+                                    Cliquez pour voir les détails
+                                    <i class="fas fa-chevron-down fa-fw ml-2"></i>
+                                </span>
+                            </div>
+                            <div class="collapse" id="transaction-{{ doc.pk }}">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-lg-6 mb-4">
+                                            <h5 class="text-primary"><i class="fas fa-info-circle mr-2"></i> Détails de la transaction</h5>
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item">
+                                                    <strong>Bien :</strong>
+                                                    {% if doc.bien_vente %}
+                                                        {{ doc.bien_vente.type_bien|capfirst }} à {{ doc.bien_vente.localisation }}
+                                                    {% else %}
+                                                        N/A
+                                                    {% endif %}
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <strong>Propriétaire :</strong> {{ doc.proprietaire.nom }} {{ doc.proprietaire.prenom }}
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <strong>Client :</strong> {{ doc.demande_bien.nom_complet }}
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-lg-6 mb-4">
+                                            <h5 class="text-primary"><i class="fas fa-file-invoice mr-2"></i> Documents de la transaction</h5>
+                                            <ul class="doc-list">
+                                                {% if doc.recu_vente %}
+                                                    <li>
+                                                        <a href="{{ doc.recu_vente.url }}" target="_blank" class="document-link" title="Reçu de vente">
+                                                            <i class="fas fa-file-pdf text-danger"></i>
+                                                            <small class="doc-title">Reçu de vente</small>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                                {% if doc.copie_attestation_mandataire %}
+                                                    <li>
+                                                        <a href="{{ doc.copie_attestation_mandataire.url }}" target="_blank" class="document-link" title="Attestation mandataire">
+                                                            <i class="fas fa-file-pdf text-danger"></i>
+                                                            <small class="doc-title">Mandataire</small>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                                {% if doc.copie_attestations_heritage %}
+                                                    <li>
+                                                        <a href="{{ doc.copie_attestations_heritage.url }}" target="_blank" class="document-link" title="Attestation d'héritage">
+                                                            <i class="fas fa-file-pdf text-danger"></i>
+                                                            <small class="doc-title">Héritage</small>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                                {% if doc.nouveau_titre_foncier %}
+                                                    <li>
+                                                        <a href="{{ doc.nouveau_titre_foncier.url }}" target="_blank" class="document-link" title="Nouveau titre foncier">
+                                                            <i class="fas fa-file-pdf text-danger"></i>
+                                                            <small class="doc-title">Titre foncier</small>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                        <div class="col-12">
+                                            <h5 class="text-primary mt-4"><i class="fas fa-address-card mr-2"></i> CNIs des témoins</h5>
+                                            <div class="cni-container">
+                                                {% if doc.nom_temoin1_proprietaire %}
+                                                    <strong>Témoin 1 (Propriétaire) : {{ doc.nom_temoin1_proprietaire }}</strong>
+                                                    <ul class="cni-list mb-3">
+                                                        {% if doc.temoin1_proprietaire_cni_recto %}
+                                                            <li>
+                                                                <a href="{{ doc.temoin1_proprietaire_cni_recto.url }}" target="_blank" class="document-link" title="CNI Recto">
+                                                                    <img src="{{ doc.temoin1_proprietaire_cni_recto.url }}" alt="CNI Recto">
+                                                                    <small class="doc-title">Recto</small>
+                                                                </a>
+                                                            </li>
+                                                        {% endif %}
+                                                        {% if doc.temoin1_proprietaire_cni_verso %}
+                                                            <li>
+                                                                <a href="{{ doc.temoin1_proprietaire_cni_verso.url }}" target="_blank" class="document-link" title="CNI Verso">
+                                                                    <img src="{{ doc.temoin1_proprietaire_cni_verso.url }}" alt="CNI Verso">
+                                                                    <small class="doc-title">Verso</small>
+                                                                </a>
+                                                            </li>
+                                                        {% endif %}
+                                                    </ul>
+                                                {% endif %}
+
+                                                {% if doc.nom_temoin1_client %}
+                                                    <strong>Témoin 1 (Client) : {{ doc.nom_temoin1_client }}</strong>
+                                                    <ul class="cni-list mb-3">
+                                                        {% if doc.temoin1_client_cni_recto %}
+                                                            <li>
+                                                                <a href="{{ doc.temoin1_client_cni_recto.url }}" target="_blank" class="document-link" title="CNI Recto">
+                                                                    <img src="{{ doc.temoin1_client_cni_recto.url }}" alt="CNI Recto">
+                                                                    <small class="doc-title">Recto</small>
+                                                                </a>
+                                                            </li>
+                                                        {% endif %}
+                                                        {% if doc.temoin1_client_cni_verso %}
+                                                            <li>
+                                                                <a href="{{ doc.temoin1_client_cni_verso.url }}" target="_blank" class="document-link" title="CNI Verso">
+                                                                    <img src="{{ doc.temoin1_client_cni_verso.url }}" alt="CNI Verso">
+                                                                    <small class="doc-title">Verso</small>
+                                                                </a>
+                                                            </li>
+                                                        {% endif %}
+                                                    </ul>
+                                                {% endif %}
+
+                                                {% if doc.nom_temoin2_proprietaire %}
+                                                    <strong>Témoin 2 (Propriétaire) : {{ doc.nom_temoin2_proprietaire }}</strong>
+                                                    <ul class="cni-list mb-3">
+                                                        {% if doc.temoin2_proprietaire_cni_recto %}
+                                                            <li>
+                                                                <a href="{{ doc.temoin2_proprietaire_cni_recto.url }}" target="_blank" class="document-link" title="CNI Recto">
+                                                                    <img src="{{ doc.temoin2_proprietaire_cni_recto.url }}" alt="CNI Recto">
+                                                                    <small class="doc-title">Recto</small>
+                                                                </a>
+                                                            </li>
+                                                        {% endif %}
+                                                        {% if doc.temoin2_proprietaire_cni_verso %}
+                                                            <li>
+                                                                <a href="{{ doc.temoin2_proprietaire_cni_verso.url }}" target="_blank" class="document-link" title="CNI Verso">
+                                                                    <img src="{{ doc.temoin2_proprietaire_cni_verso.url }}" alt="CNI Verso">
+                                                                    <small class="doc-title">Verso</small>
+                                                                </a>
+                                                            </li>
+                                                        {% endif %}
+                                                    </ul>
+                                                {% endif %}
+
+                                                {% if doc.nom_temoin2_client %}
+                                                    <strong>Témoin 2 (Client) : {{ doc.nom_temoin2_client }}</strong>
+                                                    <ul class="cni-list mb-3">
+                                                        {% if doc.temoin2_client_cni_recto %}
+                                                            <li>
+                                                                <a href="{{ doc.temoin2_client_cni_recto.url }}" target="_blank" class="document-link" title="CNI Recto">
+                                                                    <img src="{{ doc.temoin2_client_cni_recto.url }}" alt="CNI Recto">
+                                                                    <small class="doc-title">Recto</small>
+                                                                </a>
+                                                            </li>
+                                                        {% endif %}
+                                                        {% if doc.temoin2_client_cni_verso %}
+                                                            <li>
+                                                                <a href="{{ doc.temoin2_client_cni_verso.url }}" target="_blank" class="document-link" title="CNI Verso">
+                                                                    <img src="{{ doc.temoin2_client_cni_verso.url }}" alt="CNI Verso">
+                                                                    <small class="doc-title">Verso</small>
+                                                                </a>
+                                                            </li>
+                                                        {% endif %}
+                                                    </ul>
+                                                {% endif %}
+
+                                                {% if doc.nom_temoin3_proprietaire %}
+                                                    <strong>Témoin 3 (Propriétaire) : {{ doc.nom_temoin3_proprietaire }}</strong>
+                                                    <ul class="cni-list mb-3">
+                                                        {% if doc.temoin3_proprietaire_cni_recto %}
+                                                            <li>
+                                                                <a href="{{ doc.temoin3_proprietaire_cni_recto.url }}" target="_blank" class="document-link" title="CNI Recto">
+                                                                    <img src="{{ doc.temoin3_proprietaire_cni_recto.url }}" alt="CNI Recto">
+                                                                    <small class="doc-title">Recto</small>
+                                                                </a>
+                                                            </li>
+                                                        {% endif %}
+                                                        {% if doc.temoin3_proprietaire_cni_verso %}
+                                                            <li>
+                                                                <a href="{{ doc.temoin3_proprietaire_cni_verso.url }}" target="_blank" class="document-link" title="CNI Verso">
+                                                                    <img src="{{ doc.temoin3_proprietaire_cni_verso.url }}" alt="CNI Verso">
+                                                                    <small class="doc-title">Verso</small>
+                                                                </a>
+                                                            </li>
+                                                        {% endif %}
+                                                    </ul>
+                                                {% endif %}
+
+                                                {% if doc.nom_temoin3_client %}
+                                                    <strong>Témoin 3 (Client) : {{ doc.nom_temoin3_client }}</strong>
+                                                    <ul class="cni-list mb-3">
+                                                        {% if doc.temoin3_client_cni_recto %}
+                                                            <li>
+                                                                <a href="{{ doc.temoin3_client_cni_recto.url }}" target="_blank" class="document-link" title="CNI Recto">
+                                                                    <img src="{{ doc.temoin3_client_cni_recto.url }}" alt="CNI Recto">
+                                                                    <small class="doc-title">Recto</small>
+                                                                </a>
+                                                            </li>
+                                                        {% endif %}
+                                                        {% if doc.temoin3_client_cni_verso %}
+                                                            <li>
+                                                                <a href="{{ doc.temoin3_client_cni_verso.url }}" target="_blank" class="document-link" title="CNI Verso">
+                                                                    <img src="{{ doc.temoin3_client_cni_verso.url }}" alt="CNI Verso">
+                                                                    <small class="doc-title">Verso</small>
+                                                                </a>
+                                                            </li>
+                                                        {% endif %}
+                                                    </ul>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="validation-section">
+                                                <h5 class="text-success"><i class="fas fa-check-circle mr-2"></i> Action de validation</h5>
+                                                <form method="post" action="{% url 'valider_document' pk=doc.pk %}">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-success btn-lg">
+                                                        <i class="fas fa-check mr-2"></i>Valider ce document
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="alert alert-info text-center empty-state" role="alert">
+                        <h4 class="alert-heading text-primary"><i class="fas fa-folder-open fa-2x mb-3"></i></h4>
+                        <h4 class="alert-heading">Aucun document en attente de validation !</h4>
+                        <p>Les propriétaires doivent soumettre les documents pour finaliser les ventes.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <footer class="sticky-footer bg-white mt-5">
+            <div class="container my-auto">
+                <div class="text-center text-muted my-auto">
+                    <span>&copy; PROJET IMMOBILIER 2025</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+<script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+
+<script>
+    // Script pour faire pivoter l'icône de la flèche
+    $('.card-header-custom').on('click', function() {
+        $(this).find('i').toggleClass('fa-chevron-down fa-chevron-up');
+    });
+</script>
+</body>
+</html>

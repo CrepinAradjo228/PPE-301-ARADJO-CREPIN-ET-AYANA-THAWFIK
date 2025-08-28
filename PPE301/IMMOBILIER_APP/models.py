@@ -266,3 +266,56 @@ class RenouvelerLocation(models.Model):
     def __str__(self):
         return f"{self.nom_complet} - {self.bien.titre}"
 
+class DocumentsTransactionVente(models.Model):
+    """
+    Modèle pour stocker les documents et informations soumis par le propriétaire
+    lors de la finalisation d'une vente.
+    """
+    demande_bien = models.OneToOneField(DemandeBien, on_delete=models.CASCADE, related_name='documents_vente')
+    bien_vente = models.ForeignKey(Vendre, on_delete=models.CASCADE, related_name='documents_vente')
+    proprietaire = models.ForeignKey(Utilisateur, on_delete=models.CASCADE, related_name='documents_vente_proprietaire', default=None)
+    
+    # Champs pour les fichiers
+    recu_vente = models.FileField(upload_to='documents_vente/recus/', verbose_name="Reçu de vente")
+    copie_attestation_mandataire = models.FileField(upload_to='documents_vente/attestations/', verbose_name="Copie d'attestation du mandataire")
+    copie_attestations_heritage = models.FileField(upload_to='documents_vente/heritage/', verbose_name="Copie(s) d'attestation(s) de passation d'héritage")
+    nouveau_titre_foncier = models.FileField(upload_to='documents_vente/titres_fonciers/', verbose_name="Nouveau titre foncier (Optionnel)", blank=True, null=True)
+
+    # Champs pour les témoins
+    temoin1_proprietaire_cni_recto = models.ImageField(upload_to='documents_vente/temoins/cni_proprietaire/', verbose_name="CNI Recto du témoin (Propriétaire)")
+    temoin1_proprietaire_cni_verso = models.ImageField(upload_to='documents_vente/temoins/cni_proprietaire/', verbose_name="CNI Verso du témoin (Propriétaire)")
+    nom_temoin1_proprietaire = models.CharField(max_length=255, verbose_name="Nom et prénom du témoin (Propriétaire)")
+    
+    temoin1_client_cni_recto = models.ImageField(upload_to='documents_vente/temoins/cni_client/', verbose_name="CNI Recto du témoin (Client)")
+    temoin1_client_cni_verso = models.ImageField(upload_to='documents_vente/temoins/cni_client/', verbose_name="CNI Verso du témoin (Client)")
+    nom_temoin1_client = models.CharField(max_length=255, verbose_name="Nom et prénom du témoin (Client)")
+
+    temoin2_proprietaire_cni_recto = models.ImageField(upload_to='documents_vente/temoins/cni_proprietaire/', verbose_name="CNI Recto du deuxième témoin (Propriétaire)")
+    temoin2_proprietaire_cni_verso = models.ImageField(upload_to='documents_vente/temoins/cni_proprietaire/', verbose_name="CNI Verso du deuxième témoin (Propriétaire)")
+    nom_temoin2_proprietaire = models.CharField(max_length=255, verbose_name="Nom et prénom du deuxième témoin (Propriétaire)")
+
+    temoin2_client_cni_recto = models.ImageField(upload_to='documents_vente/temoins/cni_client/', verbose_name="CNI Recto du deuxième témoin (Client)")
+    temoin2_client_cni_verso = models.ImageField(upload_to='documents_vente/temoins/cni_client/', verbose_name="CNI Verso du deuxième témoin (Client)")
+    nom_temoin2_client = models.CharField(max_length=255, verbose_name="Nom et prénom du deuxième témoin (Client)")
+
+    temoin3_proprietaire_cni_recto = models.ImageField(upload_to='documents_vente/temoins/cni_proprietaire/', verbose_name="CNI Recto du troisième témoin (Propriétaire)")
+    temoin3_proprietaire_cni_verso = models.ImageField(upload_to='documents_vente/temoins/cni_proprietaire/', verbose_name="CNI Verso du troisième témoin (Propriétaire)")
+    nom_temoin3_proprietaire = models.CharField(max_length=255, verbose_name="Nom et prénom du troisième témoin (Propriétaire)")
+
+    temoin3_client_cni_recto = models.ImageField(upload_to='documents_vente/temoins/cni_client/', verbose_name="CNI Recto du troisième témoin (Client)")
+    temoin3_client_cni_verso = models.ImageField(upload_to='documents_vente/temoins/cni_client/', verbose_name="CNI Verso du troisième témoin (Client)")
+    nom_temoin3_client = models.CharField(max_length=255, verbose_name="Nom et prénom du troisième témoin (Client)")
+
+    date_soumission = models.DateTimeField(auto_now_add=True)
+    date_validation = models.DateTimeField(default=timezone.now)
+    valide_par_admin = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Documents pour la vente de {self.bien_vente.type_bien} à {self.bien_vente.localisation}"
+
+class AdminLogin(models.Model):
+    username = models.CharField(max_length=100)
+    password = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.username

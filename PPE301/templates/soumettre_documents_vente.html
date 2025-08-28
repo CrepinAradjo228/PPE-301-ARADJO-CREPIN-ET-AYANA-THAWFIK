@@ -1,0 +1,438 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soumission de documents | IWAMMO</title>
+
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/vente-style.css' %}" rel="stylesheet">
+    
+    <style>
+        .step {
+            display: none;
+        }
+        .step.active {
+            display: block;
+        }
+        .progress-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        .progress-indicator::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 4px;
+            background-color: #e0e0e0;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+        .progress-step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+            z-index: 2;
+            position: relative;
+            transition: background-color 0.3s ease;
+        }
+        .progress-step.active {
+            background-color: #4e73df;
+        }
+        .progress-step.completed {
+            background-color: #1cc88a;
+        }
+        .step-label {
+            position: absolute;
+            top: 45px;
+            font-size: 0.8rem;
+            color: #858796;
+            text-align: center;
+            width: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .form-card {
+            background-color: #f8f9fc;
+            border: 1px solid #e3e6f0;
+        }
+    </style>
+</head>
+
+<body id="page-top">
+
+<div id="wrapper">
+
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'dashboard' %}">
+            <div class="sidebar-brand-icon rotate-n-15">
+                <i class="fas fa-home"></i>
+            </div>
+            <div class="sidebar-brand-text mx-3">IWAMMO</div>
+        </a>
+
+        <hr class="sidebar-divider my-0">
+
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'dashboard' %}">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>Tableau de bord</span>
+            </a>
+        </li>
+
+        <hr class="sidebar-divider">
+
+        <div class="sidebar-heading">
+            Fonctionnalités
+        </div>
+
+        <li class="nav-item active">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseBiens"
+                aria-expanded="true" aria-controls="collapseBiens">
+                <i class="fas fa-fw fa-building"></i>
+                <span>Gestion des biens</span>
+            </a>
+            <div id="collapseBiens" class="collapse show" aria-labelledby="headingBiens" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Mes biens :</h6>
+                    <a class="collapse-item" href="{% url 'registerbien' %}">Enregistrer un bien</a>
+                    <a class="collapse-item" href="{% url 'listebien' proprietaire_id=proprietaire.id %}">Biens enregistrés</a>
+                    <a class="collapse-item" href="{% url 'bienpublies' %}">Biens publiés</a>
+                </div>
+            </div>
+        </li>
+         <li class="nav-item">
+                <a class="nav-link" href="{% url 'liste_demandes_proprietaire' %}">
+                    <i class="fas fa-fw fa-comments"></i>
+                    <span>Demandes des clients</span>
+                </a>
+            </li>
+
+        <hr class="sidebar-divider d-none d-md-block">
+
+        <div class="text-center d-none d-md-inline">
+            <button class="rounded-circle border-0" id="sidebarToggle"></button>
+        </div>
+
+    </ul>
+    <div id="content-wrapper" class="d-flex flex-column">
+
+        <div id="content">
+
+            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <ul class="navbar-nav ml-auto">
+                    <div class="topbar-divider d-none d-sm-block"></div>
+                    <li class="nav-item dropdown no-arrow">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="mr-2 d-none d-lg-inline text-gray-600 small">Bienvenue {{ proprietaire.nom }} {{ proprietaire.prenom }}</span>
+                            <img class="img-profile rounded-circle" src="{% static 'images/undraw_profile.svg' %}">
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Profil
+                            </a>
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Paramètres
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Déconnexion
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+            <div class="container-fluid">
+                <h1 class="h3 mb-4 text-gray-800 font-weight-bold text-center">Soumettre les documents pour la vente</h1>
+
+                <div class="progress-indicator mb-5">
+                    <div class="progress-step active" id="progress-1">
+                        1
+                        <div class="step-label">Documents de base</div>
+                    </div>
+                    <div class="progress-step" id="progress-2">
+                        2
+                        <div class="step-label">Témoins du bien</div>
+                    </div>
+                    <div class="progress-step" id="progress-3">
+                        3
+                        <div class="step-label">Témoins du client</div>
+                    </div>
+                    <div class="progress-step" id="progress-4">
+                        4
+                        <div class="step-label">Vérification</div>
+                    </div>
+                </div>
+
+                <div class="card shadow mb-4 p-4 form-card">
+                    
+                    {% if form.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <strong>Erreur(s) de formulaire :</strong>
+                            <ul>
+                                {% for field in form %}
+                                    {% if field.errors %}
+                                        <li><strong>{{ field.label }}</strong>: {{ field.errors|striptags }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if form.non_field_errors %}
+                                    <li>{{ form.non_field_errors|striptags }}</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    
+                    <form id="multi-step-form" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="step active" id="step-1">
+                            <h4 class="mb-4 text-primary">1. Documents de base de la transaction</h4>
+                            <div class="form-group mb-3">
+                                <label for="{{ form.recu_vente.id_for_label }}">Reçu de vente :</label>
+                                {{ form.recu_vente }}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="{{ form.copie_attestation_mandataire.id_for_label }}">Copie d'attestation du mandataire :</label>
+                                {{ form.copie_attestation_mandataire }}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="{{ form.copie_attestations_heritage.id_for_label }}">Copie(s) d'attestation(s) de passation d'héritage :</label>
+                                {{ form.copie_attestations_heritage }}
+                            </div>
+                            <div class="form-group mb-4">
+                                <label for="{{ form.nouveau_titre_foncier.id_for_label }}">Nouveau titre foncier (Optionnel) :</label>
+                                {{ form.nouveau_titre_foncier }}
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-primary btn-lg" onclick="nextStep()">
+                                    Suivant <i class="fas fa-arrow-right ml-2"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="step" id="step-2">
+                            <h4 class="mb-4 text-primary">2. Informations sur les témoins</h4>
+                            <h6 class="text-gray-600 font-weight-bold">Témoin 1 (Propriétaire)</h6>
+                            <div class="form-group mb-3">
+                                <label for="{{ form.nom_temoin1_proprietaire.id_for_label }}">Nom et prénom :</label>
+                                {{ form.nom_temoin1_proprietaire }}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="{{ form.temoin1_proprietaire_cni_recto.id_for_label }}">CNI Recto :</label>
+                                {{ form.temoin1_proprietaire_cni_recto }}
+                            </div>
+                            <div class="form-group mb-4">
+                                <label for="{{ form.temoin1_proprietaire_cni_verso.id_for_label }}">CNI Verso :</label>
+                                {{ form.temoin1_proprietaire_cni_verso }}
+                            </div>
+
+                            <h6 class="text-gray-600 font-weight-bold">Témoin 2 (Propriétaire)</h6>
+                            <div class="form-group mb-3">
+                                <label for="{{ form.nom_temoin2_proprietaire.id_for_label }}">Nom et prénom :</label>
+                                {{ form.nom_temoin2_proprietaire }}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="{{ form.temoin2_proprietaire_cni_recto.id_for_label }}">CNI Recto :</label>
+                                {{ form.temoin2_proprietaire_cni_recto }}
+                            </div>
+                            <div class="form-group mb-4">
+                                <label for="{{ form.temoin2_proprietaire_cni_verso.id_for_label }}">CNI Verso :</label>
+                                {{ form.temoin2_proprietaire_cni_verso }}
+                            </div>
+
+                            <h6 class="text-gray-600 font-weight-bold">Témoin 3 (Propriétaire)</h6>
+                            <div class="form-group mb-3">
+                                <label for="{{ form.nom_temoin3_proprietaire.id_for_label }}">Nom et prénom :</label>
+                                {{ form.nom_temoin3_proprietaire }}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="{{ form.temoin3_proprietaire_cni_recto.id_for_label }}">CNI Recto :</label>
+                                {{ form.temoin3_proprietaire_cni_recto }}
+                            </div>
+                            <div class="form-group mb-4">
+                                <label for="{{ form.temoin3_proprietaire_cni_verso.id_for_label }}">CNI Verso :</label>
+                                {{ form.temoin3_proprietaire_cni_verso }}
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <button type="button" class="btn btn-secondary" onclick="prevStep()">
+                                    <i class="fas fa-arrow-left mr-2"></i> Précédent
+                                </button>
+                                <button type="button" class="btn btn-primary btn-lg" onclick="nextStep()">
+                                    Suivant <i class="fas fa-arrow-right ml-2"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="step" id="step-3">
+                            <h4 class="mb-4 text-primary">3. Informations sur les témoins du client</h4>
+                            <h6 class="text-gray-600 font-weight-bold">Témoin 1 (Client)</h6>
+                            <div class="form-group mb-3">
+                                <label for="{{ form.nom_temoin1_client.id_for_label }}">Nom et prénom :</label>
+                                {{ form.nom_temoin1_client }}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="{{ form.temoin1_client_cni_recto.id_for_label }}">CNI Recto :</label>
+                                {{ form.temoin1_client_cni_recto }}
+                            </div>
+                            <div class="form-group mb-4">
+                                <label for="{{ form.temoin1_client_cni_verso.id_for_label }}">CNI Verso :</label>
+                                {{ form.temoin1_client_cni_verso }}
+                            </div>
+
+                            <h6 class="text-gray-600 font-weight-bold">Témoin 2 (Client)</h6>
+                            <div class="form-group mb-3">
+                                <label for="{{ form.nom_temoin2_client.id_for_label }}">Nom et prénom :</label>
+                                {{ form.nom_temoin2_client }}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="{{ form.temoin2_client_cni_recto.id_for_label }}">CNI Recto :</label>
+                                {{ form.temoin2_client_cni_recto }}
+                            </div>
+                            <div class="form-group mb-4">
+                                <label for="{{ form.temoin2_client_cni_verso.id_for_label }}">CNI Verso :</label>
+                                {{ form.temoin2_client_cni_verso }}
+                            </div>
+                            <h6 class="text-gray-600 font-weight-bold">Témoin 3 (Client)</h6>
+                            <div class="form-group mb-3">
+                                <label for="{{ form.nom_temoin3_client.id_for_label }}">Nom et prénom :</label>
+                                {{ form.nom_temoin3_client }}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="{{ form.temoin2_client_cni_recto.id_for_label }}">CNI Recto :</label>
+                                {{ form.temoin2_client_cni_recto }}
+                            </div>
+                            <div class="form-group mb-4">
+                                <label for="{{ form.temoin2_client_cni_verso.id_for_label }}">CNI Verso :</label>
+                                {{ form.temoin2_client_cni_verso }}
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <button type="button" class="btn btn-secondary" onclick="prevStep()">
+                                    <i class="fas fa-arrow-left mr-2"></i> Précédent
+                                </button>
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    Soumettre les documents <i class="fas fa-paper-plane ml-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="d-flex justify-content-end mt-4">
+                    <a href="{% url 'liste_demandes_proprietaire' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-times-circle mr-2"></i> Annuler la soumission
+                    </a>
+                </div>
+
+            </div>
+            </div>
+        <footer class="sticky-footer bg-white mt-5">
+            <div class="container my-auto">
+                <div class="copyright text-center my-auto">
+                    <span>Copyright &copy; IWAMMO 2025</span>
+                </div>
+            </div>
+        </footer>
+        </div>
+    </div>
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Prêt à partir?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">Sélectionnez "Déconnexion" ci-dessous si vous êtes prêt à terminer votre session en cours.</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Annuler</button>
+                <a class="btn btn-primary" href="#">Déconnexion</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+<script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+
+<script>
+    let currentStep = 1;
+    const steps = document.querySelectorAll('.step');
+    const progressSteps = document.querySelectorAll('.progress-step');
+
+    function showStep(stepNumber) {
+        steps.forEach((step, index) => {
+            step.classList.remove('active');
+            if (index + 1 < stepNumber) {
+                progressSteps[index].classList.add('completed');
+                progressSteps[index].innerHTML = '<i class="fas fa-check"></i>';
+            } else {
+                progressSteps[index].classList.remove('completed');
+                progressSteps[index].innerHTML = index + 1;
+            }
+        });
+        document.getElementById(`step-${stepNumber}`).classList.add('active');
+        document.getElementById(`progress-${stepNumber}`).classList.add('active');
+    }
+
+    function nextStep() {
+        if (currentStep < steps.length) {
+            currentStep++;
+            showStep(currentStep);
+        }
+    }
+
+    function prevStep() {
+        if (currentStep > 1) {
+            currentStep--;
+            showStep(currentStep);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        showStep(currentStep);
+    });
+</script>
+
+{% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+</body>
+</html>

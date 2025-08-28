@@ -3,139 +3,234 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Valider les biens</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin | Valider Publications</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    
     <link rel="stylesheet" href="{% static 'vendor/fontawesome-free/css/all.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/sb-admin-2.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <style>
+        /* Vos styles personnalisés ici */
+        .card-img-top {
+            height: 250px;
+            object-fit: cover;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+        }
+        .card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+        .sidebar-brand-icon {
+            animation: bounce-in 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+        }
+        @keyframes bounce-in {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+        .btn-success {
+            background-color: #1cc88a;
+            border-color: #1cc88a;
+        }
+        .btn-success:hover {
+            background-color: #17a673;
+            border-color: #17a673;
+        }
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding: 8px 0;
+        }
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #5a5c69;
+        }
+        .info-value {
+            color: #858796;
+            text-align: right;
+        }
+    </style>
 </head>
+
 <body id="page-top">
-<div id="wrapper">
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
-            <div class="sidebar-brand-icon rotate-n-15">
-                <i class="fas fa-laugh-wink"></i>
+    <div id="wrapper">
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'dashboard_admin' %}">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">IWAMMO Admin</div>
+            </a>
+            <hr class="sidebar-divider my-0">
+            
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'dashboard_admin' %}">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Tableau de bord</span>
+                </a>
+            </li>
+
+            <hr class="sidebar-divider">
+            <div class="sidebar-heading">Gestion des biens</div>
+
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'valider_publication' %}">
+                    <i class="fas fa-fw fa-check-circle"></i>
+                    <span>Valider les publications</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'liste_biens_valides' %}">
+                    <i class="fas fa-fw fa-list"></i>
+                    <span>Biens validés</span>
+                </a>
+            </li>
+
+            <hr class="sidebar-divider">
+            <div class="sidebar-heading">Gestion des documents</div>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'liste_documents_a_valider' %}">
+                    <i class="fas fa-fw fa-file-invoice"></i>
+                    <span>Valider les documents</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'liste_documents_valides' %}">
+                    <i class="fas fa-fw fa-file-alt"></i>
+                    <span>Documents validés</span>
+                </a>
+            </li>
+            <hr class="sidebar-divider">
+            <div class="sidebar-heading">
+                Rapports & Statistiques
             </div>
-            <div class="sidebar-brand-text mx-3">Admin</div>
-        </a>
-
-        <hr class="sidebar-divider my-0">
-
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'valider_publication' %}"> {# Corrigé pour correspondre au nom d'URL actuel #}
-                <i class="fas fa-fw fa-check-circle"></i>
-                <span>Valider bien</span></a>
-        </li>
-
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'liste_biens_valides' %}">
-                <i class="fas fa-fw fa-list"></i>
-                <span>Liste de biens validés</span></a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'liste_transactions' %}">
-                <i class="fas fa-fw fa-list"></i>
-                <span>Historique des transactions</span></a>
-        </li>
-
-        <hr class="sidebar-divider d-none d-md-block">
-    </ul>
-    <div id="content-wrapper" class="d-flex flex-column">
-        <div id="content">
-            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                    <i class="fa fa-bars"></i>
-                </button>
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item dropdown no-arrow">
-                        <a class="nav-link dropdown-toggle" href="#">
-                            <span class="mr-2 d-none d-lg-inline text-gray-600 small">Bienvenue Admin</span>
-                            <img class="img-profile rounded-circle" src="{% static 'images/undraw_profile.svg' %}">
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-            <div class="container-fluid p-4">
-                <h2 class="mb-4 text-center">Biens en attente de validation</h2>
-                
-                {# --- Section pour les biens à VENDRE en attente --- #}
-                <h3 class="mt-4 mb-3">Biens à vendre en attente</h3>
-                <div class="row">
-                    {% for bien_vente in publications_vente %} {# Itérer sur la liste des Ventes #}
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card shadow">
-                            <img src="{{ bien_vente.image_principale.url }}" class="card-img-top" alt="Image principale">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ bien_vente.type_bien }} (Vente)</h5>
-                                <p class="card-text">
-                                    <strong>ID:</strong> {{ bien_vente.id }}<br>
-                                    <strong>Prix:</strong> {{ bien_vente.prix_vente }} FCFA<br>
-                                    <strong>Superficie:</strong> {{ bien_vente.superficie }} m²<br>
-                                    <strong>Localisation:</strong> {{ bien_vente.localisation }}<br>
-                                    <strong>État du bien:</strong> {{ bien_vente.etat_bien }}<br>
-                                    <strong>Propriétaire:</strong> {{ bien_vente.proprietaire.nom }} {{ bien_vente.proprietaire.prenom }}<br>
-                                    {# Affichage du titre foncier, s'il existe #}
-                                    {% if bien_vente.titre_foncier %}
-                                        <strong>Titre foncier:</strong><br>
-                                        <img src="{{ bien_vente.titre_foncier.url }}" alt="Titre foncier" class="img-fluid" style="max-width: 100px; height: auto;"><br>
-                                        Numéro: {{ bien_vente.numero_titre_foncier }}
-                                    {% else %}
-                                        <strong>Titre foncier:</strong> Non fourni
-                                    {% endif %}
-                                </p>
-                                {# Lien de validation pour une VENTE, AVEC le type et l'ID #}
-                                <a href="{% url 'confirmer_validation' 'vente' bien_vente.id %}" class="btn btn-success w-100 mb-2">Valider la Publication</a>
-                                {# Optionnel: Bouton de refus #}
-                                <a href="#" class="btn btn-danger w-100">Refuser la publication</a>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'liste_transactions' %}">
+                    <i class="fas fa-fw fa-money-bill-wave"></i>
+                    <span>Historique des transactions</span>
+                </a>
+            </li>
+        </ul>
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Bienvenue Admin</span>
+                                <img class="img-profile rounded-circle" src="{% static 'images/undraw_profile.svg' %}">
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="container-fluid p-4">
+                    <h2 class="mb-4 text-center text-primary font-weight-bold">Publications en attente de validation</h2>
+                    <p class="text-center text-muted mb-5">
+                        Examinez les détails de chaque bien avant de le valider pour publication.
+                    </p>
+                    
+                    <h3 class="mt-4 mb-3 text-dark">Biens à vendre</h3>
+                    <div class="row">
+                        {% for bien_vente in publications_vente %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card shadow border-left-success">
+                                <a href="{{ bien_vente.image_principale.url }}" target="_blank">
+                                    <img src="{{ bien_vente.image_principale.url }}" class="card-img-top" alt="Image principale">
+                                </a>
+                                <div class="card-body">
+                                    <h5 class="card-title font-weight-bold text-success">{{ bien_vente.type_bien|title }} (Vente)</h5>
+                                    <hr>
+                                    <ul class="list-unstyled">
+                                        <li class="info-item"><span class="info-label">ID:</span> <span class="info-value">{{ bien_vente.id }}</span></li>
+                                        <li class="info-item"><span class="info-label">Prix:</span> <span class="info-value">{{ bien_vente.prix_vente }} FCFA</span></li>
+                                        <li class="info-item"><span class="info-label">Superficie:</span> <span class="info-value">{{ bien_vente.superficie }} m²</span></li>
+                                        <li class="info-item"><span class="info-label">Localisation:</span> <span class="info-value">{{ bien_vente.localisation }}</span></li>
+                                        <li class="info-item"><span class="info-label">État:</span> <span class="info-value">{{ bien_vente.etat_bien }}</span></li>
+                                        <li class="info-item"><span class="info-label">Propriétaire:</span> <span class="info-value">{{ bien_vente.proprietaire.nom }} {{ bien_vente.proprietaire.prenom }}</span></li>
+                                        <li class="info-item"><span class="info-label">Titre foncier:</span> {% if bien_vente.titre_foncier %}<a href="{{ bien_vente.titre_foncier.url }}" target="_blank" class="info-value">Voir</a>{% else %}<span class="info-value">Non fourni</span>{% endif %}</li>
+                                    </ul>
+                                    <div class="mt-4 d-flex justify-content-between">
+                                        <a href="{% url 'confirmer_validation' 'vente' bien_vente.id %}" class="btn btn-success flex-grow-1 mr-2">Valider</a>
+                                        <a href="#" class="btn btn-danger flex-grow-1 ml-2">Refuser</a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                        {% empty %}
+                        <div class="col-12 text-center my-5">
+                            <i class="fas fa-box-open fa-4x text-gray-400 mb-3"></i>
+                            <p class="text-muted h4">Aucune vente en attente.</p>
+                        </div>
+                        {% endfor %}
                     </div>
-                    {% empty %}
-                    <div class="col-12 text-center">
-                        <p class="text-muted">Aucune vente en attente.</p>
-                    </div>
-                    {% endfor %}
-                </div>
-
-                {# --- Section pour les biens à LOUER en attente --- #}
-                <h3 class="mt-5 mb-3">Biens à louer en attente</h3>
-                <div class="row">
-                    {% for bien_location in publications_location %} {# Itérer sur la liste des Locations #}
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card shadow">
-                            <img src="{{ bien_location.image_principale.url }}" class="card-img-top" alt="Image principale">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ bien_location.type_bien }} (Location)</h5>
-                                <p class="card-text">
-                                    <strong>ID:</strong> {{ bien_location.id }}<br>
-                                    <strong>Loyer mensuel:</strong> {{ bien_location.loyer_mensuel }} FCFA<br>
-                                    <strong>Durée de location:</strong> {{ bien_location.durée_location }} Mois minimum<br>
-                                    <strong>Avance:</strong> {{ bien_location.avance }}<br>
-                                    <strong>Localisation:</strong> {{ bien_location.localisation }}<br>
-                                    <strong>Propriétaire:</strong> {{ bien_location.proprietaire.nom }} {{ bien_location.proprietaire.prenom }}<br>
-                                    {# Les biens à louer n'ont pas forcément de titre foncier selon votre modèle Louer, ajustez si besoin #}
-                                </p>
-                                {# Lien de validation pour une LOCATION, AVEC le type et l'ID #}
-                                <a href="{% url 'confirmer_validation' 'location' bien_location.id %}" class="btn btn-success w-100 mb-2">Valider la Location</a>
-                                {# Optionnel: Bouton de refus #}
-                                <a href="#" class="btn btn-danger w-100">Refuser la Location</a>
+                    
+                    <hr>
+                    
+                    <h3 class="mt-5 mb-3 text-dark">Biens à louer</h3>
+                    <div class="row">
+                        {% for bien_location in publications_location %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card shadow border-left-primary">
+                                <a href="{{ bien_location.image_principale.url }}" target="_blank">
+                                    <img src="{{ bien_location.image_principale.url }}" class="card-img-top" alt="Image principale">
+                                </a>
+                                <div class="card-body">
+                                    <h5 class="card-title font-weight-bold text-primary">{{ bien_location.type_bien|title }} (Location)</h5>
+                                    <hr>
+                                    <ul class="list-unstyled">
+                                        <li class="info-item"><span class="info-label">ID:</span> <span class="info-value">{{ bien_location.id }}</span></li>
+                                        <li class="info-item"><span class="info-label">Loyer mensuel:</span> <span class="info-value">{{ bien_location.loyer_mensuel }} FCFA</span></li>
+                                        <li class="info-item"><span class="info-label">Durée de location:</span> <span class="info-value">{{ bien_location.durée_location }} Mois</span></li>
+                                        <li class="info-item"><span class="info-label">Avance:</span> <span class="info-value">{{ bien_location.avance }}</span></li>
+                                        <li class="info-item"><span class="info-label">Localisation:</span> <span class="info-value">{{ bien_location.localisation }}</span></li>
+                                        <li class="info-item"><span class="info-label">Propriétaire:</span> <span class="info-value">{{ bien_location.proprietaire.nom }} {{ bien_location.proprietaire.prenom }}</span></li>
+                                    </ul>
+                                    <div class="mt-4 d-flex justify-content-between">
+                                        <a href="{% url 'confirmer_validation' 'location' bien_location.id %}" class="btn btn-success flex-grow-1 mr-2">Valider</a>
+                                        <a href="#" class="btn btn-danger flex-grow-1 ml-2">Refuser</a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                        {% empty %}
+                        <div class="col-12 text-center my-5">
+                            <i class="fas fa-box-open fa-4x text-gray-400 mb-3"></i>
+                            <p class="text-muted h4">Aucune location en attente.</p>
+                        </div>
+                        {% endfor %}
                     </div>
-                    {% empty %}
-                    <div class="col-12 text-center">
-                        <p class="text-muted">Aucune location en attente de validation.</p>
-                    </div>
-                    {% endfor %}
                 </div>
-
+                </div>
+            <footer class="sticky-footer bg-white mt-5">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; IWAMMO 2025</span>
+                    </div>
+                </div>
+            </footer>
             </div>
-        </div>
     </div>
-</div>
-<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
-<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
-<script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+    <script src="{% static 'js/sb-admin-2.min.js' %}"></script>
 </body>
 </html>

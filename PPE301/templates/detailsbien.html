@@ -1,308 +1,282 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="author" content="Untree.co" />
-    <link rel="shortcut icon" href="favicon.png" />
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="PROJETDJANGO" />
+  <link rel="shortcut icon" href="{% static 'favicon.png' %}" />
 
-    <meta name="description" content="" />
-    <meta name="keywords" content="bootstrap, bootstrap5" />
+  <meta name="description" content="Détails du bien : {{ bien.type_bien }} à {{ bien.localisation }}" />
+  <meta name="keywords" content="immobilier, maison, appartement, terrain, vente, location, Lomé, {{ bien.type_bien }}" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-    <link rel="stylesheet" href="{% static 'fonts/icomoon/style.css' %}" />
-    <link rel="stylesheet" href=" {% static 'fonts/flaticon/font/flaticon.css' %}" />
+  <link rel="stylesheet" href="{% static 'fonts/icomoon/style.css' %}" />
+  <link rel="stylesheet" href="{% static 'fonts/flaticon/font/flaticon.css' %}" />
 
-    <link rel="stylesheet" href="{% static 'css/tiny-slider.css' %}" />
-    <link rel="stylesheet" href="{% static 'css/aos.css' %}" />
-    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/tiny-slider.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/aos.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
 
-    <title>
-      Détails du bien - {{ bien.type_bien }} à {{ bien.localisation }}
-    </title>
-  </head>
-  <body>
-    <div class="site-mobile-menu site-navbar-target">
-      <div class="site-mobile-menu-header">
-        <div class="site-mobile-menu-close">
-          <span class="icofont-close js-menu-toggle"></span>
-        </div>
+  <title>Détails du bien - {{ bien.type_bien }} à {{ bien.localisation }}</title>
+</head>
+<body>
+  <div class="site-mobile-menu site-navbar-target">
+    <div class="site-mobile-menu-header">
+      <div class="site-mobile-menu-close">
+        <span class="icofont-close js-menu-toggle"></span>
       </div>
-      <div class="site-mobile-menu-body"></div>
     </div>
+    <div class="site-mobile-menu-body"></div>
+  </div>
 
-    <nav class="site-nav">
-      <div class="container">
-        <div class="menu-bg-wrap">
-          <div class="site-navigation">
-            <a href="{% url 'home' %}" class="logo m-0 float-start">Property</a>
-
-            <ul
-              class="js-clone-nav d-none d-lg-inline-block text-start site-menu float-end"
-            >
-              <li><a href="{% url 'home' %}">Home</a></li>
-              <li class="has-children active">
-                <a href="{% url 'property' %}">Properties</a>
-                <ul class="dropdown">
-                  <li><a href="#">Buy Property</a></li>
-                  <li><a href="#">Sell Property</a></li>
-                  <li class="has-children">
-                    <a href="#">Dropdown</a>
-                    <ul class="dropdown">
-                      <li><a href="#">Sub Menu One</a></li>
-                      <li><a href="#">Sub Menu Two</a></li>
-                      <li><a href="#">Sub Menu Three</a></li>
-                    </ul>
-                  </li>
-                </ul>
-              </li>
-              <li><a href="{% url 'service' %}">Services</a></li>
-              <li><a href="#">About</a></li>
-              <li><a href="{% url 'contact' %}">Contact Us</a></li>
-            </ul>
-
-            <a
-              href="#"
-              class="burger light me-auto float-end mt-1 site-menu-toggle js-menu-toggle d-inline-block d-lg-none"
-              data-toggle="collapse"
-              data-target="#main-navbar"
-            >
-              <span></span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </nav>
-
-    <div
-      class="hero page-inner overlay"
-      style="background-image: url('{% if bien.image_principale %}{{ bien.image_principale.url }}{% else %}(static/images/hero_bg_1.jpg){% endif %}')"
-    ></div>
-      <div class="container">
-    <div class="row justify-content-center align-items-center">
-          <div class="col-lg-9 text-center mt-5">
-            <h1 class="heading" data-aos="fade-up">Détails du bien : {{ bien.type_bien }}</h1>
-            <nav
-              aria-label="breadcrumb"
-              data-aos="fade-up"
-              data-aos-delay="200"
-            >
-              <ol class="breadcrumb text-center justify-content-center">
-                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-                <li class="breadcrumb-item"><a href="{% url 'property' %}">Properties</a></li>
-                <li
-                  class="breadcrumb-item active text-white-50"
-                  aria-current="page"
-                >
-                  Détails
-                </li>
-              </ol>
-            </nav>
-          </div>
+  <nav class="site-nav">
+    <div class="container">
+      <div class="menu-bg-wrap">
+        <div class="site-navigation">
+          <a href="{% url 'home' %}" class="logo m-0 float-start">IWAMMO</a>
+          <ul class="js-clone-nav d-none d-lg-inline-block text-start site-menu float-end">
+            <li><a href="{% url 'home' %}">Accueil</a></li>
+            <li class="active"><a href="{% url 'property' %}">Propriétés</a></li>
+            <li><a href="{% url 'contact' %}">Contact</a></li>
+          </ul>
+          <a href="#" class="burger light me-auto float-end mt-1 site-menu-toggle js-menu-toggle d-inline-block d-lg-none" data-toggle="collapse" data-target="#main-navbar">
+            <span></span>
+          </a>
         </div>
       </div>
     </div>
+  </nav>
 
-    <div class="section">
-      <div class="container">
-        <div class="row justify-content-between">
-          <div class="col-lg-7">
-            <div class="img-property-details mb-4">
-              {% if bien.image_principale %}
-                  <img src="{{ bien.image_principale.url }}" alt="Image principale du bien" class="img-fluid">
-              {% else %}
-                  <img src="{% static 'images/default.jpg' %}" alt="Image par défaut" class="img-fluid">
+  <div class="hero page-inner overlay" style="background-image: url('{% if bien.image_principale %}{{ bien.image_principale.url }}{% endif %}')">
+    <div class="container">
+      <div class="row justify-content-center align-items-center">
+        <div class="col-lg-9 text-center mt-5">
+          <h1 class="heading" data-aos="fade-up">Détails du bien</h1>
+          <nav aria-label="breadcrumb" data-aos="fade-up" data-aos-delay="200">
+            <ol class="breadcrumb text-center justify-content-center">
+              <li class="breadcrumb-item"><a href="{% url 'home' %}">Accueil</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'property' %}">Propriétés</a></li>
+              <li class="breadcrumb-item active text-white-50" aria-current="page">Détails</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section pt-4 pt-md-5">
+    <div class="container">
+      {% if bien %}
+      <div class="row gx-lg-5">
+        <div class="col-lg-8">
+          <div class="property-details-header mb-4">
+            <h2 class="mb-1 text-primary">{{ bien.type_bien }}</h2>
+            <p class="text-muted"><i class="icon-map-marker me-2"></i>{{ bien.localisation }}</p>
+            <div class="d-flex align-items-center mb-4">
+              {% if bien.prix_vente %}
+                <span class="badge bg-primary text-white fs-5 me-3">À Vendre</span>
+                <h3 class="price m-0">{{ bien.prix_vente }} FCFA</h3>
+              {% elif bien.loyer_mensuel %}
+                <span class="badge bg-success text-white fs-5 me-3">À Louer</span>
+                <h3 class="price m-0">{{ bien.loyer_mensuel }} FCFA / mois</h3>
               {% endif %}
             </div>
-            <h2 class="mb-3 text-primary">{{ bien.type_bien }} à {{ bien.localisation }}</h2>
-            <p class="text-black-50 mb-4">{{ bien.description|linebreaksbr }}</p>
-
-            <div class="d-flex align-items-center mb-4">
-                {% if bien.prix_vente %}
-                    <span class="badge bg-primary fs-5 me-3">En Vente</span>
-                    <h3 class="price m-0">{{ bien.prix_vente }} FCFA</h3>
-                {% elif bien.loyer_mensuel %}
-                    <span class="badge bg-success fs-5 me-3">En Location</span>
-                    <h3 class="price m-0">{{ bien.loyer_mensuel }} FCFA / mois</h3>
-                {% endif %}
+          </div>
+          
+          <div class="property-image-gallery mb-4">
+            {% if bien.image_principale %}
+            <div class="main-image mb-3 rounded-3 overflow-hidden">
+                <img src="{{ bien.image_principale.url }}" alt="Image principale du bien" class="img-fluid w-100">
             </div>
-
-            <div class="row mb-4">
+            {% endif %}
+            {% if bien.image_2 or bien.image_3 or bien.image_4 %}
+            <div class="row row-cols-md-3 g-2 mt-3">
+              {% if bien.image_2 %}
+              <div class="col">
+                <img src="{{ bien.image_2.url }}" alt="Image secondaire 1" class="img-fluid rounded-3 property-thumbnail">
+              </div>
+              {% endif %}
+              {% if bien.image_3 %}
+              <div class="col">
+                <img src="{{ bien.image_3.url }}" alt="Image secondaire 2" class="img-fluid rounded-3 property-thumbnail">
+              </div>
+              {% endif %}
+              {% if bien.image_4 %}
+              <div class="col">
+                <img src="{{ bien.image_4.url }}" alt="Image secondaire 3" class="img-fluid rounded-3 property-thumbnail">
+              </div>
+              {% endif %}
+            </div>
+            {% endif %}
+          </div>
+          
+          <div class="property-details-body mb-5">
+            <h4 class="mb-3 text-secondary">Description du bien</h4>
+            <p class="text-black-50">{{ bien.description|linebreaksbr }}</p>
+            
+            <h4 class="mb-3 mt-4 text-secondary">Caractéristiques principales</h4>
+            <div class="row">
                 <div class="col-md-6">
                     <ul class="list-unstyled ul-check primary">
                         {% if bien.superficie %}
-                            <li>Superficie: {{ bien.superficie }} m²</li>
+                            <li>Superficie : <span class="fw-bold">{{ bien.superficie }} m²</span></li>
                         {% endif %}
                         {% if bien.etat %}
-                            <li>État: {{ bien.etat }}</li>
+                            <li>État : <span class="fw-bold">{{ bien.etat }}</span></li>
+                        {% endif %}
+                        {% if bien.chambres %}
+                            <li>Chambres : <span class="fw-bold">{{ bien.chambres }}</span></li>
+                        {% endif %}
+                        {% if bien.salle_de_bain %}
+                            <li>Salles de bain : <span class="fw-bold">{{ bien.salle_de_bain }}</span></li>
                         {% endif %}
                     </ul>
                 </div>
                 <div class="col-md-6">
                     <ul class="list-unstyled ul-check primary">
-                        {% if bien.loyer_mensuel %} {# Specific to Louer model #}
-                            <li>Durée minimum de location: {{ bien.durée_location }} mois</li>
-                            <li>Avance/Caution: {{ bien.avance }} FCFA</li>
+                        {% if bien.loyer_mensuel %}
+                            <li>Durée de location min. : <span class="fw-bold">{{ bien.durée_location }} mois</span></li>
+                            <li>Avance / Caution : <span class="fw-bold">{{ bien.avance }} FCFA</span></li>
+                        {% endif %}
+                        {% if bien.garage %}
+                            <li>Garage : <span class="fw-bold">{% if bien.garage %}Oui{% else %}Non{% endif %}</span></li>
                         {% endif %}
                     </ul>
                 </div>
-          </div> {# Ceci ferme une div précédente. Assurez-vous que le contexte HTML est correct. #}
-
-    {% if bien.prix_vente %}
-    <a href="{% url 'creer_demande_bien' type_bien='vendre' bien_id=bien.pk %}" class="btn btn-success py-3 px-5 mt-4">
-        Je suis intéressé par l'achat
-    </a>
-{% elif bien.loyer_mensuel %}
-    {% if bien.statut == 'loue' and transaction and transaction.date_fin_location %}
-        <div class="alert alert-warning mt-3">
-            <strong>Ce bien est actuellement loué.</strong><br>
-            Disponible à nouveau après le {{ transaction.date_fin_location|date:"d F Y" }}.
+            </div>
+          </div>
         </div>
-        <!--<button class="btn btn-secondary py-3 px-5 mt-2" disabled>
-            Je suis intéressé par la location
-        </button> -->
         
-    {% else %}
-        <a href="{% url 'creer_demande_bien' type_bien='louer' bien_id=bien.pk %}" class="btn btn-success py-3 px-5 mt-4">
-            Je suis intéressé par la location
-        </a>
-    {% endif %}
-{% endif %}
+        <div class="col-lg-4">
+          <div class="p-4 rounded-3 sidebar-info-box shadow-sm mb-4">
+            <h4 class="mb-3 text-primary">Informations et contact</h4>
+            <div class="owner-info mb-4">
+              <p><strong>Nom du Propriétaire :</strong> {{ bien.proprietaire.nom }} {{ bien.proprietaire.prenom }}</p>
+              <p><strong>Email :</strong> {{ bien.proprietaire.email }}</p>
+              <p><strong>Téléphone :</strong> {{ bien.proprietaire.numero }}</p>
+            </div>
+            <a href="https://wa.me/{{ bien.proprietaire.numero }}/?text=Bonjour,%20je%20suis%20int%C3%A9ress%C3%A9%20par%20le%20bien%20%C3%A0%20{{ bien.localisation }}.%20Puis-je%20avoir%20plus%20d'informations%20%3F" class="btn btn-outline-success w-100 mb-3" target="_blank">
+              <i class="icon-whatsapp me-2"></i>Contacter le propriétaire
+            </a>
+            
+            {% if bien.prix_vente %}
+              <a href="{% url 'creer_demande_bien' type_bien='vendre' bien_id=bien.pk %}" class="btn btn-primary w-100">Je suis intéressé par l'achat</a>
+            {% elif bien.loyer_mensuel %}
+              {% if bien.statut == 'loue' %}
+                <div class="alert alert-warning text-center mt-3" role="alert">
+                  <strong>Ce bien est actuellement loué.</strong>
+                  <p class="mb-0">Disponible après le {{ transaction.date_fin_location|default:"date inconnue"|date:"d F Y" }}.</p>
+                </div>
+              {% else %}
+                <a href="{% url 'creer_demande_bien' type_bien='louer' bien_id=bien.pk %}" class="btn btn-primary w-100">Je suis intéressé par la location</a>
+              {% endif %}
+            {% endif %}
 
-{% if bien.statut == 'loue' and bien.date_fin_location and bien.date_fin_location > today %}
-    <a href="{% url 'renouveler_location' bien.id %}" class="btn btn-primary">
-        Renouveler ma location
-    </a>
-{% endif %}
-
-{# Message pour la connexion, avec styles CSS directement sur le lien #}
-<p class="mt-4 text-muted">
-    Veuillez 
-    <a href="{% url 'connexion' %}" style="color: white; background-color: #007bff; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 0.9em;">vous connecter</a> 
-    pour exprimer votre intérêt.
-</p>
-
-</div> {# Ceci ferme une autre div. Assurez-vous que le contexte HTML est correct. #}
-          <div class="col-lg-4">
-            <div class="bg-light p-4 rounded mb-4">
-              <h4 class="mb-3">Informations sur le Propriétaire</h4>
-              <p><strong>Nom:</strong> {{ bien.proprietaire.nom }} {{ bien.proprietaire.prenom }}</p>
-              <p><strong>Email:</strong> {{ bien.proprietaire.email }}</p>
-              <p><strong>Téléphone:</strong> {{ bien.proprietaire.numero }}</p> {# Assurez-vous que votre modèle Utilisateur a un champ 'telephone' #}
-              <a href="https://wa.me/{{ bien.proprietaire.numero }}/?text=Bonjour,%20j'aimerais%20avoir%20plus%20d'informations%20sur%20le%20bien" class="btn btn-outline-primary btn-sm mt-3">Contacter le proprietaire</a>
-            </div>
-
-            </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="site-footer">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-4">
-            <div class="widget">
-              <h3>Contact</h3>
-              <address>43 Raymouth Rd. Baltemoer, London 3910</address>
-              <ul class="list-unstyled links">
-                <li><a href="tel://11234567890">+1(123)-456-7890</a></li>
-                <li><a href="tel://11234567890">+1(123)-456-7890</a></li>
-                <li>
-                  <a href="mailto:info@mydomain.com">info@mydomain.com</a>
-                </li>
-              </ul>
-            </div>
-            </div>
-          <div class="col-lg-4">
-            <div class="widget">
-              <h3>Sources</h3>
-              <ul class="list-unstyled float-start links">
-                <li><a href="#">About us</a></li>
-                <li><a href="#">Services</a></li>
-                <li><a href="#">Vision</a></li>
-                <li><a href="#">Mission</a></li>
-                <li><a href="#">Terms</a></li>
-                <li><a href="#">Privacy</a></li>
-              </ul>
-              <ul class="list-unstyled float-start links">
-                <li><a href="#">Partners</a></li>
-                <li><a href="#">Business</a></li>
-                <li><a href="#">Careers</a></li>
-                <li><a href="#">Blog</a></li>
-                <li><a href="#">FAQ</a></li>
-                <li><a href="#">Creative</a></li>
-              </ul>
-            </div>
-            </div>
-          <div class="col-lg-4">
-            <div class="widget">
-              <h3>Links</h3>
-              <ul class="list-unstyled links">
-                <li><a href="#">Our Vision</a></li>
-                <li><a href="#">About us</a></li>
-                <li><a href="#">Contact us</a></li>
-              </ul>
-
-              <ul class="list-unstyled social">
-                <li>
-                  <a href="#"><span class="icon-instagram"></span></a>
-                </li>
-                <li>
-                  <a href="#"><span class="icon-twitter"></span></a>
-                </li>
-                <li>
-                  <a href="#"><span class="icon-facebook"></span></a>
-                </li>
-                <li>
-                  <a href="#"><span class="icon-linkedin"></span></a>
-                </li>
-                <li>
-                  <a href="#"><span class="icon-pinterest"></span></a>
-                </li>
-                <li>
-                  <a href="#"><span class="icon-dribbble"></span></a>
-                </li>
-              </ul>
-            </div>
-            </div>
-          </div>
-        <div class="row mt-5">
-          <div class="col-12 text-center">
-            <p>
-              Copyright &copy;
-              <script>
-                document.write(new Date().getFullYear());
-              </script>
-              . All Rights Reserved. &mdash; Designed with love by
-              <a href="https://untree.co">Untree.co</a>
+            {% if not user.is_authenticated %}
+            <p class="mt-4 text-center">
+              <a href="{% url 'connexion' %}" class="btn btn-secondary w-100">Connectez-vous pour continuer</a>
             </p>
-            <div>
-              Distributed by
-              <a href="https://themewagon.com/" target="_blank">themewagon</a>
-            </div>
+            {% endif %}
+          </div>
+          {% if bien.prix_vente %}
+          <div class="p-4 rounded-3 bg-light shadow-sm">
+            <h4 class="mb-3 text-primary">Informations importantes</h4>
+            <p class="text-muted">Pour ce bien en vente, une rencontre avec le propriétaire sera organisée pour finaliser la transaction.</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% else %}
+      <div class="row">
+        <div class="col-12 text-center">
+          <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">Bien non trouvé !</h4>
+            <p>Le bien que vous recherchez n'existe pas ou n'est plus disponible.</p>
+            <hr>
+            <p class="mb-0">Veuillez retourner à la liste des <a href="{% url 'property' %}" class="alert-link">propriétés</a>.</p>
           </div>
         </div>
       </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="site-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4">
+          <div class="widget">
+            <h3>Contact</h3>
+            <address>43 Raymouth Rd. Baltemoer, London 3910</address>
+            <ul class="list-unstyled links">
+              <li><a href="tel://11234567890">+1(123)-456-7890</a></li>
+              <li><a href="tel://11234567890">+1(123)-456-7890</a></li>
+              <li><a href="mailto:info@mydomain.com">info@mydomain.com</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="widget">
+            <h3>Sources</h3>
+            <ul class="list-unstyled float-start links">
+              <li><a href="#">À propos de nous</a></li>
+              <li><a href="#">Services</a></li>
+              <li><a href="#">Vision</a></li>
+              <li><a href="#">Mission</a></li>
+              <li><a href="#">Termes</a></li>
+              <li><a href="#">Confidentialité</a></li>
+            </ul>
+            <ul class="list-unstyled float-start links">
+              <li><a href="#">Partenaires</a></li>
+              <li><a href="#">Carrières</a></li>
+              <li><a href="#">Blog</a></li>
+              <li><a href="#">FAQ</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="widget">
+            <h3>Liens</h3>
+            <ul class="list-unstyled links">
+              <li><a href="#">Notre Vision</a></li>
+              <li><a href="#">À propos de nous</a></li>
+              <li><a href="#">Contactez-nous</a></li>
+            </ul>
+            <ul class="list-unstyled social">
+              <li><a href="#"><span class="icon-instagram"></span></a></li>
+              <li><a href="#"><span class="icon-twitter"></span></a></li>
+              <li><a href="#"><span class="icon-facebook"></span></a></li>
+              <li><a href="#"><span class="icon-linkedin"></span></a></li>
+            </ul>
+          </div>
+        </div>
       </div>
-    <div id="overlayer"></div>
-    <div class="loader">
-      <div class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
+      <div class="row mt-5">
+        <div class="col-12 text-center">
+          <p>
+            Copyright &copy; IWAMMO <script>document.write(new Date().getFullYear());</script>. Tous droits réservés.
+          </p>
+        </div>
       </div>
     </div>
+  </div>
 
-    <script src=" {% static 'js/bootstrap.bundle.min.js'%}"></script>
-    <script src="{% static 'js/tiny-slider.js'%}"></script>
-    <script src="{% static 'js/aos.js' %}"></script>
-    <script src="{% static 'js/navbar.js' %}"></script>
-    <script src="{% static 'js/counter.js' %}"></script>
-    <script src="{% static 'js/custom.js' %}"></script>
-  </body>
+  <div id="overlayer"></div>
+  <div class="loader">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <script src="{% static 'js/bootstrap.bundle.min.js'%}"></script>
+  <script src="{% static 'js/tiny-slider.js'%}"></script>
+  <script src="{% static 'js/aos.js' %}"></script>
+  <script src="{% static 'js/navbar.js' %}"></script>
+  <script src="{% static 'js/counter.js' %}"></script>
+  <script src="{% static 'js/custom.js' %}"></script>
+</body>
 </html>

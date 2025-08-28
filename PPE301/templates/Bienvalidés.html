@@ -3,128 +3,246 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Biens validés</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biens validés | IWAMMO</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    
     <link rel="stylesheet" href="{% static 'vendor/fontawesome-free/css/all.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/sb-admin-2.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <style>
+        .card-img-top {
+            height: 200px; /* Taille réduite */
+            object-fit: cover;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+            transition: transform 0.3s ease-in-out;
+        }
+        .card-img-top:hover {
+            transform: scale(1.05);
+        }
+        .card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            cursor: pointer;
+            border-radius: 0.5rem; /* Coins arrondis pour plus de douceur */
+            overflow: hidden; /* Assure que l'image ne dépasse pas */
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+        .sidebar-brand-icon {
+            animation: bounce-in 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+        }
+        @keyframes bounce-in {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+        .section-header {
+            color: #4e73df;
+            font-weight: 700;
+            border-bottom: 2px solid #eaecf4;
+            padding-bottom: 10px;
+        }
+        .img-fluid-small {
+            max-width: 100%;
+            height: auto;
+            max-height: 150px; /* Taille réduite */
+            border: 2px solid #ddd;
+            border-radius: 0.5rem;
+            transition: transform 0.3s ease-in-out;
+        }
+        .img-fluid-small:hover {
+            transform: scale(1.05);
+        }
+        .text-truncate-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
 </head>
+
 <body id="page-top">
-<div id="wrapper">
-    <!-- Sidebar -->
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
-            <div class="sidebar-brand-icon rotate-n-15">
-                <i class="fas fa-laugh-wink"></i>
-            </div>
-            <div class="sidebar-brand-text mx-3">Admin</div>
-        </a>
+    <div id="wrapper">
 
-        <hr class="sidebar-divider my-0">
-
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'valider_publication' %}">
-                <i class="fas fa-fw fa-check-circle"></i>
-                <span>Valider bien</span></a>
-        </li>
-
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'liste_biens_valides' %}">
-                <i class="fas fa-fw fa-list"></i>
-                <span>Liste de biens validés</span></a>
-        </li>
-
-         <li class="nav-item">
-            <a class="nav-link" href="{% url 'liste_transactions' %}">
-                <i class="fas fa-fw fa-list"></i>
-                <span>Historique des transactions</span></a>
-        </li>
-
-        <hr class="sidebar-divider d-none d-md-block">
-    </ul>
-    <!-- End Sidebar -->
-
-    <!-- Content Wrapper -->
-    <div id="content-wrapper" class="d-flex flex-column">
-        <div id="content">
-            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                    <i class="fa fa-bars"></i>
-                </button>
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item dropdown no-arrow">
-                        <a class="nav-link dropdown-toggle" href="#">
-                            <span class="mr-2 d-none d-lg-inline text-gray-600 small">Bienvenue Admin</span>
-                            <img class="img-profile rounded-circle" src="{% static 'images/undraw_profile.svg' %}">
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-            <div class="container-fluid p-4">
-                <h2 class="mb-4 text-center">Liste des biens validés</h2>
-
-                <h3 class="mt-4 mb-3">Bien en Vente validés</h3>
-                <div class="row">
-                    {% for bien in vente_valides %}
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card shadow">
-                            <img src="{{ bien.image_principale.url }}" class="card-img-top" alt="Image principale">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ bien.type_bien }}</h5>
-                                <p class="card-text">
-                                    <strong>Prix:</strong> {{ bien.prix_vente }} FCFA<br>
-                                    <strong>Superficie:</strong> {{ bien.superficie }} m²<br>
-                                    <strong>Localisation:</strong> {{ bien.localisation }}<br>
-                                    <strong>État:</strong> {{ bien.etat_bien }}<br>
-                                    <strong>Propriétaire:</strong> {{ bien.proprietaire.nom }} {{ bien.proprietaire.prenom }}<br>
-                                    <strong>Titre foncier:</strong><br>
-                                    <img src="{{ bien.titre_foncier.url }}" alt="Titre foncier" class="img-fluid">
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    {% empty %}
-                    <div class="col-12 text-center">
-                        <p class="text-muted">Aucun bien en vente validé pour le moment.</p>
-                    </div>
-                    {% endfor %}
-                    
-                <h3 class="mt-5 mb-3">Biens à louer validés</h3>
-                <div class="row">
-                    {% for bien in location_valides %} {# Itérer sur la liste des Locations #}
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card shadow">
-                            <img src="{{ bien.image_principale.url }}" class="card-img-top" alt="Image principale">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ bien.type_bien }}</h5>
-                                <p class="card-text">
-                                    <strong>Loyer mensuel:</strong> {{ bien.loyer_mensuel }} FCFA<br>
-                                    <strong>Durée de location:</strong> {{ bien.durée_location }} Mois minimum<br>
-                                    <strong>Avance:</strong> {{ bien.avance }}<br>
-                                    <strong>Localisation:</strong> {{ bien.localisation }}<br>
-                                    <strong>Propriétaire:</strong> {{ bien.proprietaire.nom }} {{ bien.proprietaire.prenom }}<br>
-                                    {# Les biens à louer n'ont pas forcément de titre foncier selon votre modèle Louer, ajustez si besoin #}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    {% empty %}
-                    <div class="col-12 text-center">
-                        <p class="text-muted">Aucune location validés pour le moment.</p>
-                    </div>
-                    {% endfor %}
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-user-shield"></i>
                 </div>
+                <div class="sidebar-brand-text mx-3">IWAMMO Admin</div>
+            </a>
+            <hr class="sidebar-divider my-0">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'valider_publication' %}">
+                    <i class="fas fa-fw fa-check-circle"></i>
+                    <span>Valider les publications</span>
+                </a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'liste_biens_valides' %}">
+                    <i class="fas fa-fw fa-list"></i>
+                    <span>Biens validés</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'liste_transactions' %}">
+                    <i class="fas fa-fw fa-money-bill-wave"></i>
+                    <span>Historique des transactions</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'liste_documents_a_valider' %}">
+                    <i class="fas fa-fw fa-file-invoice"></i>
+                    <span>Valider les documents</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'liste_documents_valides' %}">
+                    <i class="fas fa-fw fa-file-alt"></i>
+                    <span>Documents validés</span>
+                </a>
+            </li>
+            <hr class="sidebar-divider d-none d-md-block">
+        </ul>
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Bienvenue Admin</span>
+                                <img class="img-profile rounded-circle" src="{% static 'images/undraw_profile.svg' %}">
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Profil
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Déconnexion
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="container-fluid p-4">
+                    <h1 class="mb-4 text-center text-primary font-weight-bold">Liste des biens validés</h1>
 
+                    <div class="mb-5">
+                        <h3 class="section-header mt-4"><i class="fas fa-home mr-2 text-warning"></i>Biens en Vente validés 🏠</h3>
+                        <div class="row">
+                            {% for bien in vente_valides %}
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card shadow border-left-success">
+                                    <a href="{{ bien.image_principale.url }}" target="_blank" class="d-block text-decoration-none">
+                                        <img src="{{ bien.image_principale.url }}" class="card-img-top" alt="Image principale">
+                                    </a>
+                                    <div class="card-body">
+                                        <h5 class="card-title font-weight-bold text-success text-truncate">{{ bien.type_bien|title }}</h5>
+                                        <hr>
+                                        <ul class="list-unstyled mb-0 small text-muted">
+                                            <li class="d-flex align-items-center mb-1"><i class="fas fa-tag mr-2 text-primary"></i><strong>Prix:</strong> <span class="ml-auto">{{ bien.prix_vente }} FCFA</span></li>
+                                            <li class="d-flex align-items-center mb-1"><i class="fas fa-ruler-combined mr-2 text-primary"></i><strong>Superficie:</strong> <span class="ml-auto">{{ bien.superficie }} m²</span></li>
+                                            <li class="d-flex align-items-center mb-1"><i class="fas fa-map-marker-alt mr-2 text-primary"></i><strong>Localisation:</strong> <span class="ml-auto text-truncate">{{ bien.localisation }}</span></li>
+                                            <li class="d-flex align-items-center mb-1"><i class="fas fa-info-circle mr-2 text-primary"></i><strong>État:</strong> <span class="ml-auto">{{ bien.etat_bien }}</span></li>
+                                            <li class="d-flex align-items-center mb-1"><i class="fas fa-user mr-2 text-primary"></i><strong>Propriétaire:</strong> <span class="ml-auto">{{ bien.proprietaire.nom }} {{ bien.proprietaire.prenom }}</span></li>
+                                        </ul>
+                                        <div class="mt-3 text-center">
+                                            <h6 class="text-muted small">Titre foncier</h6>
+                                            {% if bien.titre_foncier %}
+                                                <a href="{{ bien.titre_foncier.url }}" target="_blank">
+                                                    <img src="{{ bien.titre_foncier.url }}" alt="Titre foncier" class="img-fluid rounded shadow-sm img-fluid-small">
+                                                </a>
+                                            {% else %}
+                                                <p class="text-danger small">Titre foncier non disponible.</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="col-12 text-center my-5">
+                                <i class="fas fa-box-open fa-4x text-gray-400 mb-3"></i>
+                                <p class="text-muted h4">Aucun bien en vente validé pour le moment.</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
 
+                    <div class="mb-5">
+                        <h3 class="section-header mt-5"><i class="fas fa-key mr-2 text-warning"></i>Biens à louer validés 🔑</h3>
+                        <div class="row">
+                            {% for bien in location_valides %}
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card shadow border-left-info">
+                                    <a href="{{ bien.image_principale.url }}" target="_blank" class="d-block text-decoration-none">
+                                        <img src="{{ bien.image_principale.url }}" class="card-img-top" alt="Image principale">
+                                    </a>
+                                    <div class="card-body">
+                                        <h5 class="card-title font-weight-bold text-info text-truncate-2">{{ bien.type_bien|title }}</h5>
+                                        <hr>
+                                        <ul class="list-unstyled mb-0 small text-muted">
+                                            <li class="d-flex align-items-center mb-1"><i class="fas fa-money-bill-alt mr-2 text-primary"></i><strong>Loyer mensuel:</strong> <span class="ml-auto">{{ bien.loyer_mensuel }} FCFA</span></li>
+                                            <li class="d-flex align-items-center mb-1"><i class="fas fa-clock mr-2 text-primary"></i><strong>Durée de location:</strong> <span class="ml-auto">{{ bien.duree_location }} mois minimum</span></li>
+                                            <li class="d-flex align-items-center mb-1"><i class="fas fa-credit-card mr-2 text-primary"></i><strong>Avance:</strong> <span class="ml-auto">{{ bien.avance }}</span></li>
+                                            <li class="d-flex align-items-center mb-1"><i class="fas fa-map-marker-alt mr-2 text-primary"></i><strong>Localisation:</strong> <span class="ml-auto text-truncate">{{ bien.localisation }}</span></li>
+                                            <li class="d-flex align-items-center mb-1"><i class="fas fa-user mr-2 text-primary"></i><strong>Propriétaire:</strong> <span class="ml-auto">{{ bien.proprietaire.nom }} {{ bien.proprietaire.prenom }}</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="col-12 text-center my-5">
+                                <i class="fas fa-box-open fa-4x text-gray-400 mb-3"></i>
+                                <p class="text-muted h4">Aucun bien en location validé pour le moment.</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<!-- Scripts -->
-<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
-<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
-<script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+    <footer class="sticky-footer bg-white mt-5">
+            <div class="container my-auto">
+                <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; IWAMMO 2025</span>
+                </div>
+            </div>
+        </footer>
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Prêt à partir ?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Sélectionnez "Déconnexion" ci-dessous si vous êtes prêt à terminer votre session actuelle.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Annuler</button>
+                    <a class="btn btn-primary" href="#">Déconnexion</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+    <script src="{% static 'js/sb-admin-2.min.js' %}"></script>
 </body>
 </html>

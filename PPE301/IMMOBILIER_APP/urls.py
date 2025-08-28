@@ -13,6 +13,8 @@ urlpatterns = [
     path('contact/', views.contact , name="contact"),
     path('inscription/', views.inscription, name='inscription'),
     path('enregistrerBien/', views.EnregistrerBien, name='enregistrer'),
+    path('supprimer_bien/<int:bien_id>/', views.supprimer_bien, name='supprimer_bien'),
+    path('modifier_bien/<int:bien_id>/', views.modifier_bien, name='modifier_bien'),
     path('publierBien/<int:id>/', views.PublierBien, name='publier'),
     path('connexion/', views.connexion_view, name='connexion'),
     path('enregistrerbien/', views.EnregistrerBien, name='registerbien'),
@@ -41,6 +43,13 @@ urlpatterns = [
     path('demande/en-attente/', views.demande_en_attente, name='demande_en_attente'),
     path('error/', views.page_erreur, name='some_error_page'),
     path('location/renouveler/<int:bien_id>/', views.renouveler_location, name='renouveler_location'),
+     path('soumettre-documents-vente/<int:demande_pk>/', views.soumettre_documents_vente, name='soumettre_documents_vente'),
+    path('documents-a-valider/', views.liste_documents_a_valider, name='liste_documents_a_valider'),
+    path('valider-document/<int:pk>/', views.valider_document, name='valider_document'),
+    path('documents-valides/', views.liste_documents_valides, name='liste_documents_valides'), # Nouvelle URL
+    path('admin/login/', views.admin_login, name='admin_login'),
+    path('demande/<int:demande_id>/confirmer_suppression/', views.confirmer_suppression_demande, name='confirmer_suppression_demande'),
+    path('demande/<int:demande_id>/supprimer/', views.supprimer_demande_bien, name='supprimer_demande_bien'),
     path('demande/traitee/succes/', views.demande_traitee_succes, name='demande_traitee_succes')
 ]   
 

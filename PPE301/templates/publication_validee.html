@@ -1,94 +1,188 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
-    <title>Publication validée</title>
-    <link rel="stylesheet" href="{% static 'vendor/fontawesome-free/css/all.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/sb-admin-2.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Publication Validée | IWAMMO</title>
+
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    
+    <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/bien-style.css' %}" rel="stylesheet">
+
     <style>
-        /* Styles spécifiques pour centrer le contenu du message */
         .success-message-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: calc(100vh - 56px - 30px); /* Ajuste pour la hauteur de la sidebar/nav et le padding */
+            min-height: calc(100vh - 56px - 30px);
             padding: 20px;
+            text-align: center;
         }
-        .alert-custom {
-            max-width: 600px;
+        .success-card {
+            max-width: 700px;
             width: 100%;
-            background-color: #d4edda; /* Vert clair Bootstrap */
-            border-color: #c3e6cb;
-            color: #155724;
+            background-color: #f0fdf4; /* Un vert très clair pour le fond de la carte */
+        }
+        .btn-green-pulse {
+            animation: pulse-green 2s infinite;
+        }
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(40, 167, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
         }
     </style>
 </head>
+
 <body id="page-top">
-<div id="wrapper">
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'dashboard' %}">
-            <div class="sidebar-brand-icon rotate-n-15">
-                <i class="fas fa-laugh-wink"></i>
-            </div>
-            <div class="sidebar-brand-text mx-3">SB ADMIN<sup>2</sup></div>
-        </a>
+    <div id="wrapper">
 
-        <hr class="sidebar-divider my-0">
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'dashboard' %}">
-                <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span>Dashboard</span>
-            </a>
-            <hr class="sidebar-divider">
-            <div class="sidebar-heading">Interface</div>
-        </li>
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
-               aria-expanded="true" aria-controls="collapsePages">
-                <i class="fas fa-fw fa-folder"></i>
-                <span>Propriétaires</span>
-            </a>
-            <div id="collapsePages" class="collapse show" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Biens :</h6>
-                    <a class="collapse-item" href="#">Messagerie</a>
-                    <a class="collapse-item" href="{% url 'registerbien' %}">Enregistrez un bien</a>
-                    <a class="collapse-item active" href="{% url 'listebien' proprietaire_id=proprietaire_id %}">Biens enregistrés</a>
-                    <a class="collapse-item active" href="{% url 'bienpublies' %}">Biens publiés</a>
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'dashboard' %}">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-home"></i>
                 </div>
-            </div>
-        </li>
+                <div class="sidebar-brand-text mx-3">IWAMMO</div>
+            </a>
 
-    </ul>
-    <div id="content-wrapper" class="d-flex flex-column">
-        <div id="content">
-            <div class="container-fluid p-4">
-                {# --- Contenu principal du message de succès --- #}
-                <div class="success-message-container">
-                    <div class="alert alert-success alert-custom p-5 rounded shadow text-center">
-                        <h3 class="text-success">Félicitations !</h3>
-                        <p class="lead">Votre bien a été **validé** par l’administrateur.</p>
-                        <p>Il est désormais **publié** et visible sur la plateforme.</p>
-                        <hr> {# Ligne de séparation #}
-                        <p class="mb-0">
-                            <a href="{% url 'bienpublies' %}" class="btn btn-success mt-3">Voir mes biens publiés</a>
-                            <a href="{% url 'dashboard' %}" class="btn btn-outline-success mt-3">Retour au tableau de bord</a>
-                        </p>
+            <hr class="sidebar-divider my-0">
+
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'dashboard' %}">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Tableau de bord</span>
+                </a>
+            </li>
+
+            <hr class="sidebar-divider">
+
+            <div class="sidebar-heading">
+                Fonctionnalités
+            </div>
+
+            <li class="nav-item active">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseBiens"
+                    aria-expanded="true" aria-controls="collapseBiens">
+                    <i class="fas fa-fw fa-building"></i>
+                    <span>Gestion des biens</span>
+                </a>
+                <div id="collapseBiens" class="collapse show" aria-labelledby="headingBiens" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Mes biens :</h6>
+                        <a class="collapse-item" href="{% url 'registerbien' %}">Enregistrer un bien</a>
+                        <a class="collapse-item" href="{% url 'listebien' proprietaire_id=proprietaire.id %}">Biens enregistrés</a>
+                        <a class="collapse-item active" href="{% url 'bienpublies' %}">Biens publiés</a>
+                        <a class="collapse-item" href="{% url 'liste_demandes_proprietaire' %}">Demandes des clients</a>
                     </div>
                 </div>
-                {# --- Fin du contenu principal --- #}
+            </li>
+
+            <hr class="sidebar-divider d-none d-md-block">
+
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+
+        </ul>
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <div id="content">
+
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    <ul class="navbar-nav ml-auto">
+                        <div class="topbar-divider d-none d-sm-block"></div>
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Bienvenue {{ proprietaire.nom }} {{ proprietaire.prenom }}</span>
+                                <img class="img-profile rounded-circle" src="{% static 'images/undraw_profile.svg' %}">
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Profil
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Paramètres
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Déconnexion
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="container-fluid">
+                    <div class="success-message-container">
+                        <div class="card p-5 border-success shadow success-card">
+                            <div class="card-body">
+                                <i class="fas fa-check-circle fa-5x text-success mb-4 animated tada"></i>
+                                <h1 class="h3 mb-3 text-gray-800 font-weight-bold">Félicitations ! Votre bien est en ligne !</h1>
+                                <p class="lead">
+                                    Votre annonce a été **validée** et est désormais **visible** par des milliers de clients sur la plateforme.
+                                </p>
+                                <p>
+                                    Préparez-vous à recevoir vos premières demandes de contact !
+                                </p>
+                                <hr class="my-4">
+                                <a href="{% url 'bienpublies' %}" class="btn btn-success mt-3 btn-lg btn-green-pulse">
+                                    <i class="fas fa-eye"></i> Voir mes biens publiés
+                                </a>
+                                <a href="{% url 'dashboard' %}" class="btn btn-outline-primary mt-3 btn-lg">
+                                    <i class="fas fa-tachometer-alt"></i> Retour au tableau de bord
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; IWAMMO 2025</span>
+                    </div>
+                </div>
+            </footer>
+            </div>
+        </div>
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Prêt à partir ?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Sélectionnez "Déconnexion" ci-dessous si vous êtes prêt à terminer votre session actuelle.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Annuler</button>
+                    <a class="btn btn-primary" href="#">Déconnexion</a>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
-<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
-<script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+    <script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+
 </body>
+
 </html>

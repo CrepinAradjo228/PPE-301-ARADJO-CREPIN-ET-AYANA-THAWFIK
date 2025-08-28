@@ -1,72 +1,154 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demande Traitée - Mon Projet Immobilier</title>
+    <title>Demande Traitée - IWAMMO</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'fonts/icomoon/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/tiny-slider.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/aos.css' %}" />
+    
     <style>
-        /* Quelques styles pour centrer et rendre la carte jolie sans fichier CSS externe */
+        /* Définition des variables de couleur de votre projet pour cette page */
+        :root {
+            --primary-color: #005555;
+            --secondary-color: #00204a;
+            --text-dark: #343a40;
+            --bg-light: #f8f9fa;
+        }
+
         body {
-            background-color: #f8f9fa; /* Couleur de fond légère */
+            font-family: 'Work Sans', sans-serif;
+            background-color: var(--bg-light);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .main-content {
+            flex-grow: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh; /* Prend toute la hauteur de la fenêtre */
-            margin: 0;
+            padding: 2rem 0;
         }
-        .card {
+        
+        /* Styles de la carte de confirmation */
+        .confirmation-card {
             border: none;
-            border-radius: 1rem;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             max-width: 600px;
+            text-align: center;
+            padding: 3rem;
+            background-color: #ffffff;
+            animation: fadeIn 1s ease-in-out;
         }
-        .text-success {
-            color: #198754 !important; /* Vert Bootstrap */
+        
+        .confirmation-icon {
+            font-size: 5rem;
+            color: var(--primary-color); /* Utilisation de la couleur principale */
+            margin-bottom: 1.5rem;
         }
-        .text-primary {
-            color: #0d6efd !important; /* Bleu Bootstrap */
+        
+        .confirmation-heading {
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
         }
-        .btn-primary {
-            background-color: #0d6efd;
-            border-color: #0d6efd;
+        
+        .confirmation-text {
+            color: var(--text-dark);
+            line-height: 1.6;
+            font-size: 1.1rem;
         }
-        .btn-primary:hover {
-            background-color: #0b5ed7;
-            border-color: #0a58ca;
+
+        /* Bouton personnalisé */
+        .btn-custom {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: #fff;
+            font-weight: 600;
+            padding: 1rem 2.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease-in-out;
+            text-decoration: none;
         }
-        .btn-secondary {
-            background-color: #6c757d;
-            border-color: #6c757d;
+
+        .btn-custom:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            color: #fff;
         }
-        .btn-secondary:hover {
-            background-color: #5c636a;
-            border-color: #565e64;
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="container-fluid py-5">
+    <nav class="site-nav">
+        <div class="container">
+            <div class="menu-bg-wrap">
+                <div class="site-navigation">
+                    <a href="{% url 'home' %}" class="logo m-0 float-start">IWAMMO</a>
+                    <ul class="js-clone-nav d-none d-lg-inline-block text-start site-menu float-end">
+                        <li><a href="{% url 'home' %}">Accueil</a></li>
+                        <li><a href="{% url 'property' %}">Propriétés</a></li>
+                        <li><a href="{% url 'contact' %}">Contact</a></li>
+                    </ul>
+                    <a href="#" class="burger light me-auto float-end mt-1 site-menu-toggle js-menu-toggle d-inline-block d-lg-none" data-toggle="collapse" data-target="#main-navbar">
+                        <span></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-content">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-lg-10 text-center">
-                    <div class="card p-5 shadow-lg rounded-3">
-                        <i class="fas fa-check-circle fa-5x text-success mb-4"></i>
-                        <h1 class="display-4 text-primary mb-3">La demande a été marquée comme traitée avec succès !</h1>
-                        <p class="lead mb-4">Les informations ont été mises à jour.</p>
-                        <p class="text-muted">Merci d'avoir fait cette demande.</p>
-                        <a href="{% url 'property' %}" class="btn btn-secondary mt-3 py-3 px-5">Tableau de bord</a>
+                <div class="col-lg-8">
+                    <div class="card confirmation-card">
+                        <i class="icon-check_circle confirmation-icon"></i>
+                        <h1 class="confirmation-heading">Demande traitée avec succès !</h1>
+                        <p class="confirmation-text">
+                            La demande a été mise à jour et traitée. Merci d'avoir effectué la demande.
+                        </p>
+                        <a href="{% url 'home' %}" class="btn btn-custom mt-4">
+                            Retour à l'accueil
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    
+    <div class="site-footer">
+        </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/bootstrap.bundle.min.js'%}"></script>
+    <script src="{% static 'js/tiny-slider.js'%}"></script>
+    <script src="{% static 'js/aos.js' %}"></script>
+    <script src="{% static 'js/navbar.js' %}"></script>
+    <script src="{% static 'js/counter.js' %}"></script>
+    <script src="{% static 'js/custom.js' %}"></script>
 
 </body>
 </html>

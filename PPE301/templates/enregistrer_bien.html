@@ -16,15 +16,26 @@
 
     <h1>ENREGISTRER UN BIEN</h1>
 
-    <div class="container mt-4">
-        <form action="{% url 'registerbien' %}" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.as_p }}
-
-            <button class="btn btn-primary" type="submit">Enregistrer</button>
-        </form>
-            <a href="{% url 'dashboard' %}" > <button class="btn btn-primary">RETOUR</button></a>
-    </div>
+   <div class="container mt-4">
+    <form action="{% url 'registerbien' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        
+        <button class="btn btn-success btn-icon-split" type="submit">
+            <span class="icon text-white-50">
+                <i class="fas fa-save"></i>
+            </span>
+            <span class="text">Enregistrer le bien</span>
+        </button>
+    </form>
+    
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary btn-icon-split mt-3">
+        <span class="icon text-white-50">
+            <i class="fas fa-arrow-left"></i>
+        </span>
+        <span class="text">Retour au tableau de bord</span>
+    </a>
+</div>
 
     <!-- JS Bootstrap -->
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>

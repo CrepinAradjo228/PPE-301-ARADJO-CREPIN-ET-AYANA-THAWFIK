@@ -1,5 +1,5 @@
 from django import forms
-from .models import Proprietaire, Client, TypeBien, Utilisateur,DemandeBien,RenouvelerLocation
+from .models import Proprietaire, Client, TypeBien, Utilisateur,DemandeBien,RenouvelerLocation,DocumentsTransactionVente
 from django.core.exceptions import ValidationError
 
 class UtilisateurForm(forms.Form):
@@ -34,7 +34,7 @@ class BienForm(forms.Form):
     localisation = forms.CharField(label="Localisation", max_length=255)
     prix = forms.FloatField(label="Prix du bien")
     etat = forms.CharField(label="Etat du bien",max_length=255)
-    image = forms.ImageField(label="Inserez les images du bien")
+    image = forms.ImageField(label="Inserez les images du bien", required=False)
 
 
 class PublierForm(forms.Form):
@@ -85,11 +85,8 @@ class VendreForm(forms.Form):
     numero_titre_foncier = forms.CharField(label="Numéro du titre foncier", max_length=255)
 
        # AJOUTEZ CE CHAMP :
-    proprietaire = forms.ModelChoiceField(
-        queryset=Utilisateur.objects.filter(role='proprietaire'), # Récupère tous les utilisateurs
-        empty_label="Sélectionnez un propriétaire", # Texte par défaut si aucun choix
-        label="Propriétaire"
-    )
+    proprietaire_nom = forms.CharField(label="Propriétaire", disabled=True, required=False)
+    proprietaire_id = forms.IntegerField(widget=forms.HiddenInput(), required=False)
 
 
 class LouerForm(forms.Form):
@@ -100,14 +97,8 @@ class LouerForm(forms.Form):
     localisation = forms.CharField(label="Localisation", max_length=255)
     description = forms.CharField(label="Description", widget=forms.Textarea)
     image_principale = forms.ImageField(label="Image principale", required=False)
-
-       # AJOUTEZ CE CHAMP :
-    proprietaire = forms.ModelChoiceField(
-        queryset=Utilisateur.objects.filter(role='proprietaire'), # Récupère tous les utilisateurs
-        empty_label="Sélectionnez un propriétaire", # Texte par défaut si aucun choix
-        label="Propriétaire"
-    )
-
+    proprietaire_nom = forms.CharField(label="Propriétaire", disabled=True, required=False)
+    proprietaire_id = forms.IntegerField(widget=forms.HiddenInput(), required=False)
 
 class DemandeBienForm(forms.Form):
     message = forms.CharField(label="Votre message", widget=forms.Textarea(attrs={'rows': 5, 'placeholder': 'Décrivez votre intérêt ou posez vos questions...'}),required=False )
@@ -123,7 +114,7 @@ class DemandeBienForm(forms.Form):
     type_operation = forms.ChoiceField(label="Type d'opération souhaité",choices=TYPES_DEMANDE_CHOICES,required=True)
 
 
-class RenouvelerLocationForm(forms.ModelForm):
+class RenouvelerLocationForm(forms.Form):
     nom_complet = forms.CharField(label="Votre nom complet", max_length=100, required=True)
     email = forms.EmailField(label="Votre adresse email", required=True)
     telephone = forms.CharField(label="Votre numéro de téléphone (facultatif)", max_length=20, required=False)
@@ -134,3 +125,38 @@ class RenouvelerLocationForm(forms.ModelForm):
         help_text="Indiquez la durée de renouvellement souhaitée pour la location (en mois)"
     )
 
+class DocumentsTransactionVenteForm(forms.Form):
+    # Champs pour les documents de la transaction
+    recu_vente = forms.FileField(label="Reçu de vente")
+    copie_attestation_mandataire = forms.FileField(label="Copie d'attestation du mandataire")
+    copie_attestations_heritage = forms.FileField(label="Copie(s) d'attestation(s) de passation d'héritage")
+    nouveau_titre_foncier = forms.FileField(label="Nouveau titre foncier (Optionnel)", required=False)
+
+    # Champs pour le premier témoin (propriétaire et client)
+    nom_temoin1_proprietaire = forms.CharField(label="Nom et prénom du témoin (Propriétaire)", max_length=255)
+    temoin1_proprietaire_cni_recto = forms.ImageField(label="CNI Recto du témoin (Propriétaire)")
+    temoin1_proprietaire_cni_verso = forms.ImageField(label="CNI Verso du témoin (Propriétaire)")
+    nom_temoin1_client = forms.CharField(label="Nom et prénom du témoin (Client)", max_length=255)
+    temoin1_client_cni_recto = forms.ImageField(label="CNI Recto du témoin (Client)")
+    temoin1_client_cni_verso = forms.ImageField(label="CNI Verso du témoin (Client)")
+
+    # Champs pour le deuxième témoin (propriétaire et client)
+    nom_temoin2_proprietaire = forms.CharField(label="Nom et prénom du deuxième témoin (Propriétaire)", max_length=255)
+    temoin2_proprietaire_cni_recto = forms.ImageField(label="CNI Recto du deuxième témoin (Propriétaire)")
+    temoin2_proprietaire_cni_verso = forms.ImageField(label="CNI Verso du deuxième témoin (Propriétaire)")
+    nom_temoin2_client = forms.CharField(label="Nom et prénom du deuxième témoin (Client)", max_length=255)
+    temoin2_client_cni_recto = forms.ImageField(label="CNI Recto du deuxième témoin (Client)")
+    temoin2_client_cni_verso = forms.ImageField(label="CNI Verso du deuxième témoin (Client)")
+    
+    # Champs pour le troisième témoin (propriétaire et client)
+    nom_temoin3_proprietaire = forms.CharField(label="Nom et prénom du troisième témoin (Propriétaire)", max_length=255)
+    temoin3_proprietaire_cni_recto = forms.ImageField(label="CNI Recto du troisième témoin (Propriétaire)")
+    temoin3_proprietaire_cni_verso = forms.ImageField(label="CNI Verso du troisième témoin (Propriétaire)")
+    nom_temoin3_client = forms.CharField(label="Nom et prénom du troisième témoin (Client)", max_length=255)
+    temoin3_client_cni_recto = forms.ImageField(label="CNI Recto du troisième témoin (Client)")
+    temoin3_client_cni_verso = forms.ImageField(label="CNI Verso du troisième témoin (Client)")
+    
+
+class AdminLoginForm(forms.Form):
+    username = forms.CharField(max_length=100, label="Nom d'utilisateur")
+    password = forms.CharField(widget=forms.PasswordInput, label="Mot de passe")

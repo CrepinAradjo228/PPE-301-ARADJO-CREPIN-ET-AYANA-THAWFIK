@@ -73,7 +73,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'IMMOBILIER_APP.context_processors.proprietaire_id_processor',  # Assurez-vous que le nom de votre app est correct
+                'IMMOBILIER_APP.context_processors.proprietaire_processor',  # Assurez-vous que le nom de votre app est correct
             ],
         },
     },
@@ -88,14 +88,11 @@ WSGI_APPLICATION = 'PPE301.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'iwwamo_app_71xn',
-        'USER': 'iwwamo_user',
-        'PASSWORD': 'NhMcNkmKw8wsFRP8MlXuFCiwheLuKpAM',
-        'HOST': 'dpg-d2b5eper433s739fgkug-a.oregon-postgres.render.com',
+        'NAME': 'mobilier',
+        'USER': 'postgres',
+        'PASSWORD': 'Thawfik',
+        'HOST': 'localhost',
         'PORT': '5432',
-        'OPTIONS': {
-            'sslmode': 'require',
-        },
     }
 }
 
