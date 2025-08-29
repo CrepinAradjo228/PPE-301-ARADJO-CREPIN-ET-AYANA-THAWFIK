@@ -55,6 +55,7 @@
                         <a class="collapse-item" href="{% url 'registerbien' %}">Enregistrer un bien</a>
                         <a class="collapse-item" href="{% url 'listebien' proprietaire_id=proprietaire.id %}">Biens enregistrés</a>
                         <a class="collapse-item" href="{% url 'bienpublies' %}">Biens publiés</a>
+                        <a class="collapse-item" href="{% url 'biens_refuses' %}">Biens refusés</a>
                     </div>
                 </div>
             </li>
@@ -132,7 +133,116 @@
                             </div>
                             <form method="POST" enctype="multipart/form-data">
                                 {% csrf_token %}
-                                {{ form.as_p }}
+                                
+                                <div class="form-group">
+                                    <label for="{{ form.type_bien.id_for_label }}">{{ form.type_bien.label }}</label>
+                                    {{ form.type_bien }}
+                                    {% if form.type_bien.errors %}
+                                        <div class="text-danger small mt-1">{{ form.type_bien.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="{{ form.prix_vente.id_for_label }}">{{ form.prix_vente.label }}</label>
+                                    {{ form.prix_vente }}
+                                    {% if form.prix_vente.errors %}
+                                        <div class="text-danger small mt-1">{{ form.prix_vente.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="{{ form.superficie.id_for_label }}">{{ form.superficie.label }}</label>
+                                    {{ form.superficie }}
+                                    {% if form.superficie.errors %}
+                                        <div class="text-danger small mt-1">{{ form.superficie.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="{{ form.localisation.id_for_label }}">{{ form.localisation.label }}</label>
+                                    {{ form.localisation }}
+                                    {% if form.localisation.errors %}
+                                        <div class="text-danger small mt-1">{{ form.localisation.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                                    {{ form.description }}
+                                    {% if form.description.errors %}
+                                        <div class="text-danger small mt-1">{{ form.description.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="{{ form.etat_bien.id_for_label }}">{{ form.etat_bien.label }}</label>
+                                    {{ form.etat_bien }}
+                                    {% if form.etat_bien.errors %}
+                                        <div class="text-danger small mt-1">{{ form.etat_bien.errors }}</div>
+                                    {% endif %}
+                                </div>
+    
+                                            {% if images_existantes %}
+                            <div class="form-group mb-4">
+                                <h5>Images actuelles :</h5>
+                                <div class="image-preview-container d-flex flex-wrap">
+                                    {% for img in images_existantes %}
+                                    <div class="image-preview-item mr-2 mb-2">
+                                        <img src="{{ img.image.url }}" alt="Image du bien" class="img-thumbnail" style="max-height: 150px;">
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <small class="form-text text-muted mt-2">
+                                    Ces images seront remplacées si vous en téléchargez de nouvelles.
+                                </small>
+                            </div>
+                            {% endif %}
+
+                            <div class="form-group">
+                                <label for="id_images">
+                                    Images de la galerie (3 à 4 images) :
+                                    {% if images_existantes %}
+                                        <span class="text-danger small">(Optionnel pour la republication)</span>
+                                    {% else %}
+                                        <span class="text-danger small">(Requis pour la première publication)</span>
+                                    {% endif %}
+                                </label>
+                                <input type="file" class="form-control-file" name="images" id="id_images" multiple 
+                                {% if not images_existantes %}required{% endif %}>
+                                    </div>
+
+                                        {% if titre_foncier_existant %}
+                                        <div class="form-group mb-4">
+                                            <h5>Titre Foncier Actuel :</h5>
+                                            <div class="image-preview-container d-flex flex-wrap">
+                                                <div class="image-preview-item mr-2 mb-2">
+                                                    <img src="{{ titre_foncier_existant.url }}" alt="Titre foncier du bien" class="img-thumbnail" style="max-height: 200px;">
+                                                </div>
+                                            </div>
+                                            <small class="form-text text-muted mt-2">
+                                                Cette image sera remplacée si vous en téléchargez une nouvelle.
+                                            </small>
+                                        </div>
+                                        {% endif %}
+
+                                        <div class="form-group">
+                                            <label for="{{ form.titre_foncier.id_for_label }}">{{ form.titre_foncier.label }}</label>
+                                            {{ form.titre_foncier }}
+                                            {% if form.titre_foncier.errors %}
+                                                <div class="text-danger small mt-1">{{ form.titre_foncier.errors }}</div>
+                                            {% endif %}
+                                        </div>
+
+                                <div class="form-group">
+                                    <label for="{{ form.numero_titre_foncier.id_for_label }}">{{ form.numero_titre_foncier.label }}</label>
+                                    {{ form.numero_titre_foncier }}
+                                    {% if form.numero_titre_foncier.errors %}
+                                        <div class="text-danger small mt-1">{{ form.numero_titre_foncier.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <input type="hidden" name="proprietaire_id" value="{{ bien.proprietaire.id }}">
+
                                 <div class="form-group mt-4 text-center">
                                     <button type="submit" class="btn btn-success btn-icon-split">
                                         <span class="icon text-white-50">
@@ -140,7 +250,7 @@
                                         </span>
                                         <span class="text">Publier le bien en vente</span>
                                     </button>
-                                    <a href="{% url 'choixpublication' bien.id %}" class="btn btn-secondary btn-icon-split ml-2">
+                                    <a href="#" class="btn btn-secondary btn-icon-split ml-2">
                                         <span class="icon text-white-50">
                                             <i class="fas fa-arrow-left"></i>
                                         </span>

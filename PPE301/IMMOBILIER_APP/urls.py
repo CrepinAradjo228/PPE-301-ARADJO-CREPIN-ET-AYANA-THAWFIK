@@ -23,7 +23,9 @@ urlpatterns = [
     path('publierbien/<int:id>/', views.PublierBien, name='publierbien'),
     path('deconnexion/', views.deconnexion_view, name='deconnexion'),
     path('ajouter-vente/', views.ajouter_vente, name='ajouter_vente'),
+    path('ajouter-vente/<int:publication_id>/', views.ajouter_vente, name='republier_vente'),
     path('ajouter-location/', views.ajouter_location, name='ajouter_location'),
+    path('ajouter-location/<int:publication_id>/', views.ajouter_location, name='republier_location'),
     path('modifier_vente/<int:vente_id>/', views.modifier_vente, name='modifier_vente'),
     path('supprimer_vente/<int:vente_id>/', views.supprimer_vente, name='supprimer_vente'),
     path('modifier_location/<int:location_id>/', views.modifier_location, name='modifier_location'),
@@ -35,6 +37,7 @@ urlpatterns = [
     path('dashboard-admin/', views.DashboardAdmin, name='dashboard_admin'),
     path('publication_attente/<str:type_publication>/<int:publication_id>/', views.publication_attente, name='publication_attente'),
     path('publication_validee/<str:type_publication>/<int:publication_id>/', views.publication_valides, name='publication_validee'),
+    path('publication_refusee/<str:type_publication>/<int:publication_id>/', views.publication_refusee, name='publication_refusee'),
     path('properties/<str:type_bien>/<int:pk>/', views.detail_biens, name='details_bien_client'),
     path('demandebien/creer/<str:type_bien>/<int:bien_id>/', views.creer_demande_bien, name='creer_demande_bien'),
     path('proprietaire/demandes/', views.liste_demandes_proprietaire, name='liste_demandes_proprietaire'),
@@ -50,6 +53,8 @@ urlpatterns = [
     path('admin/login/', views.admin_login, name='admin_login'),
     path('demande/<int:demande_id>/confirmer_suppression/', views.confirmer_suppression_demande, name='confirmer_suppression_demande'),
     path('demande/<int:demande_id>/supprimer/', views.supprimer_demande_bien, name='supprimer_demande_bien'),
+    path('admin/refuser-publication/<str:bien_type>/<int:bien_id>/', views.refuser_publication, name='refuser_publication'),
+    path('biens-refuses/', views.biens_refuses, name='biens_refuses'),
     path('demande/traitee/succes/', views.demande_traitee_succes, name='demande_traitee_succes')
 ]   
 

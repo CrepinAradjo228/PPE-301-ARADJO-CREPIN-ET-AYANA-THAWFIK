@@ -3,7 +3,7 @@
 <html lang="fr">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <meta name="author" content="PROJETDJANGO" />
     <link rel="shortcut icon" href="{% static 'favicon.png' %}" />
     <meta name="description" content="Découvrez nos propriétés de rêve" />
@@ -74,47 +74,79 @@
                     <p class="mb-5 text-muted">Découvrez nos dernières propriétés disponibles à la vente.</p>
                 </div>
             </div>
-            <div class="row">
-                {% if biens_en_vente %}
-                    {% for bien in biens_en_vente %}
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="property-card rounded overflow-hidden shadow">
-                                <div class="position-relative overflow-hidden">
-                                    {% if bien.image_principale %}
-                                        <a href="{{  bien.image_principale.url}}" class="d-block">
-                                            <img class="img-fluid w-100 property-image" src="{{ bien.image_principale.url }}" alt="Image du bien" />
-                                        </a>
-                                    {% else %}
-                                        <a href="{{  bien.image_principale.url}}" class="d-block">
-                                            <img class="img-fluid w-100 property-image" src="{% static 'images/default.jpg' %}" alt="Image par défaut" />
-                                        </a>
-                                    {% endif %}
-                                    <div class="property-tag position-absolute top-0 start-0 m-3 px-3 py-1 rounded-pill text-white fw-bold bg-success">
-                                        En Vente
-                                    </div>
-                                </div>
-                                <div class="property-details p-4">
-                                    <h5 class="property-price mb-3">
-                                        {{ bien.prix_vente }} FCFA
-                                    </h5>
-                                    <a class="d-block h5 property-title mb-2 text-decoration-none" href="{% url 'details_bien_client' type_bien=bien.type_bien_str pk=bien.pk %}">
-                                        {{ bien.type_bien }} à {{ bien.localisation }}
-                                    </a>
-                                    <p class="text-muted property-location"><i class="icon-map-marker me-2"></i>{{ bien.localisation }}</p>
-                                    <div class="d-grid mt-4">
-                                        <a href="{% url 'details_bien_client' type_bien=bien.type_bien_str pk=bien.pk %}" class="btn btn-primary py-2">Voir les détails</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="col-12 text-center">
-                        <p class="text-muted">Aucun bien n'est actuellement publié pour la vente.</p>
-                    </div>
-                {% endif %}
-            </div>
+    <div class="row">
+    {% if biens_en_vente %}
+    {% for publication_vente in biens_en_vente %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="property-card rounded overflow-hidden shadow">
+            <div class="position-relative overflow-hidden">
+                <div id="carouselClientVente-{{ publication_vente.id }}" class="carousel slide" data-bs-ride="carousel">
 
+                    <!-- Indicateurs corrigés -->
+                    <div class="carousel-indicators">
+                        {% for image in publication_vente.images.all %}
+                        <button type="button" 
+                                data-bs-target="#carouselClientVente-{{ publication_vente.id }}" 
+                                data-bs-slide-to="{{ forloop.counter0 }}" 
+                                {% if forloop.first %}class="active" aria-current="true"{% endif %}
+                                aria-label="Slide {{ forloop.counter }}"></button>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Contenu du carrousel -->
+                    <div class="carousel-inner">
+                        {% for image in publication_vente.images.all %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <a href="{{ image.image.url }}" target="_blank">
+                                <img class="d-block w-100 property-image" src="{{ image.image.url }}" alt="Image du bien" style="height: 250px; object-fit: cover;" />
+                            </a>
+                        </div>
+                        {% empty %}
+                        <div class="carousel-item active">
+                            <img class="d-block w-100 property-image" src="{% static 'images/default.jpg' %}" alt="Image par défaut" style="height: 250px; object-fit: cover;" />
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Contrôles de navigation corrigés -->
+                    {% if publication_vente.images.count > 1 %}
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselClientVente-{{ publication_vente.id }}" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Précédent</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselClientVente-{{ publication_vente.id }}" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Suivant</span>
+                    </button>
+                    {% endif %}
+                </div>
+                
+                <div class="property-tag position-absolute top-0 start-0 m-3 px-3 py-1 rounded-pill text-white fw-bold bg-success">
+                    En Vente
+                </div>
+            </div>
+            
+            <div class="property-details p-4">
+                <h5 class="property-price mb-3">
+                    {{ publication_vente.prix_vente }} FCFA
+                </h5>
+                <a class="d-block h5 property-title mb-2 text-decoration-none" href="{% url 'details_bien_client' type_bien='vente' pk=publication_vente.pk %}">
+                    {{ publication_vente.type_bien }} à {{ publication_vente.localisation }}
+                </a>
+                <p class="text-muted property-location"><i class="icon-map-marker me-2"></i>{{ publication_vente.localisation }}</p>
+                <div class="d-grid mt-4">
+                    <a href="{% url 'details_bien_client' type_bien=publication_vente.type_bien_str pk=publication_vente.pk %}" class="btn btn-primary py-2">Voir les détails</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="col-12 text-center">
+        <p class="text-muted">Aucun bien n'est actuellement publié pour la vente.</p>
+    </div>
+    {% endif %}
+</div>
             <hr class="my-5">
 
             <div class="row justify-content-center text-center">
@@ -123,46 +155,80 @@
                     <p class="mb-5 text-muted">Découvrez nos dernières propriétés disponibles à la location.</p>
                 </div>
             </div>
-            <div class="row">
-                {% if biens_en_location %}
-                    {% for bien in biens_en_location %}
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="property-card rounded overflow-hidden shadow">
-                                <div class="position-relative overflow-hidden">
-                                    {% if bien.image_principale %}
-                                        <a href="{{ bien.image_principale.url }}" class="d-block">
-                                            <img class="img-fluid w-100 property-image" src="{{ bien.image_principale.url }}" alt="Image du bien" />
-                                        </a>
-                                    {% else %}
-                                        <a href="{{ bien.image_principale.url }}" class="d-block">
-                                            <img class="img-fluid w-100 property-image" src="{% static 'images/default.jpg' %}" alt="Image par défaut" />
-                                        </a>
-                                    {% endif %}
-                                    <div class="property-tag position-absolute top-0 start-0 m-3 px-3 py-1 rounded-pill text-white fw-bold bg-info">
-                                        En Location
-                                    </div>
-                                </div>
-                                <div class="property-details p-4">
-                                    <h5 class="property-price mb-3">
-                                        {{ bien.loyer_mensuel }} FCFA / mois
-                                    </h5>
-                                    <a class="d-block h5 property-title mb-2 text-decoration-none" href="{% url 'details_bien_client' type_bien=bien.type_bien_str pk=bien.pk %}">
-                                        {{ bien.type_bien }} à {{ bien.localisation }}
-                                    </a>
-                                    <p class="text-muted property-location"><i class="icon-map-marker me-2"></i>{{ bien.localisation }}</p>
-                                    <div class="d-grid mt-4">
-                                        <a href="{% url 'details_bien_client' type_bien=bien.type_bien_str pk=bien.pk %}" class="btn btn-primary py-2">Voir les détails</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="col-12 text-center">
-                        <p class="text-muted">Aucun bien n'est actuellement publié pour la location.</p>
+                    <div class="row">
+    {% if biens_en_location %}
+    {% for publication_location in biens_en_location %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="property-card rounded overflow-hidden shadow">
+            <div class="position-relative overflow-hidden">
+                <div id="carouselClientLocation-{{ publication_location.id }}" class="carousel slide" data-bs-ride="carousel">
+                    
+                    <!-- Indicateurs corrigés -->
+                    <div class="carousel-indicators">
+                        {% for image in publication_location.images.all %}
+                        <button type="button" 
+                                data-bs-target="#carouselClientLocation-{{ publication_location.id }}" 
+                                data-bs-slide-to="{{ forloop.counter0 }}" 
+                                {% if forloop.first %}class="active" aria-current="true"{% endif %}
+                                aria-label="Slide {{ forloop.counter }}"></button>
+                        {% endfor %}
                     </div>
-                {% endif %}
+
+                    <!-- Contenu du carrousel -->
+                    <div class="carousel-inner">
+                        {% for image in publication_location.images.all %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <a href="{{ image.image.url }}" target="_blank">
+                                <img class="d-block w-100 property-image" src="{{ image.image.url }}" alt="Image du bien" style="height: 250px; object-fit: cover;" />
+                            </a>
+                        </div>
+                        {% empty %}
+                        <div class="carousel-item active">
+                            <img class="d-block w-100 property-image" src="{% static 'images/default.jpg' %}" alt="Image par défaut" style="height: 250px; object-fit: cover;" />
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Contrôles de navigation corrigés -->
+                    {% if publication_location.images.count > 1 %}
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselClientLocation-{{ publication_location.id }}" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Précédent</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselClientLocation-{{ publication_location.id }}" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Suivant</span>
+                    </button>
+                    {% endif %}
+                </div>
+                
+                <div class="property-tag position-absolute top-0 start-0 m-3 px-3 py-1 rounded-pill text-white fw-bold bg-info">
+                    En Location
+                </div>
             </div>
+            
+            <div class="property-details p-4">
+                <h5 class="property-price mb-3">
+                    {{ publication_location.loyer_mensuel }} FCFA / mois
+                </h5>
+                <a class="d-block h5 property-title mb-2 text-decoration-none" href="{% url 'details_bien_client' type_bien='location' pk=publication_location.pk %}">
+                    {{ publication_location.type_bien }} à {{ publication_location.localisation }}
+                </a>
+                <p class="text-muted property-location"><i class="icon-map-marker me-2"></i>{{ publication_location.localisation }}</p>
+                <div class="d-grid mt-4">
+                    <a href="{% url 'details_bien_client' type_bien=publication_location.type_bien_str pk=publication_location.pk %}" class="btn btn-primary py-2">Voir les détails</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="col-12 text-center">
+        <p class="text-muted">Aucun bien n'est actuellement publié pour la location.</p>
+    </div>
+    {% endif %}
+</div>
+
         </div>
     </div>
     

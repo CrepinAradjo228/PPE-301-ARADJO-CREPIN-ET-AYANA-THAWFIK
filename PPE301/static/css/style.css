@@ -50,3 +50,198 @@
   --bs-primary: #005555; /* Un vert-bleu plus moderne */
   --bs-secondary: #00204a; /* L'ancien primaire, qui devient secondaire */
 }
+/* CSS à ajouter pour améliorer la responsivité mobile */
+
+/* Corrections générales pour mobile */
+@media (max-width: 768px) {
+    /* Container padding réduit sur mobile */
+    .container {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+    
+    /* Cards des propriétés */
+    .property-card {
+        margin-bottom: 20px;
+    }
+    
+    /* Images du carrousel - hauteur adaptée mobile */
+    .property-image {
+        height: 200px !important;
+        object-fit: cover;
+    }
+    
+    /* Carrousel de détail - hauteur réduite sur mobile */
+    .carousel-inner img {
+        height: 250px !important;
+        object-fit: cover;
+    }
+    
+    /* Prix et titres - taille de police adaptée */
+    .property-price {
+        font-size: 1.1rem !important;
+    }
+    
+    .property-title {
+        font-size: 1rem !important;
+        line-height: 1.3;
+    }
+    
+    /* Sidebar sur mobile - full width */
+    .sidebar-info-box {
+        margin-top: 30px;
+        padding: 20px !important;
+    }
+    
+    /* Boutons - espacement vertical */
+    .btn {
+        margin-bottom: 10px;
+    }
+    
+    /* Header de détail */
+    .property-details-header h2 {
+        font-size: 1.5rem !important;
+    }
+    
+    .property-details-header h3 {
+        font-size: 1.3rem !important;
+    }
+    
+    /* Badge responsive */
+    .badge {
+        font-size: 0.8rem !important;
+    }
+    
+    /* Caractéristiques - colonnes empilées */
+    .property-details-body .col-md-6 {
+        margin-bottom: 20px;
+    }
+    
+    /* Contrôles carrousel - taille adaptée */
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 40px;
+    }
+    
+    /* Indicateurs carrousel */
+    .carousel-indicators {
+        bottom: 10px;
+    }
+    
+    .carousel-indicators button {
+        width: 8px;
+        height: 8px;
+    }
+    
+    /* Tags des propriétés */
+    .property-tag {
+        font-size: 0.7rem !important;
+        padding: 5px 10px !important;
+    }
+    
+    /* Informations propriétaire */
+    .owner-info p {
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+    }
+    
+    /* WhatsApp et boutons d'action */
+    .btn-outline-success,
+    .btn-primary {
+        font-size: 0.9rem;
+        padding: 12px 20px;
+    }
+}
+
+/* Corrections pour très petits écrans */
+@media (max-width: 480px) {
+    /* Container encore plus serré */
+    .container {
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+    }
+    
+    /* Colonnes en full width */
+    .col-md-6,
+    .col-lg-4,
+    .col-lg-8 {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    
+    /* Images carrousel plus petites */
+    .property-image {
+        height: 180px !important;
+    }
+    
+    .carousel-inner img {
+        height: 220px !important;
+    }
+    
+    /* Textes plus petits */
+    .property-details-header h2 {
+        font-size: 1.3rem !important;
+    }
+    
+    .property-price {
+        font-size: 1rem !important;
+    }
+    
+    /* Sidebar padding réduit */
+    .sidebar-info-box {
+        padding: 15px !important;
+    }
+    
+    /* Boutons en full width */
+    .btn {
+        font-size: 0.85rem;
+    }
+}
+
+/* Corrections pour les grilles */
+@media (max-width: 576px) {
+    /* Force les colonnes en full width sur très petit mobile */
+    .col-md-6.col-lg-4 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+}
+
+/* Améliorations tactiles */
+@media (hover: none) and (pointer: coarse) {
+    /* Zones tactiles plus grandes */
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 50px;
+        opacity: 0.8;
+    }
+    
+    .carousel-indicators button {
+        width: 12px;
+        height: 12px;
+        margin: 0 3px;
+    }
+    
+    /* Boutons plus facilement cliquables */
+    .btn {
+        min-height: 44px;
+        touch-action: manipulation;
+    }
+}
+
+/* Optimisation des textes longs */
+.property-location,
+.property-title {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Gestion du débordement horizontal */
+body {
+    overflow-x: hidden;
+}
+
+.row {
+    margin-left: 0;
+    margin-right: 0;
+}

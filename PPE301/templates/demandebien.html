@@ -219,12 +219,10 @@
     <div class="container">
       <div class="menu-bg-wrap">
         <div class="site-navigation">
-          <a href="{% url 'home' %}" class="logo m-0 float-start">Property</a>
+          <a href="{% url 'home' %}" class="logo m-0 float-start">IWAMMO</a>
           <ul class="js-clone-nav d-none d-lg-inline-block text-start site-menu float-end">
             <li><a href="{% url 'home' %}">Accueil</a></li>
             <li class="active"><a href="{% url 'property' %}">Propriétés</a></li>
-            <li><a href="{% url 'service' %}">Services</a></li>
-            <li><a href="#">À propos</a></li>
             <li><a href="{% url 'contact' %}">Contact</a></li>
           </ul>
           <a href="#" class="burger light me-auto float-end mt-1 site-menu-toggle js-menu-toggle d-inline-block d-lg-none" data-toggle="collapse" data-target="#main-navbar">
@@ -253,98 +251,134 @@
   </div>
 
   <div class="section pt-5 pb-5">
-    <div class="container">
-      <div class="row justify-content-center">
+        <div class="container">
+    <div class="row justify-content-center">
         <div class="col-lg-8">
+            {% if bien %}
+            <div class="card mb-5 shadow-sm formulaire-card">
+                <div class="card-header text-white text-center formulaire-header">
+                    <h4 class="mb-0">Bien concerné par la demande</h4>
+                </div>
+                <div class="card-body">
+    <div class="row align-items-center">
+        <div class="col-md-4 mb-3 mb-md-0">
+            <div id="carouselBienDemande-{{ bien.id }}" class="carousel slide" data-bs-ride="carousel">
+                
+                <div class="carousel-indicators">
+                    {% for image in bien.images.all %}
+                    <button type="button" 
+                            data-bs-target="#carouselBienDemande-{{ bien.id }}" 
+                            data-bs-slide-to="{{ forloop.counter0 }}" 
+                            {% if forloop.first %}class="active" aria-current="true"{% endif %}
+                            aria-label="Slide {{ forloop.counter }}"></button>
+                    {% endfor %}
+                </div>
 
-          {% if bien %}
-          <div class="card mb-5 shadow-sm formulaire-card">
-            <div class="card-header text-white text-center formulaire-header">
-              <h4 class="mb-0">Bien concerné par la demande</h4>
+                <div class="carousel-inner">
+                    {% for image in bien.images.all %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <a href="{{ image.image.url }}" target="_blank">
+                            <img src="{{ image.image.url }}" class="d-block w-100 img-fluid rounded" alt="Image du bien">
+                        </a>
+                    </div>
+                    {% empty %}
+                    <div class="carousel-item active">
+                        <img src="{% static 'images/default.jpg' %}" class="d-block w-100 img-fluid rounded" alt="Image par défaut">
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                {% if bien.images.count > 1 %}
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselBienDemande-{{ bien.id }}" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Précédent</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselBienDemande-{{ bien.id }}" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Suivant</span>
+                </button>
+                {% endif %}
             </div>
-            <div class="card-body">
-              <div class="row align-items-center">
-                <div class="col-md-4 mb-3 mb-md-0">
-                  {% if bien.image_principale %}
-                  <img src="{{ bien.image_principale.url }}" class="img-fluid rounded" alt="Image du bien">
-                  {% else %}
-                  <img src="{% static 'images/default.jpg' %}" class="img-fluid rounded" alt="Image par défaut">
-                  {% endif %}
-                </div>
-                <div class="col-md-8">
-                  <h5 class="card-title formulaire-titre">{{ bien.type_bien }} à {{ bien.localisation }}</h5>
-                  {% if bien.prix_vente %}
-                    <p class="card-text text-muted mb-1"><strong class="formulaire-strong">Prix :</strong> {{ bien.prix_vente }} FCFA</p>
-                  {% elif bien.loyer_mensuel %}
-                    <p class="card-text text-muted mb-1"><strong class="formulaire-strong">Loyer :</strong> {{ bien.loyer_mensuel }} FCFA / mois</p>
-                  {% endif %}
-                  <p class="card-text text-muted mb-1"><strong class="formulaire-strong">Superficie :</strong> {{ bien.superficie }} m²</p>
-                  <p class="card-text text-muted mb-1"><strong class="formulaire-strong">Type d'opération :</strong> {% if type_bien == 'vendre' %}Vente{% else %}Location{% endif %}</p>
-                </div>
-              </div>
             </div>
-          </div>
-          {% else %}
-          <div class="alert alert-danger text-center" role="alert">
-            Le bien que vous recherchez n'est pas disponible.
-          </div>
-          {% endif %}
-
-          <div class="card shadow-lg p-4 mb-5 bg-white rounded formulaire-card">
-            <h4 class="card-title text-center text-primary mb-4 formulaire-titre">Formulaire d'intérêt</h4>
-
-            {% if messages %}
-              {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show formulaire-alert" role="alert">
-                  {{ message }}
-                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-              {% endfor %}
+        <div class="col-md-8">
+            <h5 class="card-title formulaire-titre">{{ bien.type_bien }} à {{ bien.localisation }}</h5>
+            {% if bien.prix_vente %}
+            <p class="card-text text-muted mb-1"><strong class="formulaire-strong">Prix :</strong> {{ bien.prix_vente }} FCFA</p>
+            {% elif bien.loyer_mensuel %}
+            <p class="card-text text-muted mb-1"><strong class="formulaire-strong">Loyer :</strong> {{ bien.loyer_mensuel }} FCFA / mois</p>
+            {% endif %}
+            <p class="card-text text-muted mb-1"><strong class="formulaire-strong">Superficie :</strong> {{ bien.superficie }} m²</p>
+            <p class="card-text text-muted mb-1"><strong class="formulaire-strong">Type d'opération :</strong> {% if type_bien == 'vendre' %}Vente{% else %}Location{% endif %}</p>
+        </div>
+    </div>
+</div>
+            </div>
+            {% else %}
+            <div class="alert alert-danger text-center" role="alert">
+                Le bien que vous recherchez n'est pas disponible.
+            </div>
             {% endif %}
 
-            <form method="post" class="needs-validation formulaire-form" novalidate>
-              {% csrf_token %}
+            <div class="card shadow-lg p-4 mb-5 bg-white rounded formulaire-card">
+                <h4 class="card-title text-center text-primary mb-4 formulaire-titre">Formulaire d'intérêt</h4>
 
-              {% for field in form %}
-              <div class="mb-3 formulaire-field-group">
-                <label for="{{ field.id_for_label }}" class="form-label formulaire-label">
-                  {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
-                  {{ field.label }}
-                </label>
-                <div class="formulaire-input-wrapper">
-                  {{ field }}
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show formulaire-alert" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-                {% if field.help_text %}
-                  <small class="form-text text-muted formulaire-help">{{ field.help_text }}</small>
+                {% endfor %}
                 {% endif %}
-                {% if field.errors %}
-                  <div class="invalid-feedback d-block formulaire-error">
-                    {% for error in field.errors %}
-                      {{ error }}
+
+                <form method="post" class="needs-validation formulaire-form" novalidate>
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                    <div class="mb-3 formulaire-field-group">
+                        <label for="{{ field.id_for_label }}" class="form-label formulaire-label">
+                            {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                            {{ field.label }}
+                        </label>
+                        <div class="formulaire-input-wrapper">
+                            {{ field }}
+                        </div>
+                        {% if field.help_text %}
+                        <small class="form-text text-muted formulaire-help">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% if field.errors %}
+                        <div class="invalid-feedback d-block formulaire-error">
+                            {% for error in field.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
                     {% endfor %}
-                  </div>
-                {% endif %}
-              </div>
-              {% endfor %}
 
-              <div class="d-flex justify-content-between align-items-center mt-4 formulaire-buttons">
-                <a href="{% url 'property' %}" class="btn btn-secondary py-2 px-4 formulaire-btn formulaire-btn-secondary">
-                  <i class="icon-arrow-left me-2"></i>Retour
-                </a>
-                <button type="submit" class="btn btn-primary py-2 px-4 formulaire-btn formulaire-btn-primary">
-                  <i class="icon-send me-2"></i>Envoyer ma demande
-                </button>
-              </div>
+                    <div class="d-flex justify-content-between align-items-center mt-4 formulaire-buttons">
+                        <a href="{% url 'property' %}" class="btn btn-secondary py-2 px-4 formulaire-btn formulaire-btn-secondary">
+                            <i class="icon-arrow-left me-2"></i>Retour
+                        </a>
+                        <button type="submit" class="btn btn-primary py-2 px-4 formulaire-btn formulaire-btn-primary">
+                            <i class="icon-send me-2"></i>Envoyer ma demande
+                        </button>
+                    </div>
 
-            </form>
-          </div>
+                </form>
+            </div>
         </div>
-      </div>
     </div>
+</div>
   </div>
 
-  <div class="site-footer">
-    </div>
+      <div class="row mt-5">
+                <div class="col-12 text-center">
+                    <p>
+                        Copyright &copy; IWAMMO <script>document.write(new Date().getFullYear());</script>. Tous droits réservés.
+                    </p>
+                </div>
+            </div>
 
   <script src="{% static 'js/bootstrap.bundle.min.js'%}"></script>
   <script src="{% static 'js/tiny-slider.js'%}"></script>

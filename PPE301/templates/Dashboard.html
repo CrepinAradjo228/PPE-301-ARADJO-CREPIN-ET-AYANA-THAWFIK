@@ -59,6 +59,7 @@
                         <a class="collapse-item" href="{% url 'registerbien' %}">Enregistrer un bien</a>
                         <a class="collapse-item" href="{% url 'listebien' proprietaire_id=proprietaire_id %}">Biens enregistrés</a>
                         <a class="collapse-item" href="{% url 'bienpublies' %}">Biens publiés</a>
+                        <a class="collapse-item active" href="{% url 'biens_refuses' %}">Biens refusés</a>
                     </div>
                 </div>
             </li>
@@ -216,22 +217,24 @@
                         </div>
 
                         <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-info shadow h-100 py-2">
+                            <div class="card border-left-danger shadow h-100 py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                                Profil
+                                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                                Biens refusés
                                             </div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">Complet à 85%</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ nombre_biens_refuses }}</div>
                                         </div>
                                         <div class="col-auto">
-                                            <i class="fas fa-user-circle fa-2x text-gray-300"></i>
+                                            <i class="fas fa-ban fa-2x text-gray-300"></i>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        
 
                     </div>
                 </div>

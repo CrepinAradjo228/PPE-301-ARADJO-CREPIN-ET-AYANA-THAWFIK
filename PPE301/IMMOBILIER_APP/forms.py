@@ -34,7 +34,7 @@ class BienForm(forms.Form):
     localisation = forms.CharField(label="Localisation", max_length=255)
     prix = forms.FloatField(label="Prix du bien")
     etat = forms.CharField(label="Etat du bien",max_length=255)
-    image = forms.ImageField(label="Inserez les images du bien", required=False)
+
 
 
 class PublierForm(forms.Form):
@@ -80,7 +80,6 @@ class VendreForm(forms.Form):
     localisation = forms.CharField(label="Localisation", max_length=255)
     description = forms.CharField(label="Description", widget=forms.Textarea)
     etat_bien = forms.CharField(label="État du bien", max_length=255)
-    image_principale = forms.ImageField(label="Image principale", required=False)
     titre_foncier = forms.ImageField(label="Titre foncier", required=False)
     numero_titre_foncier = forms.CharField(label="Numéro du titre foncier", max_length=255)
 
@@ -96,7 +95,6 @@ class LouerForm(forms.Form):
     avance = forms.FloatField(label="Montant de la caution (avance)")
     localisation = forms.CharField(label="Localisation", max_length=255)
     description = forms.CharField(label="Description", widget=forms.Textarea)
-    image_principale = forms.ImageField(label="Image principale", required=False)
     proprietaire_nom = forms.CharField(label="Propriétaire", disabled=True, required=False)
     proprietaire_id = forms.IntegerField(widget=forms.HiddenInput(), required=False)
 

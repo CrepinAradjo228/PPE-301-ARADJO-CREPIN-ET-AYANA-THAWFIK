@@ -1,0 +1,474 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Biens refusés | IWAMMO</title>
+
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+    <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/bien-style.css' %}" rel="stylesheet">
+    <style>
+        .card-refus {
+            border-left: 5px solid #dc3545 !important;
+        }
+        
+        .motif-refus {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            padding: 12px 15px;
+            margin: -1rem -1rem 1rem -1rem;
+            border-radius: 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .motif-refus::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            opacity: 0.1;
+        }
+        
+        .motif-refus-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .compteur-refus {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+        
+        .card-content {
+            padding: 1rem;
+        }
+        
+        .bien-image {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .badge-refuse {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+        
+        .btn-disabled-max {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+            cursor: not-allowed;
+        }
+        
+        .btn-disabled-max:hover {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+        }
+        
+        .alert-max-refus {
+            background: linear-gradient(135deg, #721c24, #dc3545);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        }
+        
+        .info-bien {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .info-bien i {
+            width: 16px;
+            text-align: center;
+            margin-right: 8px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+
+<body id="page-top">
+
+    <div id="wrapper">
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'dashboard' %}">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-home"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">IWAMMO</div>
+            </a>
+            <hr class="sidebar-divider my-0">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'dashboard' %}">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Tableau de bord</span>
+                </a>
+            </li>
+            <hr class="sidebar-divider">
+            <div class="sidebar-heading">
+                Fonctionnalités
+            </div>
+            <li class="nav-item active">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseBiens"
+                    aria-expanded="true" aria-controls="collapseBiens">
+                    <i class="fas fa-fw fa-building"></i>
+                    <span>Gestion des biens</span>
+                </a>
+                <div id="collapseBiens" class="collapse show" aria-labelledby="headingBiens" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Mes biens :</h6>
+                        <a class="collapse-item" href="{% url 'registerbien' %}">Enregistrer un bien</a>
+                        <a class="collapse-item" href="{% url 'listebien' proprietaire_id=proprietaire.id %}">Biens enregistrés</a>
+                        <a class="collapse-item" href="{% url 'bienpublies' %}">Biens publiés</a>
+                        <a class="collapse-item active" href="{% url 'biens_refuses' %}">Biens refusés</a>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'liste_demandes_proprietaire' %}">
+                    <i class="fas fa-fw fa-comments"></i>
+                    <span>Demandes des clients</span>
+                </a>
+            </li>
+            <hr class="sidebar-divider d-none d-md-block">
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+        </ul>
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                        <div class="input-group">
+                            <input type="text" class="form-control bg-light border-0 small" placeholder="Rechercher..." aria-label="Search" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button">
+                                    <i class="fas fa-search fa-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <ul class="navbar-nav ml-auto">
+                        <div class="topbar-divider d-none d-sm-block"></div>
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Bienvenue {{ proprietaire.nom }} {{ proprietaire.prenom }}</span>
+                                <img class="img-profile rounded-circle" src="{% static 'images/undraw_profile.svg' %}">
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Profil
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Paramètres
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Déconnexion
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-exclamation-triangle text-danger mr-2"></i>
+            Biens Refusés
+        </h1>
+    </div>
+    
+    <div class="alert alert-warning" role="alert">
+        <i class="fas fa-info-circle mr-2"></i>
+        <strong>Information importante :</strong> Ces biens ont été refusés par notre équipe administrative. 
+        Consultez le motif de refus et modifiez vos annonces avant de les soumettre à nouveau. 
+        <strong>Attention :</strong> après 3 refus, vous ne pourrez plus republier le bien.
+    </div>
+    
+    <div class="row">
+        <!-- Biens en Vente -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header py-3 bg-gradient-danger">
+                    <h6 class="m-0 font-weight-bold text-white">
+                        <i class="fas fa-home mr-2"></i> Biens en Vente Refusés
+                    </h6>
+                </div>
+                <div class="card-body p-0">
+                    {% if biens_vente_refuses %}
+                        {% for bien in biens_vente_refuses %}
+                        <div class="card m-3 card-refus {% if bien.nombre_de_refus >= 3 %}pulse-animation{% endif %}">
+                            <!-- Message de refus en header -->
+                            <div class="motif-refus">
+                                <div class="motif-refus-content">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-times-circle mr-2"></i>
+                                            Motif de refus
+                                        </h6>
+                                        <span class="compteur-refus">
+                                            {{ bien.nombre_de_refus }} / 3
+                                        </span>
+                                    </div>
+                                    <p class="mb-0 font-weight-normal">{{ bien.message_de_refus }}</p>
+                                </div>
+                            </div>
+                            
+                            {% if bien.nombre_de_refus >= 3 %}
+                            <div class="alert-max-refus">
+                                <i class="fas fa-ban mr-2"></i>
+                                <strong>Limite atteinte !</strong> Ce bien ne peut plus être republié.
+                            </div>
+                            {% endif %}
+                            
+                            <div class="card-content">
+                                <div class="row align-items-center">
+                                    <div class="col-4">
+                                        <div class="bien-image">
+                                            <div id="carouselVente-{{ bien.id }}" class="carousel slide" data-ride="carousel">
+                                                <div class="carousel-inner" style="height: 120px;">
+                                                    {% for image in bien.images.all %}
+                                                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                                        <img class="d-block w-100 h-100" src="{{ image.image.url }}" alt="Image {{ forloop.counter }}" style="object-fit: cover;">
+                                                    </div>
+                                                    {% empty %}
+                                                    <div class="carousel-item active">
+                                                        <img class="d-block w-100 h-100" src="{% static 'biens/background.jpeg' %}" alt="Image par défaut" style="object-fit: cover;">
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h5 class="font-weight-bold mb-0">{{ bien.type_bien }}</h5>
+                                            <span class="badge-refuse">Refusé</span>
+                                        </div>
+                                        <div class="info-bien">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            {{ bien.localisation }}
+                                        </div>
+                                        <div class="info-bien">
+                                            <i class="fas fa-money-bill-wave"></i>
+                                            <strong>{{ bien.prix_vente|floatformat:0 }}</strong> FCFA
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <hr class="my-3">
+                                
+                                <div class="d-flex justify-content-end flex-wrap">
+                                    {% if bien.type_bien_str == 'vendre' %}
+    <a href="{% url 'republier_vente' bien.id %}" 
+       class="btn btn-success btn-sm mr-2 mb-1 {% if bien.nombre_de_refus >= 3 %}btn-disabled-max{% endif %}" 
+       {% if bien.nombre_de_refus >= 3 %}onclick="return false;" tabindex="-1"{% endif %}>
+        <i class="fas fa-paper-plane"></i> Republier
+    </a>
+{% elif bien.type_bien_str == 'louer' %}
+    <a href="{% url 'republier_location' bien.id %}" 
+       class="btn btn-success btn-sm mr-2 mb-1 {% if bien.nombre_de_refus >= 3 %}btn-disabled-max{% endif %}" 
+       {% if bien.nombre_de_refus >= 3 %}onclick="return false;" tabindex="-1"{% endif %}>
+        <i class="fas fa-paper-plane"></i> Republier
+    </a>
+{% endif %}
+                                    <a href="{% url 'modifier_vente' bien.id %}" class="btn btn-info btn-sm mr-2 mb-1">
+                                        <i class="fas fa-edit"></i> Modifier
+                                    </a>
+                                    <a href="{% url 'supprimer_vente' bien.id %}" class="btn btn-danger btn-sm mb-1">
+                                        <i class="fas fa-trash"></i> Supprimer
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                        <h5 class="text-muted">Aucun bien en vente refusé</h5>
+                        <p class="text-muted">Tous vos biens en vente sont conformes !</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Biens en Location -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header py-3 bg-gradient-danger">
+                    <h6 class="m-0 font-weight-bold text-white">
+                        <i class="fas fa-key mr-2"></i> Biens en Location Refusés
+                    </h6>
+                </div>
+                <div class="card-body p-0">
+                    {% if biens_location_refuses %}
+                        {% for bien in biens_location_refuses %}
+                        <div class="card m-3 card-refus {% if bien.nombre_de_refus >= 3 %}pulse-animation{% endif %}">
+                            <!-- Message de refus en header -->
+                            <div class="motif-refus">
+                                <div class="motif-refus-content">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-times-circle mr-2"></i>
+                                            Motif de refus
+                                        </h6>
+                                        <span class="compteur-refus">
+                                            {{ bien.nombre_de_refus }} / 3
+                                        </span>
+                                    </div>
+                                    <p class="mb-0 font-weight-normal">{{ bien.message_de_refus }}</p>
+                                </div>
+                            </div>
+                            
+                            {% if bien.nombre_de_refus >= 3 %}
+                            <div class="alert-max-refus">
+                                <i class="fas fa-ban mr-2"></i>
+                                <strong>Limite atteinte !</strong> Ce bien ne peut plus être republié.
+                            </div>
+                            {% endif %}
+                            
+                            <div class="card-content">
+                                <div class="row align-items-center">
+                                    <div class="col-4">
+                                        <div class="bien-image">
+                                            <div id="carouselLocation-{{ bien.id }}" class="carousel slide" data-ride="carousel">
+                                                <div class="carousel-inner" style="height: 120px;">
+                                                    {% for image in bien.images.all %}
+                                                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                                        <img class="d-block w-100 h-100" src="{{ image.image.url }}" alt="Image {{ forloop.counter }}" style="object-fit: cover;">
+                                                    </div>
+                                                    {% empty %}
+                                                    <div class="carousel-item active">
+                                                        <img class="d-block w-100 h-100" src="{% static 'biens/background.jpeg' %}" alt="Image par défaut" style="object-fit: cover;">
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h5 class="font-weight-bold mb-0">{{ bien.type_bien }}</h5>
+                                            <span class="badge-refuse">Refusé</span>
+                                        </div>
+                                        <div class="info-bien">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            {{ bien.localisation }}
+                                        </div>
+                                        <div class="info-bien">
+                                            <i class="fas fa-money-bill-wave"></i>
+                                            <strong>{{ bien.avance|floatformat:0 }}</strong> FCFA (avance)
+                                        </div>
+                                        <div class="info-bien">
+                                            <i class="fas fa-clock"></i>
+                                            {{ bien.duree_location }} mois minimum
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <hr class="my-3">
+                                
+                                <div class="d-flex justify-content-end flex-wrap">
+                                    <a href="{% url 'publierbien' bien.id %}" 
+                                       class="btn btn-success btn-sm mr-2 mb-1 {% if bien.nombre_de_refus >= 3 %}btn-disabled-max{% endif %}" 
+                                       {% if bien.nombre_de_refus >= 3 %}onclick="return false;" tabindex="-1"{% endif %}>
+                                        <i class="fas fa-paper-plane"></i> Republier
+                                    </a>
+                                    <a href="{% url 'modifier_location' bien.id %}" class="btn btn-info btn-sm mr-2 mb-1">
+                                        <i class="fas fa-edit"></i> Modifier
+                                    </a>
+                                    <a href="{% url 'supprimer_location' bien.id %}" class="btn btn-danger btn-sm mb-1">
+                                        <i class="fas fa-trash"></i> Supprimer
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                        <h5 class="text-muted">Aucun bien en location refusé</h5>
+                        <p class="text-muted">Tous vos biens en location sont conformes !</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+            </div>
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; IWAMMO 2025</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Prêt à partir ?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Sélectionnez "Déconnexion" ci-dessous si vous êtes prêt à terminer votre session
+                    actuelle.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Annuler</button>
+                    <a class="btn btn-primary" href="#">Déconnexion</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+    <script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+
+</body>
+</html>

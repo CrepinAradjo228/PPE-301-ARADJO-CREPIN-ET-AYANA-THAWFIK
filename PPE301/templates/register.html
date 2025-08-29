@@ -55,6 +55,7 @@
                         <a class="collapse-item active" href="{% url 'registerbien' %}">Enregistrer un bien</a>
                         <a class="collapse-item" href="{% url 'listebien' proprietaire_id=proprietaire.id %}">Biens enregistrés</a>
                         <a class="collapse-item" href="{% url 'bienpublies' %}">Biens publiés</a>
+                        <a class="collapse-item" href="{% url 'biens_refuses' %}">Biens refusés</a>
                     </div>
                 </div>
             </li>
@@ -127,24 +128,31 @@
     </div>
     <div class="card-body">
         <form method="POST" action="{% url 'registerbien' %}" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <div class="form-group mt-4 d-flex justify-content-between">
-                <button type="submit" class="btn btn-success btn-icon-split">
-                    <span class="icon text-white-50">
-                        <i class="fas fa-save"></i>
-                    </span>
-                    <span class="text">Enregistrer le bien</span>
-                </button>
-                
-                <a href="{% url 'dashboard' %}" class="btn btn-secondary btn-icon-split">
-                    <span class="icon text-white-50">
-                        <i class="fas fa-times"></i>
-                    </span>
-                    <span class="text">Annuler</span>
-                </a>
-            </div>
-        </form>
+    {% csrf_token %}
+    
+    {{ form.as_p }}
+    
+    <div class="form-group">
+        <label for="id_images">Choisissez 3 à 4 images pour votre bien :</label>
+        <input type="file" class="form-control-file" name="images" id="id_images" multiple required>
+    </div>
+    
+    <div class="form-group mt-4 d-flex justify-content-between">
+        <button type="submit" class="btn btn-success btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-save"></i>
+            </span>
+            <span class="text">Enregistrer le bien</span>
+        </button>
+        
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-times"></i>
+            </span>
+            <span class="text">Annuler</span>
+        </a>
+    </div>
+</form>
     </div>
 </div>
                 </div>

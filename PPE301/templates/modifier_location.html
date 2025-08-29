@@ -55,6 +55,7 @@
                         <a class="collapse-item" href="{% url 'registerbien' %}">Enregistrer un bien</a>
                         <a class="collapse-item" href="{% url 'listebien' proprietaire_id=proprietaire.id %}">Biens enregistrés</a>
                         <a class="collapse-item" href="{% url 'bienpublies' %}">Biens publiés</a>
+                        <a class="collapse-item" href="{% url 'biens_refuses' %}">Biens refusés</a>
                     </div>
                 </div>
             </li>
@@ -116,94 +117,110 @@
                         </div>
                         <div class="card-body">
                             <form method="POST" enctype="multipart/form-data">
-                                {% csrf_token %}
-                                
-                                <div class="form-row">
-                                    <div class="form-group col-md-6">
-                                        <label for="{{ form.type_bien.id_for_label }}">{{ form.type_bien.label }}</label>
-                                        {{ form.type_bien }}
-                                        {% if form.type_bien.errors %}
-                                            <div class="text-danger small mt-1">{{ form.type_bien.errors }}</div>
-                                        {% endif %}
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label for="{{ form.loyer_mensuel.id_for_label }}">{{ form.loyer_mensuel.label }}</label>
-                                        {{ form.loyer_mensuel }}
-                                        {% if form.loyer_mensuel.errors %}
-                                            <div class="text-danger small mt-1">{{ form.loyer_mensuel.errors }}</div>
-                                        {% endif %}
-                                    </div>
-                                </div>
-
-                                <div class="form-row">
-                                    <div class="form-group col-md-6">
-                                        <label for="{{ form.durée_location.id_for_label }}">{{ form.durée_location.label }}</label>
-                                        {{ form.durée_location }}
-                                        {% if form.durée_location.errors %}
-                                            <div class="text-danger small mt-1">{{ form.durée_location.errors }}</div>
-                                        {% endif %}
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label for="{{ form.avance.id_for_label }}">{{ form.avance.label }}</label>
-                                        {{ form.avance }}
-                                        {% if form.avance.errors %}
-                                            <div class="text-danger small mt-1">{{ form.avance.errors }}</div>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="{{ form.localisation.id_for_label }}">{{ form.localisation.label }}</label>
-                                    {{ form.localisation }}
-                                    {% if form.localisation.errors %}
-                                        <div class="text-danger small mt-1">{{ form.localisation.errors }}</div>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
-                                    {{ form.description }}
-                                    {% if form.description.errors %}
-                                        <div class="text-danger small mt-1">{{ form.description.errors }}</div>
-                                    {% endif %}
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="{{ form.image_principale.id_for_label }}">{{ form.image_principale.label }}</label>
-                                    {% if location.image_principale %}
-                                        <div class="current-image mb-2 p-2 border rounded">
-                                            <p class="mb-1"><strong>Image actuelle :</strong></p>
-                                            <img src="{{ location.image_principale.url }}" alt="Image actuelle" class="img-thumbnail mb-2" style="max-width: 200px; max-height: 150px;">
-                                            <p class="text-muted small mb-0">⚠️ Sélectionnez une nouvelle image pour la remplacer (optionnel)</p>
+                                    {% csrf_token %}
+                                    
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="{{ form.type_bien.id_for_label }}">{{ form.type_bien.label }}</label>
+                                            {{ form.type_bien }}
+                                            {% if form.type_bien.errors %}
+                                                <div class="text-danger small mt-1">{{ form.type_bien.errors }}</div>
+                                            {% endif %}
                                         </div>
-                                    {% else %}
-                                        <p class="text-muted small">Aucune image actuellement</p>
-                                    {% endif %}
-                                    {{ form.image_principale }}
-                                    {% if form.image_principale.errors %}
-                                        <div class="text-danger small mt-1">{{ form.image_principale.errors }}</div>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="{{ form.proprietaire.id_for_label }}">{{ form.proprietaire.label }}</label>
-                                    {{ form.proprietaire }}
-                                    {% if form.proprietaire.errors %}
-                                        <div class="text-danger small mt-1">{{ form.proprietaire.errors }}</div>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="form-group mt-4 text-center">
-                                    <button type="submit" class="btn btn-success btn-icon-split">
-                                        <span class="icon text-white-50"><i class="fas fa-save"></i></span>
-                                        <span class="text">Enregistrer les modifications</span>
-                                    </button>
-                                    <a href="{% url 'bienpublies' %}" class="btn btn-secondary btn-icon-split ml-2">
-                                        <span class="icon text-white-50"><i class="fas fa-arrow-left"></i></span>
-                                        <span class="text">Annuler</span>
-                                    </a>
-                                </div>
-                            </form>
+                                        <div class="form-group col-md-6">
+                                            <label for="{{ form.loyer_mensuel.id_for_label }}">{{ form.loyer_mensuel.label }}</label>
+                                            {{ form.loyer_mensuel }}
+                                            {% if form.loyer_mensuel.errors %}
+                                                <div class="text-danger small mt-1">{{ form.loyer_mensuel.errors }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="{{ form.durée_location.id_for_label }}">{{ form.durée_location.label }}</label>
+                                            {{ form.durée_location }}
+                                            {% if form.durée_location.errors %}
+                                                <div class="text-danger small mt-1">{{ form.durée_location.errors }}</div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="{{ form.avance.id_for_label }}">{{ form.avance.label }}</label>
+                                            {{ form.avance }}
+                                            {% if form.avance.errors %}
+                                                <div class="text-danger small mt-1">{{ form.avance.errors }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="{{ form.localisation.id_for_label }}">{{ form.localisation.label }}</label>
+                                        {{ form.localisation }}
+                                        {% if form.localisation.errors %}
+                                            <div class="text-danger small mt-1">{{ form.localisation.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                                        {{ form.description }}
+                                        {% if form.description.errors %}
+                                            <div class="text-danger small mt-1">{{ form.description.errors }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="form-group">
+                                        <h4 class="mt-4">Gérer les images du bien</h4>
+                                        <p class="text-muted">Sélectionnez les images à supprimer ou ajoutez-en de nouvelles. (4 images maximum au total)</p>
+                                        <div class="row">
+                                            {% for image_existante in location.images.all %}
+                                            <div class="col-6 col-md-4 mb-3">
+                                                <div class="card h-100 shadow-sm">
+                                                    <img src="{{ image_existante.image.url }}" class="card-img-top" alt="Image du bien">
+                                                    <div class="card-body text-center">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" name="images_a_supprimer" value="{{ image_existante.id }}" id="delete-{{ image_existante.id }}">
+                                                            <label class="form-check-label" for="delete-{{ image_existante.id }}">
+                                                                Supprimer
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% empty %}
+                                            <div class="col-12">
+                                                <p class="text-muted">Aucune image n'est associée à ce bien.</p>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="id_images_a_ajouter">Ajouter de nouvelles images :</label>
+                                        <input type="file" class="form-control-file" name="images_a_ajouter" id="id_images_a_ajouter" multiple accept="image/*">
+                                    </div>
+
+                                    {% comment %}
+                                    <div class="form-group">
+                                        <label for="{{ form.proprietaire.id_for_label }}">{{ form.proprietaire.label }}</label>
+                                        {{ form.proprietaire }}
+                                        {% if form.proprietaire.errors %}
+                                            <div class="text-danger small mt-1">{{ form.proprietaire.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                    {% endcomment %}
+                                    <input type="hidden" name="proprietaire_id" value="{{ form.proprietaire_id.value }}">
+                                    <div class="form-group mt-4 text-center">
+                                        <button type="submit" class="btn btn-success btn-icon-split">
+                                            <span class="icon text-white-50"><i class="fas fa-save"></i></span>
+                                            <span class="text">Enregistrer les modifications</span>
+                                        </button>
+                                        <a href="{% url 'bienpublies' %}" class="btn btn-secondary btn-icon-split ml-2">
+                                            <span class="icon text-white-50"><i class="fas fa-arrow-left"></i></span>
+                                            <span class="text">Annuler</span>
+                                        </a>
+                                    </div>
+                                </form>
                         </div>
                     </div>
                 </div>

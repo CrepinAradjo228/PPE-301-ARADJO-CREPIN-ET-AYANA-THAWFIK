@@ -167,80 +167,125 @@
                             <h6 class="m-0 font-weight-bold text-primary">Détails des Transactions Effectuées</h6>
                             <i class="fas fa-dollar-sign text-primary"></i>
                         </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                {% if transactions %}
-                                    <table class="table table-bordered table-striped table-hover" id="dataTable" width="100%" cellspacing="0">
-                                        <thead>
-                                            <tr>
-                                                <th>ID Trans.</th>
-                                                <th>Type</th>
-                                                <th>Bien</th>
-                                                <th>Image</th>
-                                                <th>Propriétaire</th>
-                                                <th>Client</th>
-                                                <th>Montant</th>
-                                                <th>Date</th>
-                                                <th>Statut Bien</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for transaction in transactions %}
-                                                <tr>
-                                                    <td><i class="fas fa-file-invoice-dollar mr-2 text-muted"></i>{{ transaction.pk }}</td>
-                                                    <td>
-                                                        {% if transaction.type_transaction == 'vendu' %}
-                                                            <span class="badge badge-vente badge-pill px-3">Vente</span>
-                                                        {% elif transaction.type_transaction == 'loué' %}
-                                                            <span class="badge badge-location badge-pill px-3">Location</span>
-                                                        {% elif transaction.type_transaction == 'toujours loué' %}
-                                                            <span class="badge badge-renouvellement badge-pill px-3">Renouvellement</span>
-                                                        {% else %}
-                                                            <span class="badge badge-secondary badge-pill">{{ transaction.type_transaction }}</span>
-                                                        {% endif %}
-                                                    </td>
-                                                    <td>
-                                                        {% if transaction.bien_vente %}
-                                                            <span class="text-success font-weight-bold">#{{ transaction.bien_vente.id }}</span>
-                                                        {% elif transaction.bien_location %}
-                                                            <span class="text-info font-weight-bold">#{{ transaction.bien_location.id }}</span>
-                                                        {% else %}
-                                                            <span class="text-danger">Bien Supprimé</span>
-                                                        {% endif %}
-                                                    </td>
-                                                    <td>
-                                                        {% if transaction.bien_vente and transaction.bien_vente.image_principale %}
-                                                            <img src="{{ transaction.bien_vente.image_principale.url }}" alt="Bien Vente">
-                                                        {% elif transaction.bien_location and transaction.bien_location.image_principale %}
-                                                            <img src="{{ transaction.bien_location.image_principale.url }}" alt="Bien Location">
-                                                        {% else %}
-                                                            <img src="{% static 'images/placeholder_image.jpg' %}" alt="Image par défaut">
-                                                        {% endif %}
-                                                    </td>
-                                                    <td><i class="fas fa-user-circle mr-1 text-muted"></i>{{ transaction.proprietaire.nom }} {{ transaction.proprietaire.prenom }}</td>
-                                                    <td><i class="fas fa-address-card mr-1 text-muted"></i>{{ transaction.client_nom }}</td>
-                                                    <td><i class="fas fa-money-check-alt mr-1 text-muted"></i>{{ transaction.montant_transaction|floatformat:0 }} FCFA</td>
-                                                    <td><i class="fas fa-calendar-alt mr-1 text-muted"></i>{{ transaction.date_transaction|date:"d M Y H:i" }}</td>
-                                                    <td>
-                                                        {% if transaction.statut_bien_apres_transaction %}
-                                                            <span class="badge badge-success px-3">{{ transaction.statut_bien_apres_transaction|capfirst }}</span>
-                                                        {% elif transaction.type_transaction == 'toujours loué' %}
-                                                            <span class="badge badge-success px-3">Renouvelée</span>
-                                                        {% endif %}
-                                                    </td>
-                                                </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
+                                <div class="card-body">
+    <div class="table-responsive">
+        {% if transactions %}
+            <table class="table table-bordered table-striped table-hover" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ID Trans.</th>
+                        <th>Type</th>
+                        <th>Bien</th>
+                        <th>Image</th>
+                        <th>Propriétaire</th>
+                        <th>Client</th>
+                        <th>Montant</th>
+                        <th>Date</th>
+                        <th>Statut Bien</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                        <tr>
+                            <td><i class="fas fa-file-invoice-dollar mr-2 text-muted"></i>{{ transaction.pk }}</td>
+                            <td>
+                                {% if transaction.type_transaction == 'vendu' %}
+                                    <span class="badge badge-vente badge-pill px-3">Vente</span>
+                                {% elif transaction.type_transaction == 'loué' %}
+                                    <span class="badge badge-location badge-pill px-3">Location</span>
+                                {% elif transaction.type_transaction == 'toujours loué' %}
+                                    <span class="badge badge-renouvellement badge-pill px-3">Renouvellement</span>
                                 {% else %}
-                                    <div class="alert alert-info text-center mt-5" role="alert">
-                                        <i class="fas fa-exchange-alt fa-4x text-info mb-3"></i>
-                                        <h4 class="alert-heading font-weight-bold">Aucune transaction enregistrée pour le moment.</h4>
-                                        <p class="mb-0">Les transactions apparaissent ici une fois qu'elles ont été finalisées sur la plateforme.</p>
-                                    </div>
+                                    <span class="badge badge-secondary badge-pill">{{ transaction.type_transaction }}</span>
                                 {% endif %}
-                            </div>
-                        </div>
+                            </td>
+                            <td>
+                                {% if transaction.bien_vente %}
+                                    <span class="text-success font-weight-bold">#{{ transaction.bien_vente.id }}</span>
+                                {% elif transaction.bien_location %}
+                                    <span class="text-info font-weight-bold">#{{ transaction.bien_location.id }}</span>
+                                {% else %}
+                                    <span class="text-danger">Bien Supprimé</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div id="carouselTransaction-{{ transaction.pk }}" class="carousel slide" data-ride="carousel" style="width: 100px; height: 100px;">
+                                    <div class="carousel-inner">
+                                        {% if transaction.bien_vente %}
+                                            {% for image in transaction.bien_vente.images.all %}
+                                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                                    <a href="{{ image.image.url }}" target="_blank">
+                                                        <img src="{{ image.image.url }}" class="d-block w-100 h-100" style="object-fit: cover;" alt="Image du bien">
+                                                    </a>
+                                                </div>
+                                            {% empty %}
+                                                <div class="carousel-item active">
+                                                    <img src="{% static 'images/placeholder_image.jpg' %}" class="d-block w-100 h-100" style="object-fit: cover;" alt="Image par défaut">
+                                                </div>
+                                            {% endfor %}
+                                        {% elif transaction.bien_location %}
+                                            {% for image in transaction.bien_location.images.all %}
+                                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                                    <a href="{{ image.image.url }}" target="_blank">
+                                                        <img src="{{ image.image.url }}" class="d-block w-100 h-100" style="object-fit: cover;" alt="Image du bien">
+                                                    </a>
+                                                </div>
+                                            {% empty %}
+                                                <div class="carousel-item active">
+                                                    <img src="{% static 'images/placeholder_image.jpg' %}" class="d-block w-100 h-100" style="object-fit: cover;" alt="Image par défaut">
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="carousel-item active">
+                                                <img src="{% static 'images/placeholder_image.jpg' %}" class="d-block w-100 h-100" style="object-fit: cover;" alt="Image par défaut">
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    {% if transaction.bien_vente and transaction.bien_vente.images.count > 1 %}
+                                        <a class="carousel-control-prev" href="#carouselTransaction-{{ transaction.pk }}" role="button" data-slide="prev">
+                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                            <span class="sr-only">Précédent</span>
+                                        </a>
+                                        <a class="carousel-control-next" href="#carouselTransaction-{{ transaction.pk }}" role="button" data-slide="next">
+                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                            <span class="sr-only">Suivant</span>
+                                        </a>
+                                    {% elif transaction.bien_location and transaction.bien_location.images.count > 1 %}
+                                        <a class="carousel-control-prev" href="#carouselTransaction-{{ transaction.pk }}" role="button" data-slide="prev">
+                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                            <span class="sr-only">Précédent</span>
+                                        </a>
+                                        <a class="carousel-control-next" href="#carouselTransaction-{{ transaction.pk }}" role="button" data-slide="next">
+                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                            <span class="sr-only">Suivant</span>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                                </td>
+                            <td><i class="fas fa-user-circle mr-1 text-muted"></i>{{ transaction.proprietaire.nom }} {{ transaction.proprietaire.prenom }}</td>
+                            <td><i class="fas fa-address-card mr-1 text-muted"></i>{{ transaction.client_nom }}</td>
+                            <td><i class="fas fa-money-check-alt mr-1 text-muted"></i>{{ transaction.montant_transaction|floatformat:0 }} FCFA</td>
+                            <td><i class="fas fa-calendar-alt mr-1 text-muted"></i>{{ transaction.date_transaction|date:"d M Y H:i" }}</td>
+                            <td>
+                                {% if transaction.statut_bien_apres_transaction %}
+                                    <span class="badge badge-success px-3">{{ transaction.statut_bien_apres_transaction|capfirst }}</span>
+                                {% elif transaction.type_transaction == 'toujours loué' %}
+                                    <span class="badge badge-success px-3">Renouvelée</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="alert alert-info text-center mt-5" role="alert">
+                <i class="fas fa-exchange-alt fa-4x text-info mb-3"></i>
+                <h4 class="alert-heading font-weight-bold">Aucune transaction enregistrée pour le moment.</h4>
+                <p class="mb-0">Les transactions apparaissent ici une fois qu'elles ont été finalisées sur la plateforme.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
                     </div>
                 </div>
                 </div>

@@ -72,31 +72,39 @@
     <div id="wrapper">
 
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'dashboard_admin' %}">
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-user-shield"></i>
                 </div>
                 <div class="sidebar-brand-text mx-3">IWAMMO Admin</div>
             </a>
             <hr class="sidebar-divider my-0">
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'dashboard_admin' %}">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Tableau de bord</span>
+                </a>
+            </li>
+            <hr class="sidebar-divider">
+            <div class="sidebar-heading">
+                Gestion des biens
+            </div>
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'valider_publication' %}">
                     <i class="fas fa-fw fa-check-circle"></i>
                     <span>Valider les publications</span>
                 </a>
             </li>
-            <li class="nav-item active">
+            <li class="nav-item">
                 <a class="nav-link" href="{% url 'liste_biens_valides' %}">
                     <i class="fas fa-fw fa-list"></i>
                     <span>Biens validés</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'liste_transactions' %}">
-                    <i class="fas fa-fw fa-money-bill-wave"></i>
-                    <span>Historique des transactions</span>
-                </a>
-            </li>
+            <hr class="sidebar-divider">
+            <div class="sidebar-heading">
+                Gestion des documents
+            </div>
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'liste_documents_a_valider' %}">
                     <i class="fas fa-fw fa-file-invoice"></i>
@@ -109,8 +117,17 @@
                     <span>Documents validés</span>
                 </a>
             </li>
-            <hr class="sidebar-divider d-none d-md-block">
-        </ul>
+            <hr class="sidebar-divider">
+            <div class="sidebar-heading">
+                Rapports & Statistiques
+            </div>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'liste_transactions' %}">
+                    <i class="fas fa-fw fa-money-bill-wave"></i>
+                    <span>Historique des transactions</span>
+                </a>
+            </li>
+            </ul>
         <div id="content-wrapper" class="d-flex flex-column">
             <div id="content">
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
@@ -143,85 +160,121 @@
                     <div class="mb-5">
                         <h3 class="section-header mt-4"><i class="fas fa-home mr-2 text-warning"></i>Biens en Vente validés 🏠</h3>
                         <div class="row">
-                            {% for bien in vente_valides %}
-                            <div class="col-md-6 col-lg-4 mb-4">
-                                <div class="card shadow border-left-success">
-                                    <a href="{{ bien.image_principale.url }}" target="_blank" class="d-block text-decoration-none">
-                                        <img src="{{ bien.image_principale.url }}" class="card-img-top" alt="Image principale">
-                                    </a>
-                                    <div class="card-body">
-                                        <h5 class="card-title font-weight-bold text-success text-truncate">{{ bien.type_bien|title }}</h5>
-                                        <hr>
-                                        <ul class="list-unstyled mb-0 small text-muted">
-                                            <li class="d-flex align-items-center mb-1"><i class="fas fa-tag mr-2 text-primary"></i><strong>Prix:</strong> <span class="ml-auto">{{ bien.prix_vente }} FCFA</span></li>
-                                            <li class="d-flex align-items-center mb-1"><i class="fas fa-ruler-combined mr-2 text-primary"></i><strong>Superficie:</strong> <span class="ml-auto">{{ bien.superficie }} m²</span></li>
-                                            <li class="d-flex align-items-center mb-1"><i class="fas fa-map-marker-alt mr-2 text-primary"></i><strong>Localisation:</strong> <span class="ml-auto text-truncate">{{ bien.localisation }}</span></li>
-                                            <li class="d-flex align-items-center mb-1"><i class="fas fa-info-circle mr-2 text-primary"></i><strong>État:</strong> <span class="ml-auto">{{ bien.etat_bien }}</span></li>
-                                            <li class="d-flex align-items-center mb-1"><i class="fas fa-user mr-2 text-primary"></i><strong>Propriétaire:</strong> <span class="ml-auto">{{ bien.proprietaire.nom }} {{ bien.proprietaire.prenom }}</span></li>
-                                        </ul>
-                                        <div class="mt-3 text-center">
-                                            <h6 class="text-muted small">Titre foncier</h6>
-                                            {% if bien.titre_foncier %}
-                                                <a href="{{ bien.titre_foncier.url }}" target="_blank">
-                                                    <img src="{{ bien.titre_foncier.url }}" alt="Titre foncier" class="img-fluid rounded shadow-sm img-fluid-small">
-                                                </a>
-                                            {% else %}
-                                                <p class="text-danger small">Titre foncier non disponible.</p>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {% empty %}
-                            <div class="col-12 text-center my-5">
-                                <i class="fas fa-box-open fa-4x text-gray-400 mb-3"></i>
-                                <p class="text-muted h4">Aucun bien en vente validé pour le moment.</p>
-                            </div>
-                            {% endfor %}
-                        </div>
+    {% for bien in vente_valides %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card shadow border-left-success">
+            <div id="carouselVenteValide-{{ bien.id }}" class="carousel slide" data-ride="carousel">
+                <div class="carousel-inner">
+                    {% for image in bien.images.all %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <a href="{{ image.image.url }}" target="_blank">
+                            <img src="{{ image.image.url }}" class="d-block w-100" alt="Image {{ forloop.counter }}">
+                        </a>
+                    </div>
+                    {% empty %}
+                    <div class="carousel-item active">
+                        <img src="{% static 'biens/background.jpeg' %}" class="d-block w-100" alt="Image par défaut">
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if bien.images.count > 1 %}
+                <a class="carousel-control-prev" href="#carouselVenteValide-{{ bien.id }}" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Précédent</span>
+                </a>
+                <a class="carousel-control-next" href="#carouselVenteValide-{{ bien.id }}" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Suivant</span>
+                </a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title font-weight-bold text-success text-truncate">{{ bien.type_bien|title }}</h5>
+                <hr>
+                <ul class="list-unstyled mb-0 small text-muted">
+                    <li class="d-flex align-items-center mb-1"><i class="fas fa-tag mr-2 text-primary"></i><strong>Prix:</strong> <span class="ml-auto">{{ bien.prix_vente }} FCFA</span></li>
+                    <li class="d-flex align-items-center mb-1"><i class="fas fa-ruler-combined mr-2 text-primary"></i><strong>Superficie:</strong> <span class="ml-auto">{{ bien.superficie }} m²</span></li>
+                    <li class="d-flex align-items-center mb-1"><i class="fas fa-map-marker-alt mr-2 text-primary"></i><strong>Localisation:</strong> <span class="ml-auto text-truncate">{{ bien.localisation }}</span></li>
+                    <li class="d-flex align-items-center mb-1"><i class="fas fa-info-circle mr-2 text-primary"></i><strong>État:</strong> <span class="ml-auto">{{ bien.etat_bien }}</span></li>
+                    <li class="d-flex align-items-center mb-1"><i class="fas fa-user mr-2 text-primary"></i><strong>Propriétaire:</strong> <span class="ml-auto">{{ bien.proprietaire.nom }} {{ bien.proprietaire.prenom }}</span></li>
+                </ul>
+                <div class="mt-3 text-center">
+                    <h6 class="text-muted small">Titre foncier</h6>
+                    {% if bien.titre_foncier %}
+                    <a href="{{ bien.titre_foncier.url }}" target="_blank">
+                        <img src="{{ bien.titre_foncier.url }}" alt="Titre foncier" class="img-fluid rounded shadow-sm img-fluid-small">
+                    </a>
+                    {% else %}
+                    <p class="text-danger small">Titre foncier non disponible.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center my-5">
+        <i class="fas fa-box-open fa-4x text-gray-400 mb-3"></i>
+        <p class="text-muted h4">Aucun bien en vente validé pour le moment.</p>
+    </div>
+    {% endfor %}
+</div>
                     </div>
 
                     <div class="mb-5">
                         <h3 class="section-header mt-5"><i class="fas fa-key mr-2 text-warning"></i>Biens à louer validés 🔑</h3>
                         <div class="row">
-                            {% for bien in location_valides %}
-                            <div class="col-md-6 col-lg-4 mb-4">
-                                <div class="card shadow border-left-info">
-                                    <a href="{{ bien.image_principale.url }}" target="_blank" class="d-block text-decoration-none">
-                                        <img src="{{ bien.image_principale.url }}" class="card-img-top" alt="Image principale">
-                                    </a>
-                                    <div class="card-body">
-                                        <h5 class="card-title font-weight-bold text-info text-truncate-2">{{ bien.type_bien|title }}</h5>
-                                        <hr>
-                                        <ul class="list-unstyled mb-0 small text-muted">
-                                            <li class="d-flex align-items-center mb-1"><i class="fas fa-money-bill-alt mr-2 text-primary"></i><strong>Loyer mensuel:</strong> <span class="ml-auto">{{ bien.loyer_mensuel }} FCFA</span></li>
-                                            <li class="d-flex align-items-center mb-1"><i class="fas fa-clock mr-2 text-primary"></i><strong>Durée de location:</strong> <span class="ml-auto">{{ bien.duree_location }} mois minimum</span></li>
-                                            <li class="d-flex align-items-center mb-1"><i class="fas fa-credit-card mr-2 text-primary"></i><strong>Avance:</strong> <span class="ml-auto">{{ bien.avance }}</span></li>
-                                            <li class="d-flex align-items-center mb-1"><i class="fas fa-map-marker-alt mr-2 text-primary"></i><strong>Localisation:</strong> <span class="ml-auto text-truncate">{{ bien.localisation }}</span></li>
-                                            <li class="d-flex align-items-center mb-1"><i class="fas fa-user mr-2 text-primary"></i><strong>Propriétaire:</strong> <span class="ml-auto">{{ bien.proprietaire.nom }} {{ bien.proprietaire.prenom }}</span></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            {% empty %}
-                            <div class="col-12 text-center my-5">
-                                <i class="fas fa-box-open fa-4x text-gray-400 mb-3"></i>
-                                <p class="text-muted h4">Aucun bien en location validé pour le moment.</p>
-                            </div>
-                            {% endfor %}
-                        </div>
+    {% for bien in location_valides %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card shadow border-left-info">
+            <div id="carouselLocationValide-{{ bien.id }}" class="carousel slide" data-ride="carousel">
+                <div class="carousel-inner">
+                    {% for image in bien.images.all %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <a href="{{ image.image.url }}" target="_blank">
+                            <img src="{{ image.image.url }}" class="d-block w-100" alt="Image {{ forloop.counter }}">
+                        </a>
+                    </div>
+                    {% empty %}
+                    <div class="carousel-item active">
+                        <img src="{% static 'biens/background.jpeg' %}" class="d-block w-100" alt="Image par défaut">
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if bien.images.count > 1 %}
+                <a class="carousel-control-prev" href="#carouselLocationValide-{{ bien.id }}" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Précédent</span>
+                </a>
+                <a class="carousel-control-next" href="#carouselLocationValide-{{ bien.id }}" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Suivant</span>
+                </a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title font-weight-bold text-info text-truncate-2">{{ bien.type_bien|title }}</h5>
+                <hr>
+                <ul class="list-unstyled mb-0 small text-muted">
+                    <li class="d-flex align-items-center mb-1"><i class="fas fa-money-bill-alt mr-2 text-primary"></i><strong>Loyer mensuel:</strong> <span class="ml-auto">{{ bien.loyer_mensuel }} FCFA</span></li>
+                    <li class="d-flex align-items-center mb-1"><i class="fas fa-clock mr-2 text-primary"></i><strong>Durée de location:</strong> <span class="ml-auto">{{ bien.duree_location }} mois minimum</span></li>
+                    <li class="d-flex align-items-center mb-1"><i class="fas fa-credit-card mr-2 text-primary"></i><strong>Avance:</strong> <span class="ml-auto">{{ bien.avance }}</span></li>
+                    <li class="d-flex align-items-center mb-1"><i class="fas fa-map-marker-alt mr-2 text-primary"></i><strong>Localisation:</strong> <span class="ml-auto text-truncate">{{ bien.localisation }}</span></li>
+                    <li class="d-flex align-items-center mb-1"><i class="fas fa-user mr-2 text-primary"></i><strong>Propriétaire:</strong> <span class="ml-auto">{{ bien.proprietaire.nom }} {{ bien.proprietaire.prenom }}</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center my-5">
+        <i class="fas fa-box-open fa-4x text-gray-400 mb-3"></i>
+        <p class="text-muted h4">Aucun bien en location validé pour le moment.</p>
+    </div>
+    {% endfor %}
+</div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <footer class="sticky-footer bg-white mt-5">
-            <div class="container my-auto">
-                <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; IWAMMO 2025</span>
-                </div>
-            </div>
-        </footer>
     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -237,8 +290,16 @@
                     <a class="btn btn-primary" href="#">Déconnexion</a>
                 </div>
             </div>
+            <footer class="sticky-footer bg-white mt-5">
+            <div class="container my-auto">
+                <div class="copyright text-center my-auto">
+                    <span>Copyright&copy; IWAMMO 2025</span>
+                </div>
+            </div>
+        </footer>
         </div>
     </div>
+
 
     <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
     <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>

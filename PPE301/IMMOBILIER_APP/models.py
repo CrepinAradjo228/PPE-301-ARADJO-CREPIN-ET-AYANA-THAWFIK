@@ -45,7 +45,6 @@ class Bien(models.Model):
     localisation = models.CharField(max_length=255)
     prix = models.FloatField(null=True, blank=True)
     etat = models.CharField(max_length=255 ,null=True, blank=True)
-    image = models.ImageField(upload_to='biens/')
     statut = models.CharField(
         max_length=10,
         choices=STATUT_CHOICES,
@@ -71,11 +70,12 @@ class Publication(models.Model):
         return f"Publication pour {self.bien.nom}"
 
 class Vendre(models.Model):
+    # ... Tes champs existants, à l'exception de image_principale
     STATUTS = [
-    ('enregistre', 'Enregistré (En attente de publication)'), 
-    ('en_attente', 'En attente de validation (pour l\'administrateur)'), 
-    ('publie', 'Publié'), 
-    ('refuse', 'Refusé'), 
+        ('enregistre', 'Enregistré (En attente de publication)'), 
+        ('en_attente', 'En attente de validation (pour l\'administrateur)'), 
+        ('publie', 'Publié'), 
+        ('refuse', 'Refusé'), 
     ]
     statut = models.CharField(max_length=20, choices=STATUTS, default='en_attente')
     type_bien = models.CharField(max_length=255)
@@ -84,24 +84,23 @@ class Vendre(models.Model):
     localisation = models.CharField(max_length=255)
     description = models.TextField()
     etat_bien = models.CharField(max_length=255)
-    image_principale = models.ImageField(upload_to='biens_vendus/')
     titre_foncier = models.ImageField(upload_to='titres_fonciers/', default="")
     numero_titre_foncier = models.CharField(max_length=255, unique=True, default="")
     cloturer = models.BooleanField(default=False, help_text="Indique si la vente est clôturée ou non")
+    nombre_de_refus = models.IntegerField(default=0)
+    message_de_refus = models.TextField(blank=True, null=True)
     
-    proprietaire = models.ForeignKey(Utilisateur,  on_delete=models.CASCADE,limit_choices_to={'role': 'proprietaire'}  )
+    proprietaire = models.ForeignKey(Utilisateur, on_delete=models.CASCADE,limit_choices_to={'role': 'proprietaire'})
+    
     def __str__(self):
         return f"{self.type_bien} - {self.localisation}"
     
     @property
     def type_bien_str(self):
         return 'vendre'
-    
-    
-   
-
 
 class Louer(models.Model):
+    # ... Tes champs existants, à l'exception de image_principale
     STATUTS = [
         ('enregistre', 'Enregistré (En attente de publication)'),
         ('en_attente', 'En attente de validation (pour l\'administrateur)'),
@@ -115,8 +114,9 @@ class Louer(models.Model):
     avance = models.FloatField(default=0)
     localisation = models.CharField(max_length=255, default="")
     description = models.TextField(default="")
-    image_principale = models.ImageField(upload_to='biens_loues/', default="")
-
+    nombre_de_refus = models.IntegerField(default=0)
+    message_de_refus = models.TextField(blank=True, null=True)
+    
     proprietaire = models.ForeignKey(
         Utilisateur,  
         on_delete=models.CASCADE,
@@ -129,6 +129,39 @@ class Louer(models.Model):
     @property
     def type_bien_str(self):
         return 'louer'
+
+
+# Nouveau modèle pour les images
+class ImageBien(models.Model):
+    bien_vente = models.ForeignKey(
+        Vendre,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='images' # Nom pour récupérer les images d'un bien en vente
+    )
+    bien_location = models.ForeignKey(
+        Louer,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='images' # Nom pour récupérer les images d'un bien en location
+    )
+    bien = models.ForeignKey(
+        Bien,
+        on_delete=models.CASCADE,
+        related_name='images' # Cela permet d'accéder aux images via bien.images.all()
+    )
+
+    image = models.ImageField(upload_to='biens_images/')
+
+    def __str__(self):
+        if self.bien_vente:
+            return f"Image pour bien à vendre {self.bien_vente.pk}"
+        elif self.bien_location:
+            return f"Image pour bien à louer {self.bien_location.pk}"
+        return "Image orpheline"
+    
 
     
     

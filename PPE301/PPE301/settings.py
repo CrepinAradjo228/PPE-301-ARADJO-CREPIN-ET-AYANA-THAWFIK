@@ -30,6 +30,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
+    '*',
     'projetdjango-web.onrender.com',  # ← Ajoutez cette ligne
     # Ou pour accepter tous les domaines Render :
     '.onrender.com',  # ← Cette ligne accepte tous les sous-domaines .onrender.com

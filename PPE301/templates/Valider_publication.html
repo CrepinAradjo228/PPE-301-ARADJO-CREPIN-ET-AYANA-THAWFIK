@@ -148,74 +148,118 @@
                     </p>
                     
                     <h3 class="mt-4 mb-3 text-dark">Biens à vendre</h3>
-                    <div class="row">
-                        {% for bien_vente in publications_vente %}
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card shadow border-left-success">
-                                <a href="{{ bien_vente.image_principale.url }}" target="_blank">
-                                    <img src="{{ bien_vente.image_principale.url }}" class="card-img-top" alt="Image principale">
-                                </a>
-                                <div class="card-body">
-                                    <h5 class="card-title font-weight-bold text-success">{{ bien_vente.type_bien|title }} (Vente)</h5>
-                                    <hr>
-                                    <ul class="list-unstyled">
-                                        <li class="info-item"><span class="info-label">ID:</span> <span class="info-value">{{ bien_vente.id }}</span></li>
-                                        <li class="info-item"><span class="info-label">Prix:</span> <span class="info-value">{{ bien_vente.prix_vente }} FCFA</span></li>
-                                        <li class="info-item"><span class="info-label">Superficie:</span> <span class="info-value">{{ bien_vente.superficie }} m²</span></li>
-                                        <li class="info-item"><span class="info-label">Localisation:</span> <span class="info-value">{{ bien_vente.localisation }}</span></li>
-                                        <li class="info-item"><span class="info-label">État:</span> <span class="info-value">{{ bien_vente.etat_bien }}</span></li>
-                                        <li class="info-item"><span class="info-label">Propriétaire:</span> <span class="info-value">{{ bien_vente.proprietaire.nom }} {{ bien_vente.proprietaire.prenom }}</span></li>
-                                        <li class="info-item"><span class="info-label">Titre foncier:</span> {% if bien_vente.titre_foncier %}<a href="{{ bien_vente.titre_foncier.url }}" target="_blank" class="info-value">Voir</a>{% else %}<span class="info-value">Non fourni</span>{% endif %}</li>
-                                    </ul>
-                                    <div class="mt-4 d-flex justify-content-between">
-                                        <a href="{% url 'confirmer_validation' 'vente' bien_vente.id %}" class="btn btn-success flex-grow-1 mr-2">Valider</a>
-                                        <a href="#" class="btn btn-danger flex-grow-1 ml-2">Refuser</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {% empty %}
-                        <div class="col-12 text-center my-5">
-                            <i class="fas fa-box-open fa-4x text-gray-400 mb-3"></i>
-                            <p class="text-muted h4">Aucune vente en attente.</p>
-                        </div>
-                        {% endfor %}
+                   <div class="row">
+    {% for bien_vente in publications_vente %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card shadow border-left-success">
+            <div id="carouselAdminVente-{{ bien_vente.id }}" class="carousel slide" data-ride="carousel">
+                <div class="carousel-inner">
+                    {% for image in bien_vente.images.all %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <a href="{{ image.image.url }}" target="_blank">
+                            <img src="{{ image.image.url }}" class="d-block w-100" alt="Image {{ forloop.counter }}">
+                        </a>
                     </div>
+                    {% empty %}
+                    <div class="carousel-item active">
+                        <img src="{% static 'biens/background.jpeg' %}" class="d-block w-100" alt="Image par défaut">
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if bien_vente.images.count > 1 %}
+                <a class="carousel-control-prev" href="#carouselAdminVente-{{ bien_vente.id }}" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Précédent</span>
+                </a>
+                <a class="carousel-control-next" href="#carouselAdminVente-{{ bien_vente.id }}" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Suivant</span>
+                </a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title font-weight-bold text-success">{{ bien_vente.type_bien|title }} (Vente)</h5>
+                <hr>
+                <ul class="list-unstyled">
+                    <li class="info-item"><span class="info-label">ID:</span> <span class="info-value">{{ bien_vente.id }}</span></li>
+                    <li class="info-item"><span class="info-label">Prix:</span> <span class="info-value">{{ bien_vente.prix_vente }} FCFA</span></li>
+                    <li class="info-item"><span class="info-label">Superficie:</span> <span class="info-value">{{ bien_vente.superficie }} m²</span></li>
+                    <li class="info-item"><span class="info-label">Localisation:</span> <span class="info-value">{{ bien_vente.localisation }}</span></li>
+                    <li class="info-item"><span class="info-label">État:</span> <span class="info-value">{{ bien_vente.etat_bien }}</span></li>
+                    <li class="info-item"><span class="info-label">Propriétaire:</span> <span class="info-value">{{ bien_vente.proprietaire.nom }} {{ bien_vente.proprietaire.prenom }}</span></li>
+                    <li class="info-item"><span class="info-label">Titre foncier:</span> {% if bien_vente.titre_foncier %}<a href="{{ bien_vente.titre_foncier.url }}" target="_blank" class="info-value">Voir</a>{% else %}<span class="info-value">Non fourni</span>{% endif %}</li>
+                </ul>
+                <div class="mt-4 d-flex justify-content-between">
+                    <a href="{% url 'confirmer_validation' 'vente' bien_vente.id %}" class="btn btn-success flex-grow-1 mr-2">Valider</a>
+                    <a href="{% url 'refuser_publication' 'vente' bien_vente.id %}" class="btn btn-danger flex-grow-1 ml-2">Refuser</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center my-5">
+        <i class="fas fa-box-open fa-4x text-gray-400 mb-3"></i>
+        <p class="text-muted h4">Aucune vente en attente.</p>
+    </div>
+    {% endfor %}
+</div>
                     
                     <hr>
                     
                     <h3 class="mt-5 mb-3 text-dark">Biens à louer</h3>
                     <div class="row">
-                        {% for bien_location in publications_location %}
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card shadow border-left-primary">
-                                <a href="{{ bien_location.image_principale.url }}" target="_blank">
-                                    <img src="{{ bien_location.image_principale.url }}" class="card-img-top" alt="Image principale">
-                                </a>
-                                <div class="card-body">
-                                    <h5 class="card-title font-weight-bold text-primary">{{ bien_location.type_bien|title }} (Location)</h5>
-                                    <hr>
-                                    <ul class="list-unstyled">
-                                        <li class="info-item"><span class="info-label">ID:</span> <span class="info-value">{{ bien_location.id }}</span></li>
-                                        <li class="info-item"><span class="info-label">Loyer mensuel:</span> <span class="info-value">{{ bien_location.loyer_mensuel }} FCFA</span></li>
-                                        <li class="info-item"><span class="info-label">Durée de location:</span> <span class="info-value">{{ bien_location.durée_location }} Mois</span></li>
-                                        <li class="info-item"><span class="info-label">Avance:</span> <span class="info-value">{{ bien_location.avance }}</span></li>
-                                        <li class="info-item"><span class="info-label">Localisation:</span> <span class="info-value">{{ bien_location.localisation }}</span></li>
-                                        <li class="info-item"><span class="info-label">Propriétaire:</span> <span class="info-value">{{ bien_location.proprietaire.nom }} {{ bien_location.proprietaire.prenom }}</span></li>
-                                    </ul>
-                                    <div class="mt-4 d-flex justify-content-between">
-                                        <a href="{% url 'confirmer_validation' 'location' bien_location.id %}" class="btn btn-success flex-grow-1 mr-2">Valider</a>
-                                        <a href="#" class="btn btn-danger flex-grow-1 ml-2">Refuser</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {% empty %}
-                        <div class="col-12 text-center my-5">
-                            <i class="fas fa-box-open fa-4x text-gray-400 mb-3"></i>
-                            <p class="text-muted h4">Aucune location en attente.</p>
-                        </div>
-                        {% endfor %}
+    {% for bien_location in publications_location %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card shadow border-left-primary">
+            <div id="carouselAdminLocation-{{ bien_location.id }}" class="carousel slide" data-ride="carousel">
+                <div class="carousel-inner">
+                    {% for image in bien_location.images.all %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <a href="{{ image.image.url }}" target="_blank">
+                            <img src="{{ image.image.url }}" class="d-block w-100" alt="Image {{ forloop.counter }}">
+                        </a>
+                    </div>
+                    {% empty %}
+                    <div class="carousel-item active">
+                        <img src="{% static 'biens/background.jpeg' %}" class="d-block w-100" alt="Image par défaut">
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if bien_location.images.count > 1 %}
+                <a class="carousel-control-prev" href="#carouselAdminLocation-{{ bien_location.id }}" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Précédent</span>
+                </a>
+                <a class="carousel-control-next" href="#carouselAdminLocation-{{ bien_location.id }}" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Suivant</span>
+                </a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title font-weight-bold text-primary">{{ bien_location.type_bien|title }} (Location)</h5>
+                <hr>
+                <ul class="list-unstyled">
+                    <li class="info-item"><span class="info-label">ID:</span> <span class="info-value">{{ bien_location.id }}</span></li>
+                    <li class="info-item"><span class="info-label">Loyer mensuel:</span> <span class="info-value">{{ bien_location.loyer_mensuel }} FCFA</span></li>
+                    <li class="info-item"><span class="info-label">Durée de location:</span> <span class="info-value">{{ bien_location.durée_location }} Mois</span></li>
+                    <li class="info-item"><span class="info-label">Avance:</span> <span class="info-value">{{ bien_location.avance }}</span></li>
+                    <li class="info-item"><span class="info-label">Localisation:</span> <span class="info-value">{{ bien_location.localisation }}</span></li>
+                    <li class="info-item"><span class="info-label">Propriétaire:</span> <span class="info-value">{{ bien_location.proprietaire.nom }} {{ bien_location.proprietaire.prenom }}</span></li>
+                </ul>
+                <div class="mt-4 d-flex justify-content-between">
+                    <a href="{% url 'confirmer_validation' 'location' bien_location.id %}" class="btn btn-success flex-grow-1 mr-2">Valider</a>
+                    <a href="{% url 'refuser_publication' 'location' bien_location.id %}" class="btn btn-danger flex-grow-1 ml-2">Refuser</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center my-5">
+        <i class="fas fa-box-open fa-4x text-gray-400 mb-3"></i>
+        <p class="text-muted h4">Aucune location en attente.</p>
+    </div>
+    {% endfor %}
                     </div>
                 </div>
                 </div>

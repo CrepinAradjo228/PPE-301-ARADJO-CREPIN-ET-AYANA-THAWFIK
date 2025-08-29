@@ -79,9 +79,16 @@
                         <a class="collapse-item" href="{% url 'registerbien' %}">Enregistrer un bien</a>
                         <a class="collapse-item" href="{% url 'listebien' proprietaire_id=proprietaire.id %}">Biens enregistrés</a>
                         <a class="collapse-item active" href="{% url 'bienpublies' %}">Biens publiés</a>
-                        <a class="collapse-item" href="{% url 'liste_demandes_proprietaire' %}">Demandes des clients</a>
+                        <a class="collapse-item" href="{% url 'biens_refuses' %}">Biens refusés</a>
                     </div>
                 </div>
+            </li>
+            <hr class="sidebar-divider">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'liste_demandes_proprietaire' %}">
+                    <i class="fas fa-fw fa-comments"></i>
+                    <span>Demandes des clients</span>
+                </a>
             </li>
 
             <hr class="sidebar-divider d-none d-md-block">

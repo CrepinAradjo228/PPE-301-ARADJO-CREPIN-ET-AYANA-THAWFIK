@@ -54,7 +54,8 @@
                         <h6 class="collapse-header">Mes biens :</h6>
                         <a class="collapse-item" href="{% url 'registerbien' %}">Enregistrer un bien</a>
                         <a class="collapse-item" href="{% url 'listebien' proprietaire_id=proprietaire.id %}">Biens enregistrés</a>
-                        <a class="collapse-item active" href="{% url 'bienpublies' %}">Biens publiés</a>
+                        <a class="collapse-item" href="{% url 'bienpublies' %}">Biens publiés</a>
+                        <a class="collapse-item" href="{% url 'biens_refuses' %}">Biens refusés</a>
                     </div>
                 </div>
             </li>
@@ -127,57 +128,79 @@
                                 <div class="card-header py-3">
                                     <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-tag"></i> Biens en Vente</h6>
                                 </div>
-                                <div class="card-body">
-                                    {% if listebiens_vente_publies %}
-                                        <div class="row">
-                                            {% for bien in listebiens_vente_publies %}
-                                                <div class="col-md-12 mb-4">
-                                                    <div class="card shadow border-left-success h-100">
-                                                        <div class="card-body">
-                                                            <div class="row no-gutters align-items-center">
-                                                                <div class="col-auto mr-3">
-                                                                    {% if bien.image_principale %}
-                                                                        <a href="{{ bien.image_principale.url }}" target="_blank">
-                                                                            <img src="{{ bien.image_principale.url }}" class="img-fluid rounded" alt="{{ bien.nom }}" style="width: 100px; height: 100px; object-fit: cover;">
-                                                                        </a>
-                                                                    {% else %}
-                                                                        <img src="{% static 'biens/background.jpeg' %}" class="img-fluid rounded" alt="Image par défaut" style="width: 100px; height: 100px; object-fit: cover;">
-                                                                    {% endif %}
-                                                                </div>
-                                                                <div class="col">
-                                                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                                                        <h5 class="card-title mb-0">{{ bien.type_bien }}</h5>
-                                                                        <span class="badge badge-success">{{ bien.statut|capfirst }}</span>
-                                                                    </div>
-                                                                    <div class="text-sm text-muted">
-                                                                        <i class="fas fa-map-marker-alt"></i> {{ bien.localisation }}
-                                                                    </div>
-                                                                    <div class="text-sm text-muted">
-                                                                        <i class="fas fa-money-bill-wave"></i> **Prix :** {{ bien.prix_vente }} FCFA
-                                                                    </div>
-                                                                    
-                                                                </div>
-                                                            </div>
-                                                            <hr>
-                                                            <div class="text-right">
-                                                                <a href="{% url 'modifier_vente' bien.id %}" class="btn btn-info btn-sm">
-                                                                    <i class="fas fa-edit"></i> Modifier
-                                                                </a>
-                                                                <a href="{% url 'supprimer_vente' bien.id %}" class="btn btn-danger btn-sm">
-                                                                    <i class="fas fa-times-circle"></i> Retirer
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                        <div class="card-body">
+    {% if listebiens_vente_publies %}
+        <div class="row">
+            {% for bien in listebiens_vente_publies %}
+                <div class="col-md-12 mb-4">
+                    <div class="card shadow border-left-success h-100">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col-auto mr-3">
+                                    <div id="carouselVente-{{ bien.id }}" class="carousel slide" data-ride="carousel" style="width: 150px; height: 150px;">
+                                        <ol class="carousel-indicators">
+                                            {% for image in bien.images.all %}
+                                                <li data-target="#carouselVente-{{ bien.id }}" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
+                                            {% endfor %}
+                                        </ol>
+                                        <div class="carousel-inner">
+                                            {% for image in bien.images.all %}
+                                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                                    <a href="{{ image.image.url }}" target="_blank">
+                                                        <img class="d-block w-100 h-100" src="{{ image.image.url }}" alt="Image {{ forloop.counter }}" style="object-fit: cover;">
+                                                    </a>
+                                                </div>
+                                            {% empty %}
+                                                <div class="carousel-item active">
+                                                    <img class="d-block w-100 h-100" src="{% static 'biens/background.jpeg' %}" alt="Image par défaut" style="object-fit: cover;">
                                                 </div>
                                             {% endfor %}
                                         </div>
-                                    {% else %}
-                                        <div class="alert alert-info text-center" role="alert">
-                                            Aucun bien n'est actuellement publié pour la vente.
-                                        </div>
-                                    {% endif %}
+                                        {% if bien.images.count > 1 %}
+                                            <a class="carousel-control-prev" href="#carouselVente-{{ bien.id }}" role="button" data-slide="prev">
+                                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                <span class="sr-only">Précédent</span>
+                                            </a>
+                                            <a class="carousel-control-next" href="#carouselVente-{{ bien.id }}" role="button" data-slide="next">
+                                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                <span class="sr-only">Suivant</span>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                    </div>
+                                <div class="col">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h5 class="card-title mb-0">{{ bien.type_bien }}</h5>
+                                        <span class="badge badge-success">{{ bien.statut|capfirst }}</span>
+                                    </div>
+                                    <div class="text-sm text-muted">
+                                        <i class="fas fa-map-marker-alt"></i> {{ bien.localisation }}
+                                    </div>
+                                    <div class="text-sm text-muted">
+                                        <i class="fas fa-money-bill-wave"></i> **Prix :** {{ bien.prix_vente }} FCFA
+                                    </div>
                                 </div>
+                            </div>
+                            <hr>
+                            <div class="text-right">
+                                <a href="{% url 'modifier_vente' bien.id %}" class="btn btn-info btn-sm">
+                                    <i class="fas fa-edit"></i> Modifier
+                                </a>
+                                <a href="{% url 'supprimer_vente' bien.id %}" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-times-circle"></i> Retirer
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center" role="alert">
+            Aucun bien n'est actuellement publié pour la vente.
+        </div>
+    {% endif %}
+</div>
                             </div>
                         </div>
 
@@ -187,59 +210,81 @@
                                     <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-sign"></i> Biens en Location</h6>
                                 </div>
                                 <div class="card-body">
-                                    {% if listebiens_location_publies %}
-                                        <div class="row">
-                                            {% for bien in listebiens_location_publies %}
-                                                <div class="col-md-12 mb-4">
-                                                    <div class="card shadow border-left-info h-100">
-                                                        <div class="card-body">
-                                                            <div class="row no-gutters align-items-center">
-                                                                <div class="col-auto mr-3">
-                                                                    {% if bien.image_principale %}
-                                                                        <a href="{{ bien.image_principale.url }}" target="_blank">
-                                                                            <img src="{{ bien.image_principale.url }}" class="img-fluid rounded" alt="{{ bien.nom }}" style="width: 100px; height: 100px; object-fit: cover;">
-                                                                        </a>
-                                                                    {% else %}
-                                                                        <img src="{% static 'biens/background.jpeg' %}" class="img-fluid rounded" alt="Image par défaut" style="width: 100px; height: 100px; object-fit: cover;">
-                                                                    {% endif %}
-                                                                </div>
-                                                                <div class="col">
-                                                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                                                        <h5 class="card-title mb-0">{{ bien.type_bien }}</h5>
-                                                                        <span class="badge badge-info">{{ bien.statut|capfirst }}</span>
-                                                                    </div>
-                                                                    <div class="text-sm text-muted">
-                                                                        <i class="fas fa-map-marker-alt"></i> {{ bien.localisation }}
-                                                                    </div>
-                                                                    <div class="text-sm text-muted">
-                                                                        <i class="fas fa-money-bill-wave"></i> **Avance :** {{ bien.avance }} FCFA
-                                                                    </div>
-                                                                    <div class="text-sm text-muted">
-                                                                        <i class="fas fa-clock"></i> **Durée min. :** {{ bien.duree_location }} Mois
-                                                                    </div>
-                                                                    
-                                                                </div>
-                                                            </div>
-                                                            <hr>
-                                                            <div class="text-right">
-                                                                <a href="{% url 'modifier_location' bien.id %}" class="btn btn-info btn-sm">
-                                                                    <i class="fas fa-edit"></i> Modifier
-                                                                </a>
-                                                                <a href="{% url 'supprimer_location' bien.id %}" class="btn btn-danger btn-sm">
-                                                                    <i class="fas fa-times-circle"></i> Retirer
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+    {% if listebiens_location_publies %}
+        <div class="row">
+            {% for bien in listebiens_location_publies %}
+                <div class="col-md-12 mb-4">
+                    <div class="card shadow border-left-info h-100">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col-auto mr-3">
+                                    <div id="carouselLocation-{{ bien.id }}" class="carousel slide" data-ride="carousel" style="width: 150px; height: 150px;">
+                                        <ol class="carousel-indicators">
+                                            {% for image in bien.images.all %}
+                                                <li data-target="#carouselLocation-{{ bien.id }}" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
+                                            {% endfor %}
+                                        </ol>
+                                        <div class="carousel-inner">
+                                            {% for image in bien.images.all %}
+                                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                                    <a href="{{ image.image.url }}" target="_blank">
+                                                        <img class="d-block w-100 h-100" src="{{ image.image.url }}" alt="Image {{ forloop.counter }}" style="object-fit: cover;">
+                                                    </a>
+                                                </div>
+                                            {% empty %}
+                                                <div class="carousel-item active">
+                                                    <img class="d-block w-100 h-100" src="{% static 'biens/background.jpeg' %}" alt="Image par défaut" style="object-fit: cover;">
                                                 </div>
                                             {% endfor %}
                                         </div>
-                                    {% else %}
-                                        <div class="alert alert-info text-center" role="alert">
-                                            Aucun bien n'est actuellement publié pour la location.
-                                        </div>
-                                    {% endif %}
+                                        {% if bien.images.count > 1 %}
+                                            <a class="carousel-control-prev" href="#carouselLocation-{{ bien.id }}" role="button" data-slide="prev">
+                                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                <span class="sr-only">Précédent</span>
+                                            </a>
+                                            <a class="carousel-control-next" href="#carouselLocation-{{ bien.id }}" role="button" data-slide="next">
+                                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                <span class="sr-only">Suivant</span>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                    </div>
+                                <div class="col">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h5 class="card-title mb-0">{{ bien.type_bien }}</h5>
+                                        <span class="badge badge-info">{{ bien.statut|capfirst }}</span>
+                                    </div>
+                                    <div class="text-sm text-muted">
+                                        <i class="fas fa-map-marker-alt"></i> {{ bien.localisation }}
+                                    </div>
+                                    <div class="text-sm text-muted">
+                                        <i class="fas fa-money-bill-wave"></i> **Avance :** {{ bien.avance }} FCFA
+                                    </div>
+                                    <div class="text-sm text-muted">
+                                        <i class="fas fa-clock"></i> **Durée min. :** {{ bien.duree_location }} Mois
+                                    </div>
                                 </div>
+                            </div>
+                            <hr>
+                            <div class="text-right">
+                                <a href="{% url 'modifier_location' bien.id %}" class="btn btn-info btn-sm">
+                                    <i class="fas fa-edit"></i> Modifier
+                                </a>
+                                <a href="{% url 'supprimer_location' bien.id %}" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-times-circle"></i> Retirer
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center" role="alert">
+            Aucun bien n'est actuellement publié pour la location.
+        </div>
+    {% endif %}
+</div>
                             </div>
                         </div>
                     </div>
