@@ -199,7 +199,7 @@
     
     <div class="form-group">
         <label for="id_images">Images de la galerie (1 à 4 images) :</label>
-        <input type="file" class="form-control-file" name="images" id="id_images" multiple required>
+        <input type="file" class="form-control-file" name="images" id="id_images" multiple>
     </div>
     
     <input type="hidden" name="proprietaire_id" value="{{ form.proprietaire_id.value }}">
@@ -211,7 +211,7 @@
         </span>
         <span class="text">Publier le bien en location</span>
     </button>
-    <a href="{% url 'choixpublication' bien.id %}" class="btn btn-secondary btn-icon-split ml-2">
+    <a href="{% url 'biens_refuses' %}" class="btn btn-secondary btn-icon-split ml-2">
         <span class="icon text-white-50">
             <i class="fas fa-arrow-left"></i>
         </span>

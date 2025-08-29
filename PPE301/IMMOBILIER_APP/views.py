@@ -360,22 +360,16 @@ def bienpublies(request):
 def ajouter_vente(request, publication_id=None):
     images_existantes = None
     titre_foncier_existant = None
-    # Mode Modification
-    if publication_id:
-        instance_vente = get_object_or_404(Vendre, id=publication_id)
-        # On n'a plus besoin du modèle 'Bien' pour la republication
-        bien = None 
-        images_existantes = ImageBien.objects.filter(bien_vente=instance_vente)
-        titre_foncier_existant = instance_vente.titre_foncier
-    # Mode Création
-    else:
-        bien_id = request.GET.get('bien_id') 
-        if not bien_id:
-            messages.error(request, "ID de bien initial manquant.")
-            return redirect('listebien')
-        # On a besoin du modèle 'Bien' uniquement pour la création initiale
-        bien = get_object_or_404(Bien, id=bien_id)
-        instance_vente = None
+    bien = None
+
+    # Mode Création (toujours nouveau)
+    bien_id = request.GET.get('bien_id')
+    if not bien_id:
+        messages.error(request, "ID de bien initial manquant.")
+        return redirect('listebien')
+
+    bien = get_object_or_404(Bien, id=bien_id)
+    instance_vente = None
 
     utilisateur_connecte = None
     if request.session.get('utilisateur_id') is not None:
@@ -385,60 +379,38 @@ def ajouter_vente(request, publication_id=None):
         form = VendreForm(request.POST)
         images = request.FILES.getlist('images')
 
-        # Nouvelle logique de validation pour les images
-        # Si c'est une création initiale et qu'il n'y a pas d'images, on affiche une erreur
-        if not publication_id and not images:
+        # Validation images (création uniquement)
+        if not images:
             messages.error(request, 'Veuillez télécharger entre 3 et 4 images pour la galerie.')
             return render(request, 'ajouter_vente.html', {'form': form, 'bien': bien, 'images_existantes': images_existantes, 'titre_foncier_existant': titre_foncier_existant})
 
-        # Si des images sont uploadées, on s'assure qu'il y en a entre 3 et 4
         if images and not (3 <= len(images) <= 4):
             messages.error(request, 'Veuillez télécharger entre 3 et 4 images.')
             return render(request, 'ajouter_vente.html', {'form': form, 'bien': bien, 'images_existantes': images_existantes, 'titre_foncier_existant': titre_foncier_existant})
 
         if form.is_valid():
-            if instance_vente:
-                # Mise à jour manuelle de l'instance Vendre existante
-                vente_sauvegardee = instance_vente
-                vente_sauvegardee.etat_bien = form.cleaned_data['etat_bien']
-                vente_sauvegardee.type_bien = form.cleaned_data['type_bien']
-                vente_sauvegardee.localisation = form.cleaned_data['localisation']
-                vente_sauvegardee.prix_vente = form.cleaned_data['prix_vente']
-                vente_sauvegardee.superficie = form.cleaned_data['superficie']
-                vente_sauvegardee.description = form.cleaned_data['description']
-                vente_sauvegardee.titre_foncier = form.cleaned_data['titre_foncier']
-                vente_sauvegardee.numero_titre_foncier = form.cleaned_data['numero_titre_foncier']
-                vente_sauvegardee.statut = 'en_attente'
-                vente_sauvegardee.message_de_refus = None
-            else:
-                # Création d'une nouvelle instance
-                proprietaire_obj = get_object_or_404(Utilisateur, id=form.cleaned_data['proprietaire_id'])
-                vente_sauvegardee = Vendre.objects.create(
-                    type_bien=bien.type, # Correction: bien.type et non bien
-                    localisation=bien.localisation,
-                    proprietaire=proprietaire_obj,
-                    prix_vente=form.cleaned_data['prix_vente'],
-                    superficie=form.cleaned_data['superficie'],
-                    description=form.cleaned_data['description'],
-                    etat_bien=bien.etat,
-                    titre_foncier=form.cleaned_data['titre_foncier'],
-                    numero_titre_foncier=form.cleaned_data['numero_titre_foncier'],
-                    statut='en_attente'
-                )
-
+            proprietaire_obj = get_object_or_404(Utilisateur, id=form.cleaned_data['proprietaire_id'])
+            vente_sauvegardee = Vendre.objects.create(
+                type_bien=bien.type,  # bien.type et non bien
+                localisation=bien.localisation,
+                proprietaire=proprietaire_obj,
+                prix_vente=form.cleaned_data['prix_vente'],
+                superficie=form.cleaned_data['superficie'],
+                description=form.cleaned_data['description'],
+                etat_bien=bien.etat,
+                titre_foncier=form.cleaned_data['titre_foncier'],
+                numero_titre_foncier=form.cleaned_data['numero_titre_foncier'],
+                statut='en_attente'
+            )
             vente_sauvegardee.save()
 
-            # Mise à jour des images
-            if images: # On supprime et on ajoute de nouvelles images uniquement si de nouvelles ont été fournies
-                ImageBien.objects.filter(bien_vente=vente_sauvegardee).delete()
-            
-                for image in images:
-                    ImageBien.objects.create(bien_vente=vente_sauvegardee, image=image) 
-            
-            # La mise à jour de bien.statut ne s'applique qu'à la création initiale
-            if not publication_id:
-                bien.statut = 'valide'
-                bien.save()
+            # Sauvegarde images
+            for image in images:
+                ImageBien.objects.create(bien_vente=vente_sauvegardee, bien=bien, image=image)
+
+            # Mise à jour du statut du bien (création initiale uniquement)
+            bien.statut = 'valide'
+            bien.save()
 
             messages.success(request, 'Votre bien a été mis en vente et est en attente de validation!')
             return redirect('publication_attente', publication_id=vente_sauvegardee.id, type_publication='vente')
@@ -446,44 +418,91 @@ def ajouter_vente(request, publication_id=None):
             print("Formulaire Vendre invalide :", form.errors)
             messages.error(request, 'Veuillez corriger les erreurs du formulaire.')
     else:
-        # Initialisation du formulaire
-        if instance_vente:
-            initial_data = {
-                'etat_bien': instance_vente.etat_bien,
-                'type_bien': instance_vente.type_bien,
-                'localisation': instance_vente.localisation,
-                'prix_vente': instance_vente.prix_vente,
-                'superficie': instance_vente.superficie,
-                'description': instance_vente.description,
-                'titre_foncier': instance_vente.titre_foncier,
-                'numero_titre_foncier': instance_vente.numero_titre_foncier,
-            }
-        else:
-            initial_data = {}
-        
+        initial_data = {}
         if utilisateur_connecte and utilisateur_connecte.role == 'proprietaire':
             initial_data['proprietaire_nom'] = f"{utilisateur_connecte.nom} {utilisateur_connecte.prenom}"
             initial_data['proprietaire_id'] = utilisateur_connecte.id
-        
+
         form = VendreForm(initial=initial_data)
 
     return render(request, 'ajouter_vente.html', {'form': form, 'bien': bien, 'images_existantes': images_existantes, 'titre_foncier_existant': titre_foncier_existant})
 
-def ajouter_location(request, publication_id=None):
-    images_existantes = None
-    # Mode Modification
-    if publication_id:
-        instance_location = get_object_or_404(Louer, id=publication_id)
-        bien = None
-        images_existantes = ImageBien.objects.filter(bien_location=instance_location)
-    # Mode Création
+
+def republier_vente(request, publication_id):
+    instance_vente = get_object_or_404(Vendre, id=publication_id)
+    bien = None
+    images_existantes = ImageBien.objects.filter(bien_vente=instance_vente)
+    titre_foncier_existant = instance_vente.titre_foncier
+
+    utilisateur_connecte = None
+    if request.session.get('utilisateur_id') is not None:
+        utilisateur_connecte = get_object_or_404(Utilisateur, id=request.session['utilisateur_id'])
+
+    if request.method == 'POST':
+        form = VendreForm(request.POST)
+        images = request.FILES.getlist('images')
+
+        # Validation images
+        if images and not (3 <= len(images) <= 4):
+            messages.error(request, 'Veuillez télécharger entre 3 et 4 images.')
+            return render(request, 'ajouter_vente.html', {'form': form, 'bien': bien, 'images_existantes': images_existantes, 'titre_foncier_existant': titre_foncier_existant})
+
+        if form.is_valid():
+            vente_sauvegardee = instance_vente
+            vente_sauvegardee.etat_bien = form.cleaned_data['etat_bien']
+            vente_sauvegardee.type_bien = form.cleaned_data['type_bien']
+            vente_sauvegardee.localisation = form.cleaned_data['localisation']
+            vente_sauvegardee.prix_vente = form.cleaned_data['prix_vente']
+            vente_sauvegardee.superficie = form.cleaned_data['superficie']
+            vente_sauvegardee.description = form.cleaned_data['description']
+            vente_sauvegardee.titre_foncier = form.cleaned_data['titre_foncier']
+            vente_sauvegardee.numero_titre_foncier = form.cleaned_data['numero_titre_foncier']
+            vente_sauvegardee.statut = 'en_attente'
+            vente_sauvegardee.message_de_refus = None
+            vente_sauvegardee.save()
+
+            # Mise à jour des images si nouvelles fournies
+            if images:
+                ImageBien.objects.filter(bien_vente=vente_sauvegardee).delete()
+                for image in images:
+                    ImageBien.objects.create(bien_vente=vente_sauvegardee, bien=bien, image=image)
+
+            messages.success(request, 'Votre bien a été republié et est en attente de validation!')
+            return redirect('publication_attente', publication_id=vente_sauvegardee.id, type_publication='vente')
+        else:
+            print("Formulaire Vendre invalide :", form.errors)
+            messages.error(request, 'Veuillez corriger les erreurs du formulaire.')
     else:
-        bien_id = request.GET.get('bien_id') 
-        if not bien_id:
-            messages.error(request, "ID de bien initial manquant.")
-            return redirect('listebien')
-        bien = get_object_or_404(Bien, id=bien_id)
-        instance_location = None
+        initial_data = {
+            'etat_bien': instance_vente.etat_bien,
+            'type_bien': instance_vente.type_bien,
+            'localisation': instance_vente.localisation,
+            'prix_vente': instance_vente.prix_vente,
+            'superficie': instance_vente.superficie,
+            'description': instance_vente.description,
+            'titre_foncier': instance_vente.titre_foncier,
+            'numero_titre_foncier': instance_vente.numero_titre_foncier,
+        }
+
+        if utilisateur_connecte and utilisateur_connecte.role == 'proprietaire':
+            initial_data['proprietaire_nom'] = f"{utilisateur_connecte.nom} {utilisateur_connecte.prenom}"
+            initial_data['proprietaire_id'] = utilisateur_connecte.id
+
+        form = VendreForm(initial=initial_data)
+
+    return render(request, 'republier_vente.html', {'form': form, 'bien': bien, 'images_existantes': images_existantes, 'titre_foncier_existant': titre_foncier_existant})
+
+def ajouter_location(request):
+    images_existantes = None
+    bien = None
+
+    # Mode Création (toujours nouveau)
+    bien_id = request.GET.get('bien_id')
+    if not bien_id:
+        messages.error(request, "ID de bien initial manquant.")
+        return redirect('listebien')
+    bien = get_object_or_404(Bien, id=bien_id)
+    instance_location = None
 
     utilisateur_connecte = None
     if request.session.get('utilisateur_id') is not None:
@@ -493,54 +512,36 @@ def ajouter_location(request, publication_id=None):
         form = LouerForm(request.POST)
         images = request.FILES.getlist('images')
 
-        # Nouvelle logique de validation pour les images
-        # Si c'est une création initiale et qu'il n'y a pas d'images, on affiche une erreur
-        if not publication_id and not images:
+        # Validation images (création seulement)
+        if not images:
             messages.error(request, 'Veuillez télécharger entre 1 et 4 images pour la galerie.')
             return render(request, 'ajouter_location.html', {'form': form, 'bien': bien, 'images_existantes': images_existantes})
 
-        # Si des images sont uploadées, on s'assure qu'il y en a entre 1 et 4
         if images and not (1 <= len(images) <= 4):
             messages.error(request, 'Veuillez télécharger entre 1 et 4 images.')
             return render(request, 'ajouter_location.html', {'form': form, 'bien': bien, 'images_existantes': images_existantes})
 
         if form.is_valid():
-            if instance_location:
-                location_sauvegardee = instance_location
-                location_sauvegardee.type_bien = form.cleaned_data['type_bien']
-                location_sauvegardee.localisation = form.cleaned_data['localisation']
-                location_sauvegardee.loyer_mensuel = form.cleaned_data['loyer_mensuel']
-                location_sauvegardee.durée_location = form.cleaned_data['durée_location']
-                location_sauvegardee.avance = form.cleaned_data['avance']
-                location_sauvegardee.description = form.cleaned_data['description']
-                location_sauvegardee.statut = 'en_attente'
-                location_sauvegardee.message_de_refus = None
-            else:
-                proprietaire_obj = get_object_or_404(Utilisateur, id=form.cleaned_data['proprietaire_id'])
-                location_sauvegardee = Louer.objects.create(
-                    type_bien=bien.type,
-                    localisation=bien.localisation,
-                    proprietaire=proprietaire_obj,
-                    loyer_mensuel=form.cleaned_data['loyer_mensuel'],
-                    durée_location=form.cleaned_data['durée_location'],
-                    avance=form.cleaned_data['avance'],
-                    description=form.cleaned_data['description'],
-                    statut='en_attente'
-                )
-            
+            proprietaire_obj = get_object_or_404(Utilisateur, id=form.cleaned_data['proprietaire_id'])
+            location_sauvegardee = Louer.objects.create(
+                type_bien=bien.type,
+                localisation=bien.localisation,
+                proprietaire=proprietaire_obj,
+                loyer_mensuel=form.cleaned_data['loyer_mensuel'],
+                durée_location=form.cleaned_data['durée_location'],
+                avance=form.cleaned_data['avance'],
+                description=form.cleaned_data['description'],
+                statut='en_attente'
+            )
             location_sauvegardee.save()
 
-            # Mise à jour des images
-            if images: # On supprime et on ajoute de nouvelles images uniquement si de nouvelles ont été fournies
-                ImageBien.objects.filter(bien_location=location_sauvegardee).delete()
-            
-                for image in images:
-                    ImageBien.objects.create(bien_location=location_sauvegardee, image=image) 
-            
-            # La mise à jour de bien.statut ne s'applique qu'à la création initiale
-            if not publication_id:
-                bien.statut = 'disponible'
-                bien.save()
+            # Sauvegarde images
+            for image in images:
+                ImageBien.objects.create(bien_location=location_sauvegardee, bien=bien, image=image)
+
+            # Mise à jour statut bien (création initiale uniquement)
+            bien.statut = 'disponible'
+            bien.save()
 
             messages.success(request, 'Votre bien a été mis en location et est en attente de validation!')
             return redirect('publication_attente', publication_id=location_sauvegardee.id, type_publication='location')
@@ -548,55 +549,119 @@ def ajouter_location(request, publication_id=None):
             print("Formulaire Louer invalide :", form.errors)
             messages.error(request, 'Veuillez corriger les erreurs du formulaire.')
     else:
-        # Initialisation du formulaire
-        if instance_location:
-            initial_data = {
-                'type_bien': instance_location.type_bien,
-                'localisation': instance_location.localisation,
-                'loyer_mensuel': instance_location.loyer_mensuel,
-                'durée_location': instance_location.durée_location,
-                'avance': instance_location.avance,
-                'description': instance_location.description,
-            }
-        else:
-            initial_data = {}
-        
+        initial_data = {}
         if utilisateur_connecte and utilisateur_connecte.role == 'proprietaire':
             initial_data['proprietaire_nom'] = f"{utilisateur_connecte.nom} {utilisateur_connecte.prenom}"
             initial_data['proprietaire_id'] = utilisateur_connecte.id
-        
+
         form = LouerForm(initial=initial_data)
 
     return render(request, 'ajouter_location.html', {'form': form, 'bien': bien, 'images_existantes': images_existantes})
 
+# Dans votre fichier views.py
+
+def republier_location(request, publication_id):
+    instance_location = get_object_or_404(Louer, id=publication_id)
+    bien = None
+    images_existantes = ImageBien.objects.filter(bien_location=instance_location)
+
+    try:
+        if images_existantes.exists():
+            bien = images_existantes.first().bien
+    except Exception:
+        bien = None
+
+    utilisateur_connecte = None
+    if request.session.get('utilisateur_id') is not None:
+        utilisateur_connecte = get_object_or_404(Utilisateur, id=request.session['utilisateur_id'])
+
+    if request.method == 'POST':
+        form = LouerForm(request.POST)
+        images = request.FILES.getlist('images')
+
+        # Validation images
+        if images and not (1 <= len(images) <= 4):
+            messages.error(request, 'Veuillez télécharger entre 1 et 4 images.')
+            return render(request, 'ajouter_location.html', {'form': form, 'bien': bien, 'images_existantes': images_existantes})
+
+        if form.is_valid():
+            location_sauvegardee = instance_location
+            location_sauvegardee.type_bien = form.cleaned_data['type_bien']
+            location_sauvegardee.localisation = form.cleaned_data['localisation']
+            location_sauvegardee.loyer_mensuel = form.cleaned_data['loyer_mensuel']
+            location_sauvegardee.durée_location = form.cleaned_data['durée_location']
+            location_sauvegardee.avance = form.cleaned_data['avance']
+            location_sauvegardee.description = form.cleaned_data['description']
+            location_sauvegardee.statut = 'en_attente'
+            location_sauvegardee.message_de_refus = None
+            location_sauvegardee.save()
+
+            # Mise à jour des images si nouvelles fournies
+            if images:
+                ImageBien.objects.filter(bien_location=location_sauvegardee).delete()
+                for image in images:
+                    ImageBien.objects.create(bien_location=location_sauvegardee, bien=bien, image=image)
+
+            messages.success(request, 'Votre bien a été republié et est en attente de validation!')
+            return redirect('publication_attente', publication_id=location_sauvegardee.id, type_publication='location')
+        else:
+            print("Formulaire Louer invalide :", form.errors)
+            messages.error(request, 'Veuillez corriger les erreurs du formulaire.')
+    else:
+        initial_data = {
+            'type_bien': instance_location.type_bien,
+            'localisation': instance_location.localisation,
+            'loyer_mensuel': instance_location.loyer_mensuel,
+            'durée_location': instance_location.durée_location,
+            'avance': instance_location.avance,
+            'description': instance_location.description,
+        }
+
+        if utilisateur_connecte and utilisateur_connecte.role == 'proprietaire':
+            initial_data['proprietaire_nom'] = f"{utilisateur_connecte.nom} {utilisateur_connecte.prenom}"
+            initial_data['proprietaire_id'] = utilisateur_connecte.id
+
+        form = LouerForm(initial=initial_data)
+
+    return render(request, 'republier_location.html', {'form': form, 'bien': bien, 'images_existantes': images_existantes})
+
+
 def valider_publications(request):
-     # Afficher les biens en attente
+    # Récupérer tous les biens en attente
     biens_vente_a_valider = Vendre.objects.filter(statut='en_attente')
     biens_location_a_valider = Louer.objects.filter(statut='en_attente')
 
     if request.method == 'POST':
         bien_id = request.POST.get('bien_id')
         bien_type = request.POST.get('bien_type')
-        action = request.POST.get('action') # 'valider' ou 'refuser'
+        action = request.POST.get('action')  # 'valider' ou 'refuser'
 
+        # Vérification du type de bien
         if bien_type == 'vente':
             bien = get_object_or_404(Vendre, pk=bien_id)
         elif bien_type == 'location':
             bien = get_object_or_404(Louer, pk=bien_id)
         else:
             messages.error(request, "Type de bien invalide.")
-            return redirect('valider_publications')
+            return redirect('valider_publication')
 
+        # Action sur le bien
         if action == 'valider':
-            bien.statut = 'disponible' # Le bien est maintenant 'publie'
+            if bien_type == 'vente':
+                bien.statut = 'valide'  # Vente validée → statut = valide
+            elif bien_type == 'location':
+                bien.statut = 'disponible'  # Location validée → statut = disponible
             messages.success(request, f"Le bien de type {bien_type} (ID: {bien_id}) a été validé et publié.")
-        elif action == 'refuser':
-            bien.statut = 'refuse' # Le bien est 'refuse'
-            messages.info(request, f"Le bien de type {bien_type} (ID: {bien_id}) a été refusé.")
-        
-        bien.save()
-        return redirect('valider_publications') # Recharger la page pour voir les changements
 
+        elif action == 'refuser':
+            bien.statut = 'refuse'  # Rejet du bien
+            messages.info(request, f"Le bien de type {bien_type} (ID: {bien_id}) a été refusé.")
+
+        # Sauvegarder la modification
+        bien.save()
+        return redirect('valider_publication')  # Recharger la page après action
+
+    # Rendu de la page avec les biens en attente
     return render(request, 'Valider_publication.html', {
         'publications_vente': biens_vente_a_valider,
         'publications_location': biens_location_a_valider
@@ -651,14 +716,14 @@ def confirmer_validation(request, type_publication, publication_id):
         # S'assurer que le bien n'a pas atteint la limite de refus
         if publication.nombre_de_refus >= 3:
             messages.error(request, "Ce bien a été refusé 3 fois et ne peut plus être publié.")
-            return redirect('valider_publications')
-        publication.statut = 'disponible' 
+            return redirect('valider_publication')
+        publication.statut = 'valide' 
     elif type_publication == 'location':
         publication = get_object_or_404(Louer, id=publication_id)
         # S'assurer que le bien n'a pas atteint la limite de refus
         if publication.nombre_de_refus >= 3:
             messages.error(request, "Ce bien a été refusé 3 fois et ne peut plus être publié.")
-            return redirect('valider_publications')
+            return redirect('valider_publication')
         publication.statut = 'disponible' 
     else:
         from django.http import Http404
@@ -670,7 +735,7 @@ def confirmer_validation(request, type_publication, publication_id):
     
     publication.save()
     messages.success(request, "La publication a été validée avec succès.")
-    return redirect('valider_publications')
+    return redirect('valider_publication')
 
 def liste_biens_valides(request):
     vente_valides = Vendre.objects.filter(statut='valide')
